@@ -1,17 +1,19 @@
 {
-  "name": "debugger",
-  "description": "debugger",
+  "name": "splatter",
+  "description": "command line debugger for node",
   "keywords": [
-    "compile",
-    "compose"
+    "command",
+    "line",
+    "debugger",
+    "debug"
   ],
-  "version": "0.4.0",
+  "version": "0.1.0",
   "license": "MIT",
   "author": "Peter Elger (http://nearform.com/)",
   "contributors": [
     "Peter Elger <elger.peter@gmail.com> (http://peterelger.com/)"
   ],
-  "main": "./xeno.js",
+  "main": "./main.js",
   "engines": {
     "node": "*"
   },
@@ -21,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/apparatus/xeno"
+    "url": "https://github.com/apparatus/splatter"
   },
   "scripts": {
     "lint": "jshint **/*.js",

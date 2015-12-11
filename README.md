@@ -1,94 +1,42 @@
-#!/usr/bin/env node
-/*
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+# Splatter 
+[![Gitter][gitter-badge]][gitter-url]
 
-'use strict';
+Experimental!! do not use!!
 
-var blessed = require('blessed');
+Command line node.js debugger and default debugger for fuge.
 
-var scr = blessed.screen({smartCSR: true});
-var fs = require('fs');
+If you're using this module, and need help, you can:
 
-scr.title = 'my window title';
+- Post a [github issue][],
+- Ask on the [Gitter][gitter-url].
 
+## Install
+To install, simply use npm.
 
+```sh
+npm install splatter
+```
 
-var DebuggerApi = require('debugger-api');
- 
-// make sure node is running in debug mode: node --debug-brk=5000 
-// then: 
-var dbugger = new DebuggerApi({debugPort: 5000});
- 
-// enable debugging. 
-dbugger.enable();
- 
-// initial breakpoint (because of debug-brk) 
-dbugger.once('Debugger.paused', function(firstBreak) {
- 
-  var scriptId = firstBreak.callFrames[0].location.scriptId;
-  //url = dbugger.scripts.findScriptByID(scriptId).url;
-  dbugger.getScriptSource({scriptId: scriptId}, function(error, result){
-    console.log(error);
-    console.log(result);
+## Test
+To run tests, simply use npm:
 
-    var box = blessed.box({
-      top: 'center',
-      left: 'center',
-      width: '100%',
-      height: '90%',
-      content: result.scriptSource,
-      tags: true,
-      border: {
-        type: 'line'
-      },
-      style: {
-        fg: 'white',
-        bg: 'black',
-        border: {
-          fg: '#f0f0f0'
-        },
-      }
-    });
+```
+npm run test
+```
 
-    scr.append(box);
+## Contributing
+The [apparatus team][] encourage open participation. If you feel you can help in any way, be it with
+documentation, examples, extra testing, or new features please get in touch.
 
-    box.on('click', function() {
-      var code = fs.readFileSync(__dirname + '/package.json', 'utf8');
-      box.setContent(result);
-      scr.render();
-    });
+## License
+Copyright the apparatus team 2015, Licensed under [MIT][].
 
+[apparatus team]: https://github.com/apparatus
+[travis-badge]: https://travis-ci.org/apparatus/fuge-runner.svg
+[travis-url]: https://travis-ci.org/apparatus/fuge-runner
+[gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
+[gitter-url]: https://gitter.im/apparatus
 
-    scr.key(['escape', 'q', 'C-c'], function() {
-      return process.exit(0);
-    });
-
-    box.focus();
-    scr.render();
-
-  });
- 
-  /*
-  dbugger.setBreakpointByUrl({
-    url: url,
-    lineNumber: 4
-  });
-  
-  dbugger.on('Debugger.paused', function (pausedResult) {
-    console.log(pausedResult);
-  });
-  */
-});
-
+[MIT]: ./LICENSE
+[github issue]: https://github.com/apparatus/fuge-runner/issues/new
 
