@@ -1,0 +1,42 @@
+{
+  "name": "debugger",
+  "description": "debugger",
+  "keywords": [
+    "compile",
+    "compose"
+  ],
+  "version": "0.4.0",
+  "license": "MIT",
+  "author": "Peter Elger (http://nearform.com/)",
+  "contributors": [
+    "Peter Elger <elger.peter@gmail.com> (http://peterelger.com/)"
+  ],
+  "main": "./xeno.js",
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "debugger-api": "^0.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apparatus/xeno"
+  },
+  "scripts": {
+    "lint": "jshint **/*.js",
+    "test": "jshint **/*.js && node test/*Test.js",
+    "coverage": "istanbul cover test/*Test.js && open ./coverage/lcov-report/index.html",
+    "coverage-check": "istanbul cover test/*Test.js && istanbul check-coverage",
+    "commit-check": "jshint **/*.js && istanbul cover test/*Test.js && istanbul check-coverage"
+  },
+  "pre-commit": [
+    "commit-check"
+  ],
+  "devDependencies": {
+    "istanbul": "^0.4.0",
+    "jshint": "^2.8.0",
+    "pre-commit": "^1.1.1",
+    "tape": "^4.2.0"
+  }
+}
