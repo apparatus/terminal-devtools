@@ -1,18 +1,28 @@
 import React from 'react'
 import blessed from 'blessed'
+import {Provider} from 'react-redux'
 import {render} from 'react-blessed'
+import createStore from './store/create'
 import {
-  BreakPoints, CallStack, Console, Editor, Files, Scope, Tabs
-} from './components'
+  Console, Sources
+} from './containers'
+
+import {
+  focusTab,
+  focusPanel,
+  receiveFiles,
+  receiveCallstack,
+  receiveBreakpoints,
+  receiveScope,
+  receiveSource
+} from './actions'
+
+const store = createStore()
+const {dispatch} = store
 
 const Devtools = () => (
   <element>
-    <Tabs items={['Sources', 'Networking', 'Profiling', 'Console']}/>
-    <Files items={['file 1', 'file 2']}/>
-    <Editor source='//js source'/>
-    <CallStack items={['frame 1', 'frame 2']}/>
-    <BreakPoints items={['breakpoint 1', 'breakpoint 2']}/>
-    <Scope items={['object 1', 'object 2']}/>
+    <Sources/>
     <Console/>
   </element>
 )
@@ -26,6 +36,7 @@ export default (pid) => {
     sendFocus: true,
     dockBorders: true,
     autoPadding: true,
+    debug: true,
     ignoreLocked: ['C-c']
   })
 
@@ -33,19 +44,23 @@ export default (pid) => {
     return process.exit(0);
   })
 
-  screen.key(['e'], () => console.log('emit an action that focuses editor'))
-  screen.key(['f'], () => console.log('emit an action that focuses files'))
-  screen.key(['s'], () => console.log('emit an action that focuses scope'))
-  screen.key(['c'], () => console.log('emit an action that focuses console'))
-  screen.key(['a'], () => console.log('emit an action that focuses callstack'))
-  screen.key(['b'], () => console.log('emit an action that focuses breakpoints'))
+  screen.key(['e'], () => dispatch(focusPanel('editor')))
+  screen.key(['f'], () => dispatch(focusPanel('files')))
+  screen.key(['s'], () => dispatch(focusPanel('scope')))
+  screen.key(['c'], () => dispatch(focusPanel('console')))
+  screen.key(['a'], () => dispatch(focusPanel('callstack')))
+  screen.key(['b'], () => dispatch(focusPanel('breakpoints')))
 
-  screen.key(['C-s'], () => console.log('emit an action that focuses source tab'))
-  screen.key(['C-n'], () => console.log('emit an action that focuses networking tab'))
-  screen.key(['C-p'], () => console.log('emit an action that focuses profiling tab'))
-  screen.key(['C-k'], () => console.log('emit an action that focuses console tab'))
+  screen.key(['C-s'], () => dispatch(focusTab('source')))
+  screen.key(['C-n'], () => dispatch(focusTab('networking')))
+  screen.key(['C-p'], () => dispatch(focusTab('profiling')))
+  screen.key(['C-k'], () => dispatch(focusTab('console')))
 
 
-  return render(<Devtools />, screen)
+  return render(
+    <Provider store={store}>
+      <Devtools/>
+    </Provider>
+  , screen)
 
 }

@@ -6,7 +6,11 @@
   },
   "main": "index.js",
   "scripts": {
-    "build": "babel src --out-dir lib/ --source-maps"
+    "build": "babel src --out-dir lib/ --source-maps",
+    "watch": "npm-watch"
+  },
+  "watch": {
+    "build": "src/**/*.js"
   },
   "author": "David Mark Clements",
   "license": "MIT",
@@ -16,10 +20,16 @@
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "blessed": "^0.1.81",
-    "react": "^0.14.3"
+    "react": "^0.14.3",
+    "react-blessed": "^0.1.7",
+    "react-redux": "^4.0.1",
+    "redux": "^3.0.5",
+    "redux-thunk": "^1.0.2"
   },
   "description": "Terminal based Devtools for Node",
-  "devDependencies": {},
+  "devDependencies": {
+    "npm-watch": "0.0.1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nearform/terminal-devtools.git"

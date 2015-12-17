@@ -12,23 +12,29 @@ var _blessed = require('blessed');
 
 var _blessed2 = _interopRequireDefault(_blessed);
 
+var _reactRedux = require('react-redux');
+
 var _reactBlessed = require('react-blessed');
 
-var _components = require('./components');
+var _create = require('./store/create');
+
+var _create2 = _interopRequireDefault(_create);
+
+var _containers = require('./containers');
+
+var _actions = require('./actions');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var store = (0, _create2.default)();
+var dispatch = store.dispatch;
 
 var Devtools = function Devtools() {
   return _react2.default.createElement(
     'element',
     null,
-    _react2.default.createElement(_components.Tabs, { items: ['Sources', 'Networking', 'Profiling', 'Console'] }),
-    _react2.default.createElement(_components.Files, { items: ['file 1', 'file 2'] }),
-    _react2.default.createElement(_components.Editor, { source: '//js source' }),
-    _react2.default.createElement(_components.CallStack, { items: ['frame 1', 'frame 2'] }),
-    _react2.default.createElement(_components.BreakPoints, { items: ['breakpoint 1', 'breakpoint 2'] }),
-    _react2.default.createElement(_components.Scope, { items: ['object 1', 'object 2'] }),
-    _react2.default.createElement(_components.Console, null)
+    _react2.default.createElement(_containers.Sources, null),
+    _react2.default.createElement(_containers.Console, null)
   );
 };
 
@@ -41,6 +47,7 @@ exports.default = function (pid) {
     sendFocus: true,
     dockBorders: true,
     autoPadding: true,
+    debug: true,
     ignoreLocked: ['C-c']
   });
 
@@ -49,37 +56,41 @@ exports.default = function (pid) {
   });
 
   screen.key(['e'], function () {
-    return console.log('emit an action that focuses editor');
+    return dispatch((0, _actions.focusPanel)('editor'));
   });
   screen.key(['f'], function () {
-    return console.log('emit an action that focuses files');
+    return dispatch((0, _actions.focusPanel)('files'));
   });
   screen.key(['s'], function () {
-    return console.log('emit an action that focuses scope');
+    return dispatch((0, _actions.focusPanel)('scope'));
   });
   screen.key(['c'], function () {
-    return console.log('emit an action that focuses console');
+    return dispatch((0, _actions.focusPanel)('console'));
   });
   screen.key(['a'], function () {
-    return console.log('emit an action that focuses callstack');
+    return dispatch((0, _actions.focusPanel)('callstack'));
   });
   screen.key(['b'], function () {
-    return console.log('emit an action that focuses breakpoints');
+    return dispatch((0, _actions.focusPanel)('breakpoints'));
   });
 
   screen.key(['C-s'], function () {
-    return console.log('emit an action that focuses source tab');
+    return dispatch((0, _actions.focusTab)('source'));
   });
   screen.key(['C-n'], function () {
-    return console.log('emit an action that focuses networking tab');
+    return dispatch((0, _actions.focusTab)('networking'));
   });
   screen.key(['C-p'], function () {
-    return console.log('emit an action that focuses profiling tab');
+    return dispatch((0, _actions.focusTab)('profiling'));
   });
   screen.key(['C-k'], function () {
-    return console.log('emit an action that focuses console tab');
+    return dispatch((0, _actions.focusTab)('console'));
   });
 
-  return (0, _reactBlessed.render)(_react2.default.createElement(Devtools, null), screen);
+  return (0, _reactBlessed.render)(_react2.default.createElement(
+    _reactRedux.Provider,
+    { store: store },
+    _react2.default.createElement(Devtools, null)
+  ), screen);
 };
 //# sourceMappingURL=index.js.map
