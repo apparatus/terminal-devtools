@@ -10,20 +10,23 @@ var _react2 = _interopRequireDefault(_react);
 
 var _style = require('../../style');
 
+var style = _interopRequireWildcard(_style);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var BreakPoints = function BreakPoints(_ref) {
   var items = _ref.items;
-  var _ref$top = _ref.top;
-  var top = _ref$top === undefined ? '60%-2' : _ref$top;
+  var top = _ref.top;
   var left = _ref.left;
-  var _ref$width = _ref.width;
-  var width = _ref$width === undefined ? '50%' : _ref$width;
-  var _ref$height = _ref.height;
-  var height = _ref$height === undefined ? '17.5%+1' : _ref$height;
+  var width = _ref.width;
+  var height = _ref.height;
+  var focused = _ref.focused;
   return _react2.default.createElement('list', {
     label: 'BreakPoints',
-    'class': _style.panel,
+    focused: focused,
+    'class': style.panel,
     top: top,
     left: left,
     width: width,

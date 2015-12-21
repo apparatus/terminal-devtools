@@ -1,10 +1,11 @@
 import React from 'react'
-import {panel} from '../../style'
+import * as style from '../../style'
 
-const CallStack = ({items, top='40%-1', left, width='50%', height='25%'}) => (
+const CallStack = ({items, top, left, width, height, focused}) => (
   <list
     label='CallStack'
-    class={panel}
+    focused={focused}
+    class={style.panel}
     top={top}
     width={width}
     height={height}

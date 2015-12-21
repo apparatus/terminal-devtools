@@ -10,27 +10,30 @@ var _react2 = _interopRequireDefault(_react);
 
 var _style = require('../../style');
 
+var style = _interopRequireWildcard(_style);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Editor = function Editor(_ref) {
   var source = _ref.source;
-  var _ref$top = _ref.top;
-  var top = _ref$top === undefined ? 1 : _ref$top;
-  var _ref$left = _ref.left;
-  var left = _ref$left === undefined ? '30%' : _ref$left;
-  var _ref$width = _ref.width;
-  var width = _ref$width === undefined ? '70%' : _ref$width;
-  var _ref$height = _ref.height;
-  var height = _ref$height === undefined ? '37.5%' : _ref$height;
+  var top = _ref.top;
+  var left = _ref.left;
+  var width = _ref.width;
+  var height = _ref.height;
+  var focused = _ref.focused;
   return _react2.default.createElement('textarea', {
-    'class': _style.panel,
+    'class': style.panel,
     left: left,
     width: width,
     top: top,
     height: height,
     inputOnFocus: true,
     value: source,
-    mouse: true
+    onFocus: function onFocus() {
+      return console.log('ED FOCUSED');
+    }
   });
 };
 

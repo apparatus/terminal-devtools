@@ -1,16 +1,16 @@
 import React from 'react'
-import {panel} from '../../style'
+import * as style from '../../style'
 
-const Editor = ({source, top=1, left='30%', width='70%', height='37.5%'}) => (
+const Editor = ({source, top, left, width, height, focused}) => (
   <textarea
-    class={panel}
+    class={style.panel}
     left={left}
     width={width}
     top={top}
     height={height}
     inputOnFocus={true}
     value={source}
-    mouse={true}
+    onFocus={()=>console.log('ED FOCUSED')}
   />
 )
 

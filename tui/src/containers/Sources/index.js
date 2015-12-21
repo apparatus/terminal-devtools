@@ -1,23 +1,48 @@
 import React from 'React'
 import {connect} from 'react-redux'
+import {log} from 'blessed'
 import {
-  BreakPoints, CallStack, Console, Editor, Files, Scope, Tabs
+  BreakPoints, CallStack, Console, Editor, Files, Scope
 } from '../../components'
 
-
-const Sources = props => (
-  <element>
-    <Tabs items={['Sources', 'Networking', 'Profiling', 'Console']}/>
-    <Files items={['file 1', 'file 2']}/>
-    <Editor source='//js source'/>
-    <CallStack items={['frame 1', 'frame 2']}/>
-    <BreakPoints items={['breakpoint 1', 'breakpoint 2']}/>
-    <Scope items={['object 1', 'object 2']}/>
-    <Console/>
+const Sources = ({
+  layout, 
+  file, 
+  source, 
+  files, 
+  callstack, 
+  breakpoints, 
+  scope, 
+  panel
+}) => (
+  <element {...layout.element}>
+    <Files items={files} focused={panel === 'files'} {...layout.files}/>
+    <Editor source={source} focused={panel === 'editor'} {...layout.editor}/>
+    <CallStack items={callstack} focused={panel === 'callstack'} {...layout.callstack}/>
+    <BreakPoints items={breakpoints} focused={panel === 'breakpoints'} {...layout.breakpoints}/>
+    <Scope items={scope} focused={panel === 'scope'} {...layout.scope}/>
+    <Console focused={panel === 'console'} {...layout.console}/>
   </element>
 )
 
-export default connect(
-  ({tab, file, source, callstack, breakpoints, scope, panel}) => 
-    ({file, source, callstack, breakpoints, scope, panel})
-)(Sources)
+const mapper = ({
+  layout, 
+  file, 
+  source, 
+  files, 
+  callstack, 
+  breakpoints, 
+  scope, 
+  panel
+}) => ({
+  layout: layout.sources, 
+  file, 
+  source, 
+  files, 
+  callstack, 
+  breakpoints, 
+  scope, 
+  panel
+})
+
+export default connect(mapper)(Sources)

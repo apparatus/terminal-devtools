@@ -10,18 +10,22 @@ var _react2 = _interopRequireDefault(_react);
 
 var _style = require('../../style');
 
+var style = _interopRequireWildcard(_style);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Console = function Console(_ref) {
-  var _ref$top = _ref.top;
-  var top = _ref$top === undefined ? '72.5%-1' : _ref$top;
+  var top = _ref.top;
   var left = _ref.left;
-  var _ref$width = _ref.width;
-  var width = _ref$width === undefined ? '100%-1' : _ref$width;
-  var _ref$height = _ref.height;
-  var height = _ref$height === undefined ? '30%' : _ref$height;
-  return _react2.default.createElement('textarea', { label: 'Console',
-    'class': _style.panel,
+  var width = _ref.width;
+  var height = _ref.height;
+  var focused = _ref.focused;
+  return _react2.default.createElement('textarea', {
+    label: 'Console',
+    focused: focused,
+    'class': style.panel,
     top: top,
     left: left,
     width: width,

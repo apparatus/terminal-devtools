@@ -4,6 +4,10 @@ import {
   Console as ConsoleCmp
 } from '../../components'
 
-const Console = props => (<ConsoleCmp/>)
+const Console = ({layout}) => (
+  <ConsoleCmp {...layout.element}/>
+)
 
-export default connect(scope => scope)(Console)
+export default connect(({layout}) => ({
+  layout: layout.console
+}))(Console)

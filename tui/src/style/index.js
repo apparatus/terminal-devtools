@@ -6,5 +6,10 @@ export const panel = {
     border: {
       fg: 'blue'
     }
+  },
+  focus: {
+    border: {
+      fg: 'white'
+    }
   }
 }

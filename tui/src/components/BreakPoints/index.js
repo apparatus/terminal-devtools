@@ -1,10 +1,11 @@
 import React from 'react'
-import {panel} from '../../style'
+import * as style from '../../style'
 
-const BreakPoints = ({items, top='60%-2', left, width='50%', height='17.5%+1'}) => (
+const BreakPoints = ({items, top, left, width, height, focused}) => (
   <list 
     label='BreakPoints'
-    class={panel}
+    focused={focused}
+    class={style.panel}
     top={top}
     left={left}
     width={width}

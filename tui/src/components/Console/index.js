@@ -1,9 +1,11 @@
 import React from 'react'
-import {panel} from '../../style'
+import * as style from '../../style'
 
-const Console = ({top='72.5%-1', left, width='100%-1', height='30%'}) => (
-  <textarea label='Console'
-    class={panel}
+const Console = ({top, left, width, height, focused}) => (
+  <textarea 
+    label='Console'
+    focused={focused}
+    class={style.panel}
     top={top}
     left={left}
     width={width}

@@ -1,9 +1,11 @@
 import React from 'react'
-import {panel} from '../../style'
+import * as style from '../../style'
 
-const Scope = ({items, top='40%-1', left='49%', width='51%', height='37.5%+1'}) => (
-  <list label='Scope'
-    class={panel}
+const Scope = ({items, top, left, width, height, focused}) => (
+  <list 
+    label='Scope'
+    focused={focused}
+    class={style.panel}
     top={top}
     left={left}
     width={width}

@@ -1,10 +1,24 @@
+//User Actions Types:
+
 export const FOCUS_TAB = 'FOCUS_TAB'
 export const FOCUS_PANEL = 'FOCUS_PANEL'
+export const VIEW_FILE = 'VIEW_FILE'
+
+//Operational Action Types:
+
 export const RECEIVE_FILES = 'RECEIVE_FILES'
 export const RECEIVE_CALLSTACK = 'RECEIVE_CALLSTACK'
 export const RECEIVE_BREAKPOINTS = 'RECEIVE_BREAKPOINTS'
 export const RECEIVE_SCOPE = 'RECEIVE_SCOPE'
 export const RECEIVE_SOURCE = 'RECEIVE_SOURCE'
+
+//Configuration Action Types:
+
+export const SET_DIMENSIONS = 'SET_DIMENSIONS'
+
+
+
+//User Action Creators:
 
 export function focusTab(payload) {
   return {
@@ -18,6 +32,15 @@ export function focusPanel(payload) {
     payload
   }
 }
+export function viewFile(payload) {
+  return {
+    type: RECEIVE_FILES,
+    payload
+  }
+}
+
+//Operational Action Creators:
+
 export function receiveFiles(payload) {
   return {
     type: RECEIVE_FILES,
@@ -46,5 +69,14 @@ export function receiveSource(payload) {
   return {
     type: RECEIVE_SOURCE,
     payload
+  }
+}
 
-  }}
+//Configuration Action Creators:
+
+export function setDimensions(payload) {
+  return {
+    type: SET_DIMENSIONS,
+    payload
+  }
+}

@@ -5,7 +5,9 @@ import {
   RECEIVE_CALLSTACK,
   RECEIVE_BREAKPOINTS,
   RECEIVE_SCOPE,
-  RECEIVE_SOURCE
+  RECEIVE_SOURCE,
+  VIEW_FILE,
+  SET_DIMENSIONS
 } from '../actions'
 
 export function tab(state = 'sources', {type, payload}) {
@@ -40,6 +42,16 @@ export function scope(state = [], {type, payload}) {
 
 export function source(state = '', {type, payload}) {
   if (type !== RECEIVE_SOURCE) return state
+  return state
+}
+
+export function file(state = [], {type, payload}) {
+  if (type !== VIEW_FILE) return state
+  return state
+}
+
+export function layout(state = {}, {type, payload}) {
+  if (type !== SET_DIMENSIONS) return state
   return state
 }
 

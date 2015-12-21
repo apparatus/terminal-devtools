@@ -1,7 +1,8 @@
 import React from 'react'
-import {panel} from '../../style'
+import * as style from '../../style'
+import functional from 'react-functional'
 
-const Tabs = ({items, top, left='5%', width='100%', height='shrink'}) => (
+const Tabs = ({items, top, left, width, height}) => (
   <listbar 
     top={top}
     left={left}
@@ -9,7 +10,6 @@ const Tabs = ({items, top, left='5%', width='100%', height='shrink'}) => (
     height={height}
     autoCommandKeys={true}
     items={items}
-    mouse={true}
   />
 )
 

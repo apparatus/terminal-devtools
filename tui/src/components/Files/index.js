@@ -1,18 +1,26 @@
 import React from 'react'
-import {panel} from '../../style'
+import * as style from '../../style'
 
-const Files = ({items, top=1, left, width='31%', height='37.5%'}) => (
+function f(lastElement) {
+  console.log('LAS', lastElement)
+  lastElement.style.border = {fg: 'white'}
+
+
+}
+
+const Files = ({items, top, left, width, height, focused}) => (
   <list 
     label='Files'
-    class={panel}
+    focused={focused}
+    class={style.panel}
     width={width}
     top={top}
     height={height}
     items={items}
     mouse={true}
     keys={true}
-    vi={true}
     inputOnFocused={true}
+    onFocus={f}
   />
 )
 

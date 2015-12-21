@@ -11,6 +11,11 @@ var panel = exports.panel = {
     border: {
       fg: 'blue'
     }
+  },
+  focus: {
+    border: {
+      fg: 'white'
+    }
   }
 };
 //# sourceMappingURL=index.js.map

@@ -10,6 +10,8 @@ exports.callstack = callstack;
 exports.breakpoints = breakpoints;
 exports.scope = scope;
 exports.source = source;
+exports.file = file;
+exports.layout = layout;
 
 var _actions = require('../actions');
 
@@ -80,6 +82,26 @@ function source() {
   var payload = _ref7.payload;
 
   if (type !== _actions.RECEIVE_SOURCE) return state;
+  return state;
+}
+
+function file() {
+  var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+  var _ref8 = arguments[1];
+  var type = _ref8.type;
+  var payload = _ref8.payload;
+
+  if (type !== _actions.VIEW_FILE) return state;
+  return state;
+}
+
+function layout() {
+  var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+  var _ref9 = arguments[1];
+  var type = _ref9.type;
+  var payload = _ref9.payload;
+
+  if (type !== _actions.SET_DIMENSIONS) return state;
   return state;
 }
 //# sourceMappingURL=index.js.map
