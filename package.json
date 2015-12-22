@@ -22,6 +22,8 @@
     "blessed-contrib": "^2.5.2",
     "debugger-api": "^0.1.2",
     "lodash": "^3.10.1"
+    "react-functional": "^1.1.0",
+    "redux-logger": "^2.3.1"
   },
   "repository": {
     "type": "git",
@@ -34,9 +36,7 @@
     "coverage-check": "istanbul cover test/*Test.js && istanbul check-coverage",
     "commit-check": "jshint **/*.js && istanbul cover test/*Test.js && istanbul check-coverage"
   },
-  "pre-commit": [
-    "commit-check"
-  ],
+  "pre-commit": [],
   "devDependencies": {
     "istanbul": "^0.4.0",
     "jshint": "^2.8.0",
