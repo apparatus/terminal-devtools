@@ -19,7 +19,9 @@
   },
   "dependencies": {
     "blessed": "^0.1.81",
-    "debugger-api": "^0.1.2"
+    "blessed-contrib": "^2.5.2",
+    "debugger-api": "^0.1.2",
+    "lodash": "^3.10.1"
   },
   "repository": {
     "type": "git",

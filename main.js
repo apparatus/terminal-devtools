@@ -22,12 +22,9 @@ var scr = require('./lib/screen')();
 
 
     /*
-     * need to scroll into position when it BP
-     * need to set and remove bps and show them
-     *
-     * need to view stack frame
-     *
-     * need to view locals
+     * implement:
+     *   watch var
+     *   unwatch var
      *
      * should be like vim - i.e. ':' allows you to run a command watch, eval etc...
      *
@@ -62,8 +59,10 @@ dbg.start(function(err, context) {
 
   var evtMap = {
     step: dbg.step,
-    resume: dbg.resume
+    resume: dbg.resume,
+    breakp: dbg.setBreakpoint,
   };
+
 
 
   var dbgHandler = function dbgHandler(err, context) {
@@ -73,8 +72,15 @@ dbg.start(function(err, context) {
 
 
 
-  var keyHandler = function keyHandler(evt) {
-    evtMap[evt]();
+  var keyHandler = function keyHandler(evt, selectedLine) {
+    if (evtMap[evt]) {
+      evtMap[evt](selectedLine);
+    }
+    else {
+      dbg.evaluate(evt, function(err, result) {
+        scr.evalResult(err, result);
+      });
+    }
   };
 
 
