@@ -16,6 +16,21 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var ed = {
+  style: {
+    selected: {
+      bold: true,
+      bg: 'blue'
+    },
+    item: {
+      bold: false
+    },
+    scrollbar: {
+      bg: 'white'
+    }
+  }
+};
+
 var Editor = function Editor(_ref) {
   var source = _ref.source;
   var top = _ref.top;
@@ -23,17 +38,19 @@ var Editor = function Editor(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
-  return _react2.default.createElement('textarea', {
-    'class': style.panel,
+  return _react2.default.createElement('list', {
+    'class': [style.panel, ed],
     left: left,
     width: width,
     top: top,
     height: height,
-    inputOnFocus: true,
-    value: source,
-    onFocus: function onFocus() {
-      return console.log('ED FOCUSED');
-    }
+    scrollbar: true,
+    mouse: true,
+    keys: true,
+    vi: true,
+    inputOnFocused: true,
+    focused: focused,
+    items: source.split('\n')
   });
 };
 

@@ -6,7 +6,7 @@ export const element = {
   height: '100%-1'  
 }
 
-export const files = {
+export const navigator = {
   top: 0,
   left: 0,
   width: '31%',
@@ -17,7 +17,7 @@ export const editor = {
   top: 0,
   left: '30%-1',
   width: '70%',
-  height: '37.5%+1'
+  height: '42%-1'
 }
 
 export const callstack = {

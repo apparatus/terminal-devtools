@@ -8,6 +8,6 @@ var element = exports.element = {
   top: 1,
   left: 0,
   width: '100%',
-  height: 0
+  height: '90%'
 };
 //# sourceMappingURL=console.js.map

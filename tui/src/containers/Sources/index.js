@@ -1,9 +1,12 @@
 import React from 'React'
+
+import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import {log} from 'blessed'
 import {
-  BreakPoints, CallStack, Console, Editor, Files, Scope
+  BreakPoints, CallStack, Console, Editor, Navigator, Scope
 } from '../../components'
+import * as actionCreators from '../../actions'
 
 const Sources = ({
   layout, 
@@ -13,19 +16,20 @@ const Sources = ({
   callstack, 
   breakpoints, 
   scope, 
-  panel
+  panel,
+  actions
 }) => (
   <element {...layout.element}>
-    <Files items={files} focused={panel === 'files'} {...layout.files}/>
-    <Editor source={source} focused={panel === 'editor'} {...layout.editor}/>
-    <CallStack items={callstack} focused={panel === 'callstack'} {...layout.callstack}/>
-    <BreakPoints items={breakpoints} focused={panel === 'breakpoints'} {...layout.breakpoints}/>
-    <Scope items={scope} focused={panel === 'scope'} {...layout.scope}/>
-    <Console focused={panel === 'console'} {...layout.console}/>
+    <Navigator items={files} focused={panel === 'navigator'} actions={actions} {...layout.navigator}/>
+    <Editor source={source} focused={panel === 'editor'} actions={actions} {...layout.editor}/>
+    <CallStack items={callstack} focused={panel === 'callstack'} actions={actions} {...layout.callstack}/>
+    <BreakPoints items={breakpoints} focused={panel === 'breakpoints'} actions={actions} {...layout.breakpoints}/>
+    <Scope items={scope} focused={panel === 'scope'} actions={actions} {...layout.scope}/>
+    <Console focused={panel === 'console'} actions={actions} {...layout.console}/>
   </element>
 )
 
-const mapper = ({
+const mapState = ({
   layout, 
   file, 
   source, 
@@ -37,7 +41,7 @@ const mapper = ({
 }) => ({
   layout: layout.sources, 
   file, 
-  source, 
+  source,
   files, 
   callstack, 
   breakpoints, 
@@ -45,4 +49,8 @@ const mapper = ({
   panel
 })
 
-export default connect(mapper)(Sources)
+const mapDispatch = dispatch => ({
+  actions: bindActionCreators(actionCreators, dispatch)
+})
+
+export default connect(mapState, mapDispatch)(Sources)

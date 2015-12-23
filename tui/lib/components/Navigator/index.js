@@ -16,22 +16,18 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function f(lastElement) {
-  console.log('LAS', lastElement);
-  lastElement.style.border = { fg: 'white' };
-}
-
-var Files = function Files(_ref) {
+var Navigator = function Navigator(_ref) {
   var items = _ref.items;
   var top = _ref.top;
   var left = _ref.left;
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var selectFile = _ref.actions.selectFile;
   return _react2.default.createElement('list', {
-    label: 'Files',
+    label: 'Navigator',
     focused: focused,
-    'class': style.panel,
+    'class': [style.panel, style.list],
     width: width,
     top: top,
     height: height,
@@ -39,9 +35,12 @@ var Files = function Files(_ref) {
     mouse: true,
     keys: true,
     inputOnFocused: true,
-    onFocus: f
+    onSelectItem: function onSelectItem(_ref2) {
+      var item = _ref2.content;
+      return selectFile(item);
+    }
   });
 };
 
-exports.default = Files;
+exports.default = Navigator;
 //# sourceMappingURL=index.js.map

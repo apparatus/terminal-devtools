@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/config/layout/console.js"],"names":[],"mappings":";;;;;;AACO,IAAM,OAAO,WAAP,OAAO,GAAG;AACrB,KAAG,EAAE,CAAC;AACN,MAAI,EAAE,CAAC;AACP,OAAK,EAAE,MAAM;AACb,QAAM,EAAE,CAAC;CACV,CAAA","file":"console.js","sourcesContent":["//element is outer wrapper for the tab\nexport const element = {\n  top: 1,\n  left: 0,\n  width: '100%',\n  height: 0\n}"]}

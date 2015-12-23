@@ -10,11 +10,19 @@ var _React = require('React');
 
 var _React2 = _interopRequireDefault(_React);
 
+var _redux = require('redux');
+
 var _reactRedux = require('react-redux');
 
 var _blessed = require('blessed');
 
 var _components = require('../../components');
+
+var _actions = require('../../actions');
+
+var actionCreators = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27,19 +35,20 @@ var Sources = function Sources(_ref) {
   var breakpoints = _ref.breakpoints;
   var scope = _ref.scope;
   var panel = _ref.panel;
+  var actions = _ref.actions;
   return _React2.default.createElement(
     'element',
     layout.element,
-    _React2.default.createElement(_components.Files, _extends({ items: files, focused: panel === 'files' }, layout.files)),
-    _React2.default.createElement(_components.Editor, _extends({ source: source, focused: panel === 'editor' }, layout.editor)),
-    _React2.default.createElement(_components.CallStack, _extends({ items: callstack, focused: panel === 'callstack' }, layout.callstack)),
-    _React2.default.createElement(_components.BreakPoints, _extends({ items: breakpoints, focused: panel === 'breakpoints' }, layout.breakpoints)),
-    _React2.default.createElement(_components.Scope, _extends({ items: scope, focused: panel === 'scope' }, layout.scope)),
-    _React2.default.createElement(_components.Console, _extends({ focused: panel === 'console' }, layout.console))
+    _React2.default.createElement(_components.Navigator, _extends({ items: files, focused: panel === 'navigator', actions: actions }, layout.navigator)),
+    _React2.default.createElement(_components.Editor, _extends({ source: source, focused: panel === 'editor', actions: actions }, layout.editor)),
+    _React2.default.createElement(_components.CallStack, _extends({ items: callstack, focused: panel === 'callstack', actions: actions }, layout.callstack)),
+    _React2.default.createElement(_components.BreakPoints, _extends({ items: breakpoints, focused: panel === 'breakpoints', actions: actions }, layout.breakpoints)),
+    _React2.default.createElement(_components.Scope, _extends({ items: scope, focused: panel === 'scope', actions: actions }, layout.scope)),
+    _React2.default.createElement(_components.Console, _extends({ focused: panel === 'console', actions: actions }, layout.console))
   );
 };
 
-var mapper = function mapper(_ref2) {
+var mapState = function mapState(_ref2) {
   var layout = _ref2.layout;
   var file = _ref2.file;
   var source = _ref2.source;
@@ -60,5 +69,11 @@ var mapper = function mapper(_ref2) {
   };
 };
 
-exports.default = (0, _reactRedux.connect)(mapper)(Sources);
+var mapDispatch = function mapDispatch(dispatch) {
+  return {
+    actions: (0, _redux.bindActionCreators)(actionCreators, dispatch)
+  };
+};
+
+exports.default = (0, _reactRedux.connect)(mapState, mapDispatch)(Sources);
 //# sourceMappingURL=index.js.map

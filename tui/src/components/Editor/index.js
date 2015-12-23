@@ -1,17 +1,37 @@
 import React from 'react'
 import * as style from '../../style'
 
+const ed = {
+  style: {
+    selected: {
+      bold: true,
+      bg: 'blue'
+    },
+    item: {
+      bold: false
+    },
+    scrollbar: {
+      bg: 'white'
+    },
+  }
+}
+
 const Editor = ({source, top, left, width, height, focused}) => (
-  <textarea
-    class={style.panel}
+  <list
+    class={[style.panel, ed]}
     left={left}
     width={width}
     top={top}
     height={height}
-    inputOnFocus={true}
-    value={source}
-    onFocus={()=>console.log('ED FOCUSED')}
+    scrollbar={true}
+    mouse={true}
+    keys={true}
+    vi={true}
+    inputOnFocused={true}
+    focused={focused}
+    items={source.split('\n')}
   />
 )
+
 
 export default Editor

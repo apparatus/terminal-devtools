@@ -11,39 +11,39 @@ var element = exports.element = {
   height: '100%-1'
 };
 
-var files = exports.files = {
+var navigator = exports.navigator = {
   top: 0,
   left: 0,
-  width: '31%',
-  height: '37.5%+1'
+  width: '18%',
+  height: '75%-1'
 };
 
 var editor = exports.editor = {
   top: 0,
-  left: '30%-1',
-  width: '70%',
-  height: '37.5%+1'
+  left: '16%',
+  width: '60%',
+  height: '75%-1'
 };
 
 var callstack = exports.callstack = {
-  top: '40%-1',
-  left: 0,
-  width: '50%',
-  height: '25%'
+  top: 0,
+  left: '75%-1',
+  width: '25%+1',
+  height: '37%'
 };
 
 var breakpoints = exports.breakpoints = {
-  top: '60%-2',
-  left: 0,
-  width: '50%',
-  height: '17.5%+1'
+  top: '36%-1',
+  left: '75%-1',
+  width: '25%+1',
+  height: '15%+2'
 };
 
 var scope = exports.scope = {
-  top: '40%-1',
-  left: '49%',
-  width: '50%',
-  height: '37.5%+1'
+  top: '53%-2',
+  left: '75%-1',
+  width: '25%+1',
+  height: '20%+2'
 };
 
 var console = exports.console = {

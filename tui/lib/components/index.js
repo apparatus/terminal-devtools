@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Tabs = exports.Scope = exports.Files = exports.Editor = exports.Console = exports.CallStack = exports.BreakPoints = undefined;
+exports.Tabs = exports.Scope = exports.Navigator = exports.Editor = exports.Console = exports.CallStack = exports.BreakPoints = undefined;
 
 var _BreakPoints = require('./BreakPoints');
 
@@ -21,9 +21,9 @@ var _Editor = require('./Editor');
 
 var _Editor2 = _interopRequireDefault(_Editor);
 
-var _Files = require('./Files');
+var _Navigator = require('./Navigator');
 
-var _Files2 = _interopRequireDefault(_Files);
+var _Navigator2 = _interopRequireDefault(_Navigator);
 
 var _Scope = require('./Scope');
 
@@ -39,7 +39,7 @@ exports.BreakPoints = _BreakPoints2.default;
 exports.CallStack = _CallStack2.default;
 exports.Console = _Console2.default;
 exports.Editor = _Editor2.default;
-exports.Files = _Files2.default;
+exports.Navigator = _Navigator2.default;
 exports.Scope = _Scope2.default;
 exports.Tabs = _Tabs2.default;
 //# sourceMappingURL=index.js.map

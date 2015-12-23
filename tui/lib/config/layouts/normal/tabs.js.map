@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../../src/config/layouts/normal/tabs.js"],"names":[],"mappings":";;;;;kBAAe;AACb,KAAG,EAAE,CAAC;AACN,MAAI,EAAE,IAAI;AACV,OAAK,EAAE,MAAM;AACb,QAAM,EAAE,QAAQ;CACjB","file":"tabs.js","sourcesContent":["export default {\n  top: 0,\n  left: '5%',\n  width: '100%',\n  height: 'shrink'\n}"]}

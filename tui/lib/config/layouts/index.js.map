@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../src/config/layouts/index.js"],"names":[],"mappings":";;;;;;;;;;;;;;;;kBAGe,EAAC,MAAM,kBAAA,EAAE,OAAO,mBAAA,EAAC","file":"index.js","sourcesContent":["import normal from './normal'\nimport compact from './compact'\n\nexport default {normal, compact}"]}

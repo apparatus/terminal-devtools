@@ -4,11 +4,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _layout = require('./layout');
+var _layouts = require('./layouts');
 
-var _layout2 = _interopRequireDefault(_layout);
+var _layouts2 = _interopRequireDefault(_layouts);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = { layout: _layout2.default };
+//TODO make profile this user configurable
+var profile = 'normal';
+
+var layout = _layouts2.default[profile];
+
+exports.default = { layout: layout };
 //# sourceMappingURL=index.js.map

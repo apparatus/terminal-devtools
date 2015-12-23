@@ -13,3 +13,14 @@ export const panel = {
     }
   }
 }
+
+export const list = {
+  style: {
+    selected: {
+      bold: true
+    },
+    item: {
+      bold: false
+    }
+  }
+}

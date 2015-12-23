@@ -23,15 +23,29 @@ var CallStack = function CallStack(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var selectFrame = _ref.actions.selectFrame;
   return _react2.default.createElement('list', {
     label: 'CallStack',
     focused: focused,
-    'class': style.panel,
+    'class': [style.panel, style.list],
     top: top,
     width: width,
     height: height,
+    left: left,
     items: items,
-    mouse: true
+    inputOnFocused: true,
+    keys: true,
+    mouse: true,
+    onSelectItem: function onSelectItem(item) {
+      var content = item.content;
+
+      var index = item.parent.items.map(function (_ref2) {
+        var content = _ref2.content;
+        return content;
+      }).indexOf(content);
+
+      selectFrame(index);
+    }
   });
 };
 

@@ -18,4 +18,15 @@ var panel = exports.panel = {
     }
   }
 };
+
+var list = exports.list = {
+  style: {
+    selected: {
+      bold: true
+    },
+    item: {
+      bold: false
+    }
+  }
+};
 //# sourceMappingURL=index.js.map

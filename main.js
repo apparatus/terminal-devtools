@@ -55,6 +55,8 @@ var scr = require('./lib/screen')();
 
 
 dbg.start(function(err, context) {
+  var c = new console.Console(require('fs').createWriteStream('/dev/ttys008'), process.stderr)
+  c.log(context)
   if (err) { return console.log(err); }
 
   var evtMap = {
