@@ -1,0 +1,45 @@
+{
+  "name": "splatter",
+  "description": "command line debugger for node",
+  "keywords": [
+    "command",
+    "line",
+    "debugger",
+    "debug"
+  ],
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Peter Elger (http://nearform.com/)",
+  "contributors": [
+    "Peter Elger <elger.peter@gmail.com> (http://peterelger.com/)",
+    "David Clements <david.clements@nearform.com>"
+  ],
+  "main": "./main.js",
+  "engines": {
+    "node": "*"
+  },
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^2.5.2",
+    "debugger-api": "^0.1.2",
+    "lodash": "^3.10.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apparatus/splatter"
+  },
+  "scripts": {
+    "lint": "jshint **/*.js",
+    "test": "jshint **/*.js && node test/*Test.js",
+    "coverage": "istanbul cover test/*Test.js && open ./coverage/lcov-report/index.html",
+    "coverage-check": "istanbul cover test/*Test.js && istanbul check-coverage",
+    "commit-check": "jshint **/*.js && istanbul cover test/*Test.js && istanbul check-coverage"
+  },
+  "pre-commit": [],
+  "devDependencies": {
+    "istanbul": "^0.4.0",
+    "jshint": "^2.8.0",
+    "pre-commit": "^1.1.1",
+    "tape": "^4.2.0"
+  }
+}

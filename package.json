@@ -1,45 +1,48 @@
 {
-  "name": "splatter",
-  "description": "command line debugger for node",
-  "keywords": [
-    "command",
-    "line",
-    "debugger",
-    "debug"
-  ],
-  "version": "0.1.0",
-  "license": "MIT",
-  "author": "Peter Elger (http://nearform.com/)",
-  "contributors": [
-    "Peter Elger <elger.peter@gmail.com> (http://peterelger.com/)",
-    "David Clements <david.clements@nearform.com>"
-  ],
-  "main": "./main.js",
-  "engines": {
-    "node": "*"
+  "name": "terminal-devtools",
+  "version": "0.0.0",
+  "bin": {
+    "devtools": "./cmd.js"
   },
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src --out-dir compiled/ --source-maps",
+    "watch": "npm-watch"
+  },
+  "watch": {
+    "build": "src/**/*.js"
+  },
+  "author": "David Mark Clements",
+  "license": "MIT",
   "dependencies": {
+    "babel": "^6.3.13",
+    "babel-cli": "^6.3.17",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
     "blessed": "^0.1.81",
-    "blessed-contrib": "^2.5.2",
     "debugger-api": "^0.1.2",
-    "lodash": "^3.10.1"
+    "lsof": "^0.1.0",
+    "portly": "^1.0.0",
+    "react": "^0.14.3",
+    "react-blessed": "davidmarkclements/react-blessed#patches",
+    "react-functional": "^1.1.0",
+    "react-redux": "^4.0.1",
+    "redux": "^3.0.5",
+    "redux-logger": "^2.3.1",
+    "redux-thunk": "^1.0.2",
+    "yadc": "0.0.1"
+  },
+  "description": "Terminal based Devtools for Node",
+  "devDependencies": {
+    "npm-watch": "0.0.1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/apparatus/splatter"
+    "url": "git+https://github.com/nearform/terminal-devtools.git"
   },
-  "scripts": {
-    "lint": "jshint **/*.js",
-    "test": "jshint **/*.js && node test/*Test.js",
-    "coverage": "istanbul cover test/*Test.js && open ./coverage/lcov-report/index.html",
-    "coverage-check": "istanbul cover test/*Test.js && istanbul check-coverage",
-    "commit-check": "jshint **/*.js && istanbul cover test/*Test.js && istanbul check-coverage"
+  "bugs": {
+    "url": "https://github.com/nearform/terminal-devtools/issues"
   },
-  "pre-commit": [],
-  "devDependencies": {
-    "istanbul": "^0.4.0",
-    "jshint": "^2.8.0",
-    "pre-commit": "^1.1.1",
-    "tape": "^4.2.0"
-  }
+  "homepage": "https://github.com/nearform/terminal-devtools#readme"
 }
