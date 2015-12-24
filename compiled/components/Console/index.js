@@ -22,16 +22,20 @@ var Console = function Console(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var focusPanel = _ref.actions.focusPanel;
   return _react2.default.createElement('textarea', {
     label: 'Console',
     focused: focused,
-    'class': style.panel,
+    'class': [style.panel, focused && style.selected],
     top: top,
     left: left,
     width: width,
     height: height,
     mouse: true,
-    value: '> '
+    value: '> ',
+    onFocus: function onFocus() {
+      return focused || focusPanel('console');
+    }
   });
 };
 

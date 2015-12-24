@@ -11,6 +11,9 @@ var element = exports.element = {
   height: '100%-1'
 };
 
+//ordering specifies order of panels
+var ordering = exports.ordering = ['navigator', 'editor', 'callstack', 'breakpoints', 'scope', 'console'];
+
 var navigator = exports.navigator = {
   top: 0,
   left: 0,

@@ -2,6 +2,9 @@ import React from 'react'
 import * as style from '../../style'
 
 const stat =  {
+  border: {
+    type: 'bg'
+  },
   style: {
     transparent: true,
   }

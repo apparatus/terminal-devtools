@@ -6,10 +6,16 @@ export const panel = {
     border: {
       fg: 'blue'
     }
+  }
+}
+
+export const selected = {
+  border: {
+    type: 'line'
   },
-  focus: {
+  style: {
     border: {
-      fg: 'white'
+      fg: 'yellow'
     }
   }
 }

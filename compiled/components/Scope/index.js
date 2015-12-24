@@ -23,16 +23,20 @@ var Scope = function Scope(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var focusPanel = _ref.actions.focusPanel;
   return _react2.default.createElement('list', {
     label: 'Scope',
     focused: focused,
-    'class': style.panel,
+    'class': [style.panel, focused && style.selected],
     top: top,
     left: left,
     width: width,
     height: height,
     items: items,
-    mouse: true
+    mouse: true,
+    onFocus: function onFocus() {
+      return focused || focusPanel('scope');
+    }
   });
 };
 

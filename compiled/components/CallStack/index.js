@@ -23,11 +23,13 @@ var CallStack = function CallStack(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
-  var selectFrame = _ref.actions.selectFrame;
+  var _ref$actions = _ref.actions;
+  var selectFrame = _ref$actions.selectFrame;
+  var focusPanel = _ref$actions.focusPanel;
   return _react2.default.createElement('list', {
     label: 'CallStack',
     focused: focused,
-    'class': [style.panel, style.list],
+    'class': [style.panel, style.list, focused && style.selected],
     top: top,
     width: width,
     height: height,
@@ -45,6 +47,9 @@ var CallStack = function CallStack(_ref) {
       }).indexOf(content);
 
       selectFrame(index);
+    },
+    onFocus: function onFocus() {
+      return focused || focusPanel('callstack');
     }
   });
 };

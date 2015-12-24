@@ -54,8 +54,12 @@ export const debug = createDebugger()
 export default async (pid) => {
   const debugPort = 5858
 
-  if (pid) { 
-    process.kill(pid, 'SIGUSR1')
+  if (pid) {
+    try { 
+      process.kill(pid, 'SIGUSR1')
+    } catch (e) {
+      console.log('Warning unable to locate supplied pid ', pid)
+    }
   }
 
   const screen = blessed.screen({
@@ -91,6 +95,10 @@ export default async (pid) => {
         dispatch(receiveSource(source))
         dispatch(receiveCallstack(callstack))
         dispatch(selectFile(callstack[0].location))
+        debug.breakpoints((err, {breakpoints}) => {
+          if (err) { return console.error(err) }
+          receiveBreakpoints(breakpoints)
+        })
       })
   })
 
@@ -99,17 +107,33 @@ export default async (pid) => {
     return process.exit(0);
   })
 
-  screen.key(['C-t'], () => dispatch(focusPanel('editor')))
+
   screen.key(['C-n'], () => dispatch(focusPanel('navigator')))
-  screen.key(['C-o'], () => dispatch(focusPanel('scope')))
-  screen.key(['C-k'], () => dispatch(focusPanel('console')))
+  screen.key(['C-t'], () => dispatch(focusPanel('editor')))
   screen.key(['C-s'], () => dispatch(focusPanel('callstack')))
   screen.key(['C-p'], () => dispatch(focusPanel('breakpoints')))
+  screen.key(['C-o'], () => dispatch(focusPanel('scope')))
+  screen.key(['C-k'], () => dispatch(focusPanel('console')))
 
   screen.key(['F8', 'C-\\', 'r'], () => dispatch(resume()))
   screen.key(['S-F8', 'C-S-\\', 'p'], () => dispatch(pause()))
   screen.key(['F10', 'C-\'', 'n'], () => dispatch(stepOver()))
 
+  screen.key(['tab'], () => {
+    const {panel, tab} = store.getState()
+    const {ordering} = config.layout[tab]
+    let ix = ordering.indexOf(panel) + 1
+    if (ix >= ordering.length) ix = 0
+    dispatch(focusPanel(ordering[ix]))
+  })
+
+  screen.key(['S-tab'], () => {
+    const {panel, tab} = store.getState()
+    const {ordering} = config.layout[tab]
+    let ix = ordering.indexOf(panel) - 1
+    if (ix < 0) ix = ordering.length -1
+    dispatch(focusPanel(ordering[ix]))
+  })
 
   return render(
     <Provider store={store}>

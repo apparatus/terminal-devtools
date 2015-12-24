@@ -11,10 +11,16 @@ var panel = exports.panel = {
     border: {
       fg: 'blue'
     }
+  }
+};
+
+var selected = exports.selected = {
+  border: {
+    type: 'line'
   },
-  focus: {
+  style: {
     border: {
-      fg: 'white'
+      fg: 'yellow'
     }
   }
 };

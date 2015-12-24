@@ -18,10 +18,10 @@ const ed = {
 
 const Editor = ({
   items, selected, top, left, width, height, focused, 
-  actions: {setEditorLine}
+  actions: {setEditorLine, focusPanel, toggleBreakpoint}
 }) => (
   <list
-    class={[style.panel, ed]}
+    class={[style.panel, ed, focused && style.selected]}
     selected={selected}
     left={left}
     width={width}
@@ -34,7 +34,11 @@ const Editor = ({
     inputOnFocused={true}
     focused={focused}
     items={items}
-    onSelectItem={item => setEditorLine(item.parent.getItemIndex(item))}
+    onSelectItem={item => {
+      focusPanel('editor')
+      setEditorLine(item.parent.getItemIndex(item))
+    }}
+    onKeyB={() => toggleBreakpoint()}
   />
 )
 

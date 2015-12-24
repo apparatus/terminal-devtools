@@ -1,6 +1,5 @@
 import {debug} from '../'
 
-
 //User Actions Types:
 
 export const FOCUS_TAB = 'FOCUS_TAB'
@@ -16,7 +15,8 @@ export const RECEIVE_BREAKPOINTS = 'RECEIVE_BREAKPOINTS'
 export const RECEIVE_SCOPE = 'RECEIVE_SCOPE'
 export const RECEIVE_SOURCE = 'RECEIVE_SOURCE'
 export const SET_FILE_INDEX = 'SET_FILE_INDEX'
-export const SET_EDITOR_LINE= 'SET_EDITOR_LINE'
+export const SET_EDITOR_LINE = 'SET_EDITOR_LINE'
+export const TOGGLE_BREAKPOINT = 'TOGGLE_BREAKPOINT'
 
 // Debugger Action Types
 export const PAUSE = 'PAUSE'
@@ -75,12 +75,43 @@ export function selectFile(payload) {
 }
 
 export function setEditorLine(payload) {
-  console.log('EDITOR LINE', payload)
   return {
     type: SET_EDITOR_LINE,
     payload
   }
 }
+
+export function toggleBreakpoint() {
+  return (dispatch, getState) => {
+    const {editorLine, sources, file, breaks} = getState()
+    const script = sources.find(s => s.name === file)
+    dispatch({type: TOGGLE_BREAKPOINT})
+
+    const isSet = breaks.find(({line, script_name:name}) =>
+      (name === file && line === editorLine))
+
+    if (isSet) {
+
+      debug.clearBreakpoint(isSet.number, (err, result) => {
+        if (err) { return error(err) }
+        debug.breakpoints((err, {breakpoints}) => {
+          if (err) { return error(err) }
+          dispatch(receiveBreakpoints(breakpoints))
+        })
+      })
+      return
+    }
+
+    debug.setBreakpoint(editorLine, script.id, (err, result) => {
+      if (err) { return error(err) }
+      debug.breakpoints((err, {breakpoints}) => {
+        if (err) { return error(err) }
+        dispatch(receiveBreakpoints(breakpoints))
+      })
+    })
+  }
+}
+
 
 export function selectFrame(payload) {
   return (dispatch, getState) => {

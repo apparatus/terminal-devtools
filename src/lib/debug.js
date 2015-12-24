@@ -21,6 +21,7 @@ export default () => {
   const currentContext = {breakpoints: []}
   let dbg
   let raw
+  let seq = 0
   let handler
 
   const augmentStack = bp => {
@@ -56,7 +57,7 @@ export default () => {
 
   const scripts = cb => {
     raw.send({
-      seq: 1,
+      seq: ++seq,
       type: 'request',
       command: 'scripts',
       arguments: {
@@ -70,7 +71,6 @@ export default () => {
       if (!res.body) return cb(Error('no scripts'))
       cb(null, res.body)
     })
-
   }
 
   const start = (debugPort = 5858, cb, contextCb) => {
@@ -87,7 +87,19 @@ export default () => {
 
   const currentLine = () => {}
 
-  const breakpoints = () => {}
+  const breakpoints = cb => {
+    raw.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'listbreakpoints'
+    }, function (err, scripts) {
+      if (err) return cb(err)
+      if (!scripts.res) return cb(Error('no response'))
+      const {res} = scripts
+      if (!res.body) return cb(Error('no scripts'))
+      cb(null, res.body)
+    })
+  }
 
   const setHandler = h => {
     handler = h
@@ -146,13 +158,15 @@ export default () => {
     })
   }
 
-  const setBreakpoint = line => {
-    const {url} = dbg.scripts.findScriptByID(currentContext.scriptId)
-    dbg.setBreakpointByUrl({url, lineNumber: line}, (err, result) => {
-      currentContext.breakpoints.push(result)
-      handler(err, currentContext)
-    })
+  const setBreakpoint = (line, scriptId = currentContext.scriptId, cb) => {
+    const {url} = dbg.scripts.findScriptByID(scriptId)
+    dbg.setBreakpointByUrl({url, lineNumber: line}, cb)
   }
+
+  const clearBreakpoint = (breakpointId, cb) => {
+    dbg.removeBreakpoint({breakpointId}, cb)
+  }
+
 
   return {
     scripts,
@@ -165,6 +179,7 @@ export default () => {
     source,
     evaluate,
     setBreakpoint,
+    clearBreakpoint,
     step
   }
 }

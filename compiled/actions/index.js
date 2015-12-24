@@ -3,11 +3,12 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.SET_DIMENSIONS = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.SET_EDITOR_LINE = exports.SET_FILE_INDEX = exports.RECEIVE_SOURCE = exports.RECEIVE_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
+exports.SET_DIMENSIONS = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.TOGGLE_BREAKPOINT = exports.SET_EDITOR_LINE = exports.SET_FILE_INDEX = exports.RECEIVE_SOURCE = exports.RECEIVE_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
 exports.focusTab = focusTab;
 exports.focusPanel = focusPanel;
 exports.selectFile = selectFile;
 exports.setEditorLine = setEditorLine;
+exports.toggleBreakpoint = toggleBreakpoint;
 exports.selectFrame = selectFrame;
 exports.error = error;
 exports.receiveSources = receiveSources;
@@ -42,6 +43,7 @@ var RECEIVE_SCOPE = exports.RECEIVE_SCOPE = 'RECEIVE_SCOPE';
 var RECEIVE_SOURCE = exports.RECEIVE_SOURCE = 'RECEIVE_SOURCE';
 var SET_FILE_INDEX = exports.SET_FILE_INDEX = 'SET_FILE_INDEX';
 var SET_EDITOR_LINE = exports.SET_EDITOR_LINE = 'SET_EDITOR_LINE';
+var TOGGLE_BREAKPOINT = exports.TOGGLE_BREAKPOINT = 'TOGGLE_BREAKPOINT';
 
 // Debugger Action Types
 var PAUSE = exports.PAUSE = 'PAUSE';
@@ -107,18 +109,71 @@ function selectFile(payload) {
 }
 
 function setEditorLine(payload) {
-  console.log('EDITOR LINE', payload);
   return {
     type: SET_EDITOR_LINE,
     payload: payload
   };
 }
 
-function selectFrame(payload) {
+function toggleBreakpoint() {
   return function (dispatch, getState) {
     var _getState2 = getState();
 
-    var frames = _getState2.frames;
+    var editorLine = _getState2.editorLine;
+    var sources = _getState2.sources;
+    var file = _getState2.file;
+    var breaks = _getState2.breaks;
+
+    var script = sources.find(function (s) {
+      return s.name === file;
+    });
+    dispatch({ type: TOGGLE_BREAKPOINT });
+
+    var isSet = breaks.find(function (_ref) {
+      var line = _ref.line;
+      var name = _ref.script_name;
+      return name === file && line === editorLine;
+    });
+
+    if (isSet) {
+
+      _.debug.clearBreakpoint(isSet.number, function (err, result) {
+        if (err) {
+          return error(err);
+        }
+        _.debug.breakpoints(function (err, _ref2) {
+          var breakpoints = _ref2.breakpoints;
+
+          if (err) {
+            return error(err);
+          }
+          dispatch(receiveBreakpoints(breakpoints));
+        });
+      });
+      return;
+    }
+
+    _.debug.setBreakpoint(editorLine, script.id, function (err, result) {
+      if (err) {
+        return error(err);
+      }
+      _.debug.breakpoints(function (err, _ref3) {
+        var breakpoints = _ref3.breakpoints;
+
+        if (err) {
+          return error(err);
+        }
+        dispatch(receiveBreakpoints(breakpoints));
+      });
+    });
+  };
+}
+
+function selectFrame(payload) {
+  return function (dispatch, getState) {
+    var _getState3 = getState();
+
+    var frames = _getState3.frames;
 
     var frameIndex = payload;
     var frame = frames[frameIndex];
@@ -177,9 +232,9 @@ function receiveSource(payload) {
 function pause() {
   return function (dispatch) {
     dispatch({ type: PAUSE });
-    _.debug.pause(function (err, _ref) {
-      var source = _ref.source;
-      var callstack = _ref.bp.callFrames;
+    _.debug.pause(function (err, _ref4) {
+      var source = _ref4.source;
+      var callstack = _ref4.bp.callFrames;
 
       dispatch(receiveSource(source));
       dispatch(receiveCallstack(callstack));
@@ -199,9 +254,9 @@ function resume() {
 function stepOver() {
   return function (dispatch) {
     dispatch({ type: STEP_OVER });
-    _.debug.step(function (err, _ref2) {
-      var source = _ref2.source;
-      var callstack = _ref2.bp.callFrames;
+    _.debug.step(function (err, _ref5) {
+      var source = _ref5.source;
+      var callstack = _ref5.bp.callFrames;
 
       dispatch(receiveSource(source));
       dispatch(receiveCallstack(callstack));

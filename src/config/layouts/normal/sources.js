@@ -6,6 +6,16 @@ export const element = {
   height: '100%-1'  
 }
 
+//ordering specifies order of panels
+export const ordering = [
+  'navigator',
+  'editor',
+  'callstack',
+  'breakpoints',
+  'scope',
+  'console'
+]
+
 export const navigator = {
   top: 0,
   left: 0,

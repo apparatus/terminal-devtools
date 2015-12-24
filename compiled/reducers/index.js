@@ -13,6 +13,7 @@ exports.editorLine = editorLine;
 exports.callstack = callstack;
 exports.frames = frames;
 exports.frame = frame;
+exports.breaks = breaks;
 exports.breakpoints = breakpoints;
 exports.scope = scope;
 exports.source = source;
@@ -141,7 +142,7 @@ function frame() {
   return payload;
 }
 
-function breakpoints() {
+function breaks() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
   var _ref12 = arguments[1];
   var type = _ref12.type;
@@ -151,11 +152,25 @@ function breakpoints() {
   return payload;
 }
 
-function scope() {
+function breakpoints() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
   var _ref13 = arguments[1];
   var type = _ref13.type;
   var payload = _ref13.payload;
+
+  if (type !== _actions.RECEIVE_BREAKPOINTS) return state;
+  return payload.map(function (_ref14) {
+    var name = _ref14.script_name;
+    var line = _ref14.line;
+    return (0, _path.basename)(name) + ':' + line;
+  });
+}
+
+function scope() {
+  var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+  var _ref15 = arguments[1];
+  var type = _ref15.type;
+  var payload = _ref15.payload;
 
   if (type !== _actions.RECEIVE_SCOPE) return state;
   return payload;
@@ -163,9 +178,9 @@ function scope() {
 
 function source() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-  var _ref14 = arguments[1];
-  var type = _ref14.type;
-  var payload = _ref14.payload;
+  var _ref16 = arguments[1];
+  var type = _ref16.type;
+  var payload = _ref16.payload;
 
   if (type !== _actions.RECEIVE_SOURCE) return state;
   return payload;
@@ -173,8 +188,8 @@ function source() {
 
 function paused() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
-  var _ref15 = arguments[1];
-  var type = _ref15.type;
+  var _ref17 = arguments[1];
+  var type = _ref17.type;
 
   if (type !== _actions.RESUME || type !== _actions.PAUSE) return state;
   return type === _actions.PAUSE;
@@ -182,9 +197,9 @@ function paused() {
 
 function layout() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-  var _ref16 = arguments[1];
-  var type = _ref16.type;
-  var payload = _ref16.payload;
+  var _ref18 = arguments[1];
+  var type = _ref18.type;
+  var payload = _ref18.payload;
 
   if (type !== _actions.SET_DIMENSIONS) return state;
   return payload;

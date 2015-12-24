@@ -3,12 +3,12 @@ import * as style from '../../style'
 
 const CallStack = ({
   items, top, left, width, height, focused,
-  actions: {selectFrame}
+  actions: {selectFrame, focusPanel}
 }) => (
   <list
     label='CallStack'
     focused={focused}
-    class={[style.panel, style.list]}
+    class={[style.panel, style.list, focused && style.selected]}
     top={top}
     width={width}
     height={height}
@@ -26,6 +26,7 @@ const CallStack = ({
       selectFrame(index)
         
     }}
+    onFocus={() => focused || focusPanel('callstack')}
   />
 )
 

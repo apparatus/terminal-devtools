@@ -30,6 +30,7 @@ exports.default = function () {
   var currentContext = { breakpoints: [] };
   var dbg = undefined;
   var raw = undefined;
+  var seq = 0;
   var handler = undefined;
 
   var augmentStack = function augmentStack(bp) {
@@ -69,7 +70,7 @@ exports.default = function () {
 
   var scripts = function scripts(cb) {
     raw.send({
-      seq: 1,
+      seq: ++seq,
       type: 'request',
       command: 'scripts',
       arguments: {
@@ -102,7 +103,20 @@ exports.default = function () {
 
   var currentLine = function currentLine() {};
 
-  var breakpoints = function breakpoints() {};
+  var breakpoints = function breakpoints(cb) {
+    raw.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'listbreakpoints'
+    }, function (err, scripts) {
+      if (err) return cb(err);
+      if (!scripts.res) return cb(Error('no response'));
+      var res = scripts.res;
+
+      if (!res.body) return cb(Error('no scripts'));
+      cb(null, res.body);
+    });
+  };
 
   var setHandler = function setHandler(h) {
     handler = h;
@@ -183,14 +197,18 @@ exports.default = function () {
   };
 
   var setBreakpoint = function setBreakpoint(line) {
-    var _dbg$scripts$findScri = dbg.scripts.findScriptByID(currentContext.scriptId);
+    var scriptId = arguments.length <= 1 || arguments[1] === undefined ? currentContext.scriptId : arguments[1];
+    var cb = arguments[2];
+
+    var _dbg$scripts$findScri = dbg.scripts.findScriptByID(scriptId);
 
     var url = _dbg$scripts$findScri.url;
 
-    dbg.setBreakpointByUrl({ url: url, lineNumber: line }, function (err, result) {
-      currentContext.breakpoints.push(result);
-      handler(err, currentContext);
-    });
+    dbg.setBreakpointByUrl({ url: url, lineNumber: line }, cb);
+  };
+
+  var clearBreakpoint = function clearBreakpoint(breakpointId, cb) {
+    dbg.removeBreakpoint({ breakpointId: breakpointId }, cb);
   };
 
   return {
@@ -204,6 +222,7 @@ exports.default = function () {
     source: source,
     evaluate: evaluate,
     setBreakpoint: setBreakpoint,
+    clearBreakpoint: clearBreakpoint,
     step: step
   };
 };

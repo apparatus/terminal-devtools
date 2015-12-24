@@ -67,8 +67,7 @@ export function callstack(state = [], {type, payload}) {
       location: {lineNumber:l, columnNumber:c, url}
     }) => ( 
       (functionName || '(anonymous function)') + ' ' + basename(url) + ':' + l + ':' + c
-    )
-      
+    )   
   )
 }
 
@@ -82,9 +81,15 @@ export function frame(state = {}, {type, payload}) {
   return payload
 }
 
-export function breakpoints(state = [], {type, payload}) {
+
+export function breaks(state = [], {type, payload}) {
   if (type !== RECEIVE_BREAKPOINTS) return state
   return payload
+}
+
+export function breakpoints(state = [], {type, payload}) {
+  if (type !== RECEIVE_BREAKPOINTS) return state
+  return payload.map(({script_name:name, line}) => basename(name) + ':' + line)
 }
 
 export function scope(state = [], {type, payload}) {
@@ -96,8 +101,6 @@ export function source(state = {}, {type, payload}) {
   if (type !== RECEIVE_SOURCE) return state
   return payload
 }
-
-
 
 export function paused(state = true, {type}) {
   if (type !== RESUME || type !== PAUSE) return state

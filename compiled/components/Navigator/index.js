@@ -24,12 +24,14 @@ var Navigator = function Navigator(_ref) {
   var height = _ref.height;
   var focused = _ref.focused;
   var index = _ref.index;
-  var selectFile = _ref.actions.selectFile;
+  var _ref$actions = _ref.actions;
+  var selectFile = _ref$actions.selectFile;
+  var focusPanel = _ref$actions.focusPanel;
   return _react2.default.createElement('list', {
     label: 'Navigator',
     focused: focused,
     selected: index,
-    'class': [style.panel, style.list],
+    'class': [style.panel, style.list, focused && style.selected],
     width: width,
     top: top,
     height: height,
@@ -41,6 +43,9 @@ var Navigator = function Navigator(_ref) {
     onSelectItem: function onSelectItem(_ref2) {
       var item = _ref2.content;
       return selectFile(item);
+    },
+    onFocus: function onFocus() {
+      return focused || focusPanel('navigator');
     }
   });
 };

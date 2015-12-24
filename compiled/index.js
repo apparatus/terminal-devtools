@@ -93,7 +93,11 @@ exports.default = (function () {
             debugPort = 5858;
 
             if (pid) {
-              process.kill(pid, 'SIGUSR1');
+              try {
+                process.kill(pid, 'SIGUSR1');
+              } catch (e) {
+                console.log('Warning unable to locate supplied pid ', pid);
+              }
             }
 
             screen = _blessed2.default.screen({
@@ -128,6 +132,14 @@ exports.default = (function () {
                 dispatch((0, _actions.receiveSource)(source));
                 dispatch((0, _actions.receiveCallstack)(callstack));
                 dispatch((0, _actions.selectFile)(callstack[0].location));
+                debug.breakpoints(function (err, _ref4) {
+                  var breakpoints = _ref4.breakpoints;
+
+                  if (err) {
+                    return console.error(err);
+                  }
+                  (0, _actions.receiveBreakpoints)(breakpoints);
+                });
               });
             });
 
@@ -135,23 +147,23 @@ exports.default = (function () {
               return process.exit(0);
             });
 
-            screen.key(['C-t'], function () {
-              return dispatch((0, _actions.focusPanel)('editor'));
-            });
             screen.key(['C-n'], function () {
               return dispatch((0, _actions.focusPanel)('navigator'));
             });
-            screen.key(['C-o'], function () {
-              return dispatch((0, _actions.focusPanel)('scope'));
-            });
-            screen.key(['C-k'], function () {
-              return dispatch((0, _actions.focusPanel)('console'));
+            screen.key(['C-t'], function () {
+              return dispatch((0, _actions.focusPanel)('editor'));
             });
             screen.key(['C-s'], function () {
               return dispatch((0, _actions.focusPanel)('callstack'));
             });
             screen.key(['C-p'], function () {
               return dispatch((0, _actions.focusPanel)('breakpoints'));
+            });
+            screen.key(['C-o'], function () {
+              return dispatch((0, _actions.focusPanel)('scope'));
+            });
+            screen.key(['C-k'], function () {
+              return dispatch((0, _actions.focusPanel)('console'));
             });
 
             screen.key(['F8', 'C-\\', 'r'], function () {
@@ -164,13 +176,37 @@ exports.default = (function () {
               return dispatch((0, _actions.stepOver)());
             });
 
+            screen.key(['tab'], function () {
+              var _store$getState = store.getState();
+
+              var panel = _store$getState.panel;
+              var tab = _store$getState.tab;
+              var ordering = _config2.default.layout[tab].ordering;
+
+              var ix = ordering.indexOf(panel) + 1;
+              if (ix >= ordering.length) ix = 0;
+              dispatch((0, _actions.focusPanel)(ordering[ix]));
+            });
+
+            screen.key(['S-tab'], function () {
+              var _store$getState2 = store.getState();
+
+              var panel = _store$getState2.panel;
+              var tab = _store$getState2.tab;
+              var ordering = _config2.default.layout[tab].ordering;
+
+              var ix = ordering.indexOf(panel) - 1;
+              if (ix < 0) ix = ordering.length - 1;
+              dispatch((0, _actions.focusPanel)(ordering[ix]));
+            });
+
             return _context.abrupt('return', (0, _reactBlessed.render)(_react2.default.createElement(
               _reactRedux.Provider,
               { store: store },
               _react2.default.createElement(Devtools, null)
             ), screen));
 
-          case 18:
+          case 20:
           case 'end':
             return _context.stop();
         }

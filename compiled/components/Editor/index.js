@@ -39,9 +39,12 @@ var Editor = function Editor(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
-  var setEditorLine = _ref.actions.setEditorLine;
+  var _ref$actions = _ref.actions;
+  var setEditorLine = _ref$actions.setEditorLine;
+  var focusPanel = _ref$actions.focusPanel;
+  var toggleBreakpoint = _ref$actions.toggleBreakpoint;
   return _react2.default.createElement('list', {
-    'class': [style.panel, ed],
+    'class': [style.panel, ed, focused && style.selected],
     selected: selected,
     left: left,
     width: width,
@@ -55,7 +58,11 @@ var Editor = function Editor(_ref) {
     focused: focused,
     items: items,
     onSelectItem: function onSelectItem(item) {
-      return setEditorLine(item.parent.getItemIndex(item));
+      focusPanel('editor');
+      setEditorLine(item.parent.getItemIndex(item));
+    },
+    onKeyB: function onKeyB() {
+      return toggleBreakpoint();
     }
   });
 };
