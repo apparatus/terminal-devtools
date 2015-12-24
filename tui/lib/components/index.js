@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Tabs = exports.Scope = exports.Navigator = exports.Editor = exports.Console = exports.CallStack = exports.BreakPoints = undefined;
+exports.Tabs = exports.Scope = exports.Navigator = exports.EditorStatus = exports.Editor = exports.Console = exports.CallStack = exports.BreakPoints = undefined;
 
 var _BreakPoints = require('./BreakPoints');
 
@@ -20,6 +20,10 @@ var _Console2 = _interopRequireDefault(_Console);
 var _Editor = require('./Editor');
 
 var _Editor2 = _interopRequireDefault(_Editor);
+
+var _EditorStatus = require('./EditorStatus');
+
+var _EditorStatus2 = _interopRequireDefault(_EditorStatus);
 
 var _Navigator = require('./Navigator');
 
@@ -39,6 +43,7 @@ exports.BreakPoints = _BreakPoints2.default;
 exports.CallStack = _CallStack2.default;
 exports.Console = _Console2.default;
 exports.Editor = _Editor2.default;
+exports.EditorStatus = _EditorStatus2.default;
 exports.Navigator = _Navigator2.default;
 exports.Scope = _Scope2.default;
 exports.Tabs = _Tabs2.default;

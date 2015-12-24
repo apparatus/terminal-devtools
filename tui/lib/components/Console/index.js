@@ -31,7 +31,7 @@ var Console = function Console(_ref) {
     width: width,
     height: height,
     mouse: true,
-    source: '> '
+    value: '> '
   });
 };
 

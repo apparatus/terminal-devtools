@@ -22,11 +22,14 @@ var _debuggerApi = require('debugger-api');
 
 var _debuggerApi2 = _interopRequireDefault(_debuggerApi);
 
+var _yadc = require('yadc');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function () {
   var currentContext = { breakpoints: [] };
   var dbg = undefined;
+  var raw = undefined;
   var handler = undefined;
 
   var augmentStack = function augmentStack(bp) {
@@ -64,13 +67,37 @@ exports.default = function () {
     });
   };
 
+  var scripts = function scripts(cb) {
+    raw.send({
+      seq: 1,
+      type: 'request',
+      command: 'scripts',
+      arguments: {
+        types: 4,
+        includeSource: true
+      }
+    }, function (err, scripts) {
+      if (err) return cb(err);
+      if (!scripts.res) return cb(Error('no response'));
+      var res = scripts.res;
+
+      if (!res.body) return cb(Error('no scripts'));
+      cb(null, res.body);
+    });
+  };
+
   var start = function start() {
     var debugPort = arguments.length <= 0 || arguments[0] === undefined ? 5858 : arguments[0];
     var cb = arguments[1];
+    var contextCb = arguments[2];
 
-    dbg = new _debuggerApi2.default({ debugPort: debugPort });
-    dbg.enable();
-    fetchContext(cb);
+    raw = new _yadc.Debugger({ port: debugPort, host: 'localhost' });
+    raw.connect(function () {
+      dbg = new _debuggerApi2.default({ debugPort: debugPort });
+      dbg.enable();
+      cb();
+      fetchContext(contextCb);
+    });
   };
 
   var currentLine = function currentLine() {};
@@ -111,6 +138,10 @@ exports.default = function () {
       }
       dbg.pause(null, cb);
     });
+  };
+
+  var source = function source(scriptId, cb) {
+    return dbg.getScriptSource({ scriptId: scriptId }, cb);
   };
 
   var evaluate = function evaluate(expression, cb) {
@@ -163,12 +194,14 @@ exports.default = function () {
   };
 
   return {
+    scripts: scripts,
     start: start,
     setHandler: setHandler,
     currentLine: currentLine,
     breakpoints: breakpoints,
     resume: resume,
     pause: pause,
+    source: source,
     evaluate: evaluate,
     setBreakpoint: setBreakpoint,
     step: step

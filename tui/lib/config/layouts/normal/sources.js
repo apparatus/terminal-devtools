@@ -15,14 +15,23 @@ var navigator = exports.navigator = {
   top: 0,
   left: 0,
   width: '18%',
-  height: '75%-1'
+  height: '75%+1'
 };
 
 var editor = exports.editor = {
   top: 0,
   left: '16%',
   width: '60%',
-  height: '75%-1'
+  height: '75%+1'
+};
+
+var editorstatus = exports.editorstatus = {
+  top: '72.5%-1',
+  left: '56%',
+  width: 30,
+  height: 3,
+  align: 'right',
+  padding: { right: 1 }
 };
 
 var callstack = exports.callstack = {
@@ -36,18 +45,18 @@ var breakpoints = exports.breakpoints = {
   top: '36%-1',
   left: '75%-1',
   width: '25%+1',
-  height: '15%+2'
+  height: '15%+4'
 };
 
 var scope = exports.scope = {
-  top: '53%-2',
+  top: '53%',
   left: '75%-1',
   width: '25%+1',
   height: '20%+2'
 };
 
 var console = exports.console = {
-  top: '72.5%-1',
+  top: '72.5%+1',
   left: 0,
   width: '100%-1',
   height: '25%'

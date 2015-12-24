@@ -16,9 +16,13 @@ const ed = {
   }
 }
 
-const Editor = ({source, top, left, width, height, focused}) => (
+const Editor = ({
+  items, selected, top, left, width, height, focused, 
+  actions: {setEditorLine}
+}) => (
   <list
     class={[style.panel, ed]}
+    selected={selected}
     left={left}
     width={width}
     top={top}
@@ -29,7 +33,8 @@ const Editor = ({source, top, left, width, height, focused}) => (
     vi={true}
     inputOnFocused={true}
     focused={focused}
-    items={source.split('\n')}
+    items={items}
+    onSelectItem={item => setEditorLine(item.parent.getItemIndex(item))}
   />
 )
 

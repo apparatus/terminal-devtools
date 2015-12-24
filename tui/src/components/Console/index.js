@@ -11,7 +11,7 @@ const Console = ({top, left, width, height, focused}) => (
     width={width}
     height={height}
     mouse={true}
-    source='> '
+    value='> '
   />
 )
 

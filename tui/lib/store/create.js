@@ -22,16 +22,35 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2.default, (0, _reduxLogger2.default)({
-  logger: console,
-  colors: {
-    title: false,
-    prevState: false,
-    action: false,
-    nextState: false,
-    error: false
-  }
-}))(_redux.createStore);
+var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2.default
+// , logger({
+//   logger: console,
+//   // actionTransformer: action => {
+//   //   const {payload} = action
+//   //   if (Array.isArray(payload)) payload.forEach(o => {
+//   //     if (o.source) o.source = o.source.substr(0, 150) + '...'
+//   //   })
+//   //   if (typeof payload === 'string') {
+//   //     action.payload = payload.substr(0, 150) + '...'
+//   //   }
+//   //   return action
+//   // },
+//   // stateTransformer: state => {
+//   //   if (Array.isArray(state)) state.forEach(o => {
+//   //     if (o.source) o.source = o.source.substr(0, 150) + '...'
+//   //   })
+//   //   if (state.source) state.source = (state.source + '').substr(0, 150) + '...'
+//   //   return state
+//   // },
+//   colors: {
+//     title: false,
+//     prevState: false,
+//     action: false,
+//     nextState: false,
+//     error: false,
+//   }
+// })
+)(_redux.createStore);
 
 var reducer = (0, _redux.combineReducers)(reducers);
 

@@ -15,10 +15,12 @@
 'use strict';
 
 import DebuggerApi from 'debugger-api'
+import {Debugger} from 'yadc'
 
 export default () => {
   const currentContext = {breakpoints: []}
   let dbg
+  let raw
   let handler
 
   const augmentStack = bp => {
@@ -52,10 +54,35 @@ export default () => {
     })
   })
 
-  const start = (debugPort = 5858, cb) => {
-    dbg = new DebuggerApi({debugPort})
-    dbg.enable()
-    fetchContext(cb)
+  const scripts = cb => {
+    raw.send({
+      seq: 1,
+      type: 'request',
+      command: 'scripts',
+      arguments: {
+        types: 4,
+        includeSource: true
+      } 
+    }, function (err, scripts) {
+      if (err) return cb(err)
+      if (!scripts.res) return cb(Error('no response'))
+      const {res} = scripts
+      if (!res.body) return cb(Error('no scripts'))
+      cb(null, res.body)
+    })
+
+  }
+
+  const start = (debugPort = 5858, cb, contextCb) => {
+
+    raw = new Debugger({port: debugPort, host: 'localhost'})
+    raw.connect(() => {
+      dbg = new DebuggerApi({debugPort})
+      dbg.enable()
+      cb()
+      fetchContext(contextCb)
+    })
+
   }
 
   const currentLine = () => {}
@@ -83,6 +110,7 @@ export default () => {
     dbg.pause(null, cb)
   })
 
+  const source = (scriptId, cb) => dbg.getScriptSource({scriptId}, cb)
 
   const evaluate = (expression, cb) => {
     let value
@@ -127,12 +155,14 @@ export default () => {
   }
 
   return {
+    scripts,
     start,
     setHandler,
     currentLine,
     breakpoints,
     resume,
     pause,
+    source,
     evaluate,
     setBreakpoint,
     step

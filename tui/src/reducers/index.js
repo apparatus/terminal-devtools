@@ -3,12 +3,14 @@ import {basename} from 'path'
 import {
   FOCUS_TAB,
   FOCUS_PANEL,
-  RECEIVE_FILES,
   RECEIVE_CALLSTACK,
   RECEIVE_BREAKPOINTS,
   RECEIVE_SCOPE,
   RECEIVE_SOURCE,
+  RECEIVE_SOURCES,
   SELECT_FILE,
+  SET_FILE_INDEX,
+  SET_EDITOR_LINE,
   SELECT_FRAME,
   PAUSE,
   RESUME,
@@ -30,8 +32,31 @@ export function panel(state = 'console', {type, payload}) {
   return payload
 }
 
+export function sources(state = [], {type, payload}) {
+  if (type !== RECEIVE_SOURCES) return state
+  return payload
+}
+
 export function files(state = [], {type, payload}) {
-  if (type !== RECEIVE_FILES) return state
+  if (type !== RECEIVE_SOURCES) return state
+  const sources = payload.map(s => s.name)
+  const nonNative = sources.filter(s => s[0] === '/')
+  const native = sources.filter(s => s[0] !== '/')
+  return [...nonNative, ...native]
+}
+
+export function file(state = '', {type, payload}) {
+  if (type !== SELECT_FILE) return state
+  return payload
+}
+
+export function fileIndex(state = 0, {type, payload}) {
+  if (type !== SET_FILE_INDEX) return state
+  return payload
+}
+
+export function editorLine(state = 0, {type, payload}) {
+  if (type !== SET_EDITOR_LINE) return state
   return payload
 }
 
@@ -40,15 +65,20 @@ export function callstack(state = [], {type, payload}) {
   return payload.map(({
       functionName,
       location: {lineNumber:l, columnNumber:c, url}
-    }) => 
-        (functionName || '(anonymous function)') + '  ' + 
-        basename(url) + ':' + l + ':' + c
+    }) => ( 
+      (functionName || '(anonymous function)') + ' ' + basename(url) + ':' + l + ':' + c
+    )
       
   )
 }
 
 export function frames(state = [], {type, payload}) {
   if (type !== RECEIVE_CALLSTACK) return state
+  return payload
+}
+
+export function frame(state = {}, {type, payload}) {
+  if (type !== SELECT_FRAME) return state
   return payload
 }
 
@@ -67,10 +97,7 @@ export function source(state = {}, {type, payload}) {
   return payload
 }
 
-export function file(state = '', {type, payload}) {
-  if (type !== SELECT_FILE) return state
-  return payload
-}
+
 
 export function paused(state = true, {type}) {
   if (type !== RESUME || type !== PAUSE) return state

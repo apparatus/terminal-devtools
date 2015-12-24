@@ -32,14 +32,17 @@ var ed = {
 };
 
 var Editor = function Editor(_ref) {
-  var source = _ref.source;
+  var items = _ref.items;
+  var selected = _ref.selected;
   var top = _ref.top;
   var left = _ref.left;
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var setEditorLine = _ref.actions.setEditorLine;
   return _react2.default.createElement('list', {
     'class': [style.panel, ed],
+    selected: selected,
     left: left,
     width: width,
     top: top,
@@ -50,7 +53,10 @@ var Editor = function Editor(_ref) {
     vi: true,
     inputOnFocused: true,
     focused: focused,
-    items: source.split('\n')
+    items: items,
+    onSelectItem: function onSelectItem(item) {
+      return setEditorLine(item.parent.getItemIndex(item));
+    }
   });
 };
 

@@ -16,34 +16,38 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Navigator = function Navigator(_ref) {
-  var items = _ref.items;
+var stat = {
+  style: {
+    transparent: true
+  }
+};
+
+var EditorStatus = function EditorStatus(_ref) {
+  var line = _ref.line;
+  var file = _ref.file;
   var top = _ref.top;
   var left = _ref.left;
   var width = _ref.width;
   var height = _ref.height;
-  var focused = _ref.focused;
-  var index = _ref.index;
-  var selectFile = _ref.actions.selectFile;
-  return _react2.default.createElement('list', {
-    label: 'Navigator',
-    focused: focused,
-    selected: index,
-    'class': [style.panel, style.list],
-    width: width,
-    top: top,
-    height: height,
-    items: items,
-    mouse: true,
-    keys: true,
-    vi: true,
-    inputOnFocused: true,
-    onSelectItem: function onSelectItem(_ref2) {
-      var item = _ref2.content;
-      return selectFile(item);
-    }
-  });
+  var align = _ref.align;
+  var padding = _ref.padding;
+  return _react2.default.createElement(
+    'box',
+    {
+      'class': [style.panel, stat],
+      left: left,
+      width: width,
+      top: top,
+      height: height,
+      align: align,
+      padding: padding
+    },
+    file,
+    ':',
+    line,
+    ' '
+  );
 };
 
-exports.default = Navigator;
+exports.default = EditorStatus;
 //# sourceMappingURL=index.js.map

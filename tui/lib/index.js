@@ -25,7 +25,9 @@ var _reactFunctional = require('react-functional');
 
 var _reactFunctional2 = _interopRequireDefault(_reactFunctional);
 
-var _tcpPortUsed = require('tcp-port-used');
+var _portly = require('portly');
+
+var _portly2 = _interopRequireDefault(_portly);
 
 var _create = require('./store/create');
 
@@ -52,8 +54,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 var store = (0, _create2.default)({
   tab: 'sources',
   panel: 'editor',
-  files: ['file one', 'file two'],
-  source: '',
   layout: _config2.default.layout
 });
 var dispatch = store.dispatch;
@@ -92,10 +92,9 @@ exports.default = (function () {
           case 0:
             debugPort = 5858;
 
-            // if (pid) {
-            // process.kill(pid, 'SIGUSR1')
-            // await waitUntilUsed(debugPort)
-            // }
+            if (pid) {
+              process.kill(pid, 'SIGUSR1');
+            }
 
             screen = _blessed2.default.screen({
               autoPadding: true,
@@ -104,19 +103,32 @@ exports.default = (function () {
               sendFocus: true,
               dockBorders: true,
               autoPadding: true,
-              log: '/dev/ttys001',
+              log: '/dev/ttys004',
               ignoreLocked: ['C-c']
             });
 
             console.log = screen.log.bind(screen);
             console.error = screen.log.bind(screen, 'ERROR: ');
 
-            debug.start(debugPort, function (err, _ref3) {
-              var source = _ref3.source;
-              var callstack = _ref3.bp.callFrames;
+            dispatch((0, _actions.receiveSource)('Waiting for port debug port ' + debugPort));
+            (0, _portly2.default)(debugPort).then(function (portPid) {
+              debug.start(debugPort, function (err) {
+                debug.scripts(function (err, scripts) {
+                  var firstNonInternal = scripts.find(function (s) {
+                    return s.name[0] === '/';
+                  });
+                  dispatch((0, _actions.receiveSource)(firstNonInternal ? firstNonInternal.source : scripts[0].source));
+                  dispatch((0, _actions.receiveSources)(scripts));
+                  dispatch((0, _actions.selectFile)(firstNonInternal ? firstNonInternal.name : scripts[0].name));
+                });
+              }, function (err, _ref3) {
+                var source = _ref3.source;
+                var callstack = _ref3.bp.callFrames;
 
-              dispatch((0, _actions.receiveSource)(source));
-              dispatch((0, _actions.receiveCallstack)(callstack));
+                dispatch((0, _actions.receiveSource)(source));
+                dispatch((0, _actions.receiveCallstack)(callstack));
+                dispatch((0, _actions.selectFile)(callstack[0].location));
+              });
             });
 
             screen.key(['escape', 'q', 'C-c'], function (ch, key) {
@@ -142,7 +154,7 @@ exports.default = (function () {
               return dispatch((0, _actions.focusPanel)('breakpoints'));
             });
 
-            screen.key(['F8', 'C-r', 'r'], function () {
+            screen.key(['F8', 'C-\\', 'r'], function () {
               return dispatch((0, _actions.resume)());
             });
             screen.key(['S-F8', 'C-S-\\', 'p'], function () {
@@ -158,7 +170,7 @@ exports.default = (function () {
               _react2.default.createElement(Devtools, null)
             ), screen));
 
-          case 16:
+          case 18:
           case 'end':
             return _context.stop();
         }

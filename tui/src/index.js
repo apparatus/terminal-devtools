@@ -5,7 +5,7 @@ import blessed from 'blessed'
 import {Provider, connect} from 'react-redux'
 import {render} from 'react-blessed'
 import functional from 'react-functional'
-import {waitUntilUsed} from 'tcp-port-used'
+import portly from 'portly'
 import createStore from './store/create'
 import config from './config'
 import { Console, Sources } from './containers'
@@ -14,11 +14,12 @@ import createDebugger from './lib/debug'
 import {
   focusTab,
   focusPanel,
-  receiveFiles,
   receiveCallstack,
   receiveBreakpoints,
   receiveScope,
   receiveSource,
+  receiveSources,
+  selectFile,
   pause,
   resume,
   stepOver,
@@ -31,8 +32,6 @@ import {
 const store = createStore({
   tab: 'sources',
   panel: 'editor',
-  files: ['file one', 'file two'],
-  source: '',
   layout: config.layout,
 })
 const {dispatch} = store
@@ -55,11 +54,9 @@ export const debug = createDebugger()
 export default async (pid) => {
   const debugPort = 5858
 
-  // if (pid) { 
-    // process.kill(pid, 'SIGUSR1')
-    // await waitUntilUsed(debugPort)
-  // }
-
+  if (pid) { 
+    process.kill(pid, 'SIGUSR1')
+  }
 
   const screen = blessed.screen({
     autoPadding: true,
@@ -68,17 +65,35 @@ export default async (pid) => {
     sendFocus: true,
     dockBorders: true,
     autoPadding: true,
-    log: '/dev/ttys001',
+    log: '/dev/ttys004',
     ignoreLocked: ['C-c']
   })
 
   console.log = screen.log.bind(screen)
   console.error = screen.log.bind(screen, 'ERROR: ')
 
-  debug.start(debugPort, (err, {source, bp: {callFrames: callstack}}) => {
-    dispatch(receiveSource(source))
-    dispatch(receiveCallstack(callstack))
+  dispatch(receiveSource('Waiting for port debug port ' + debugPort))
+  portly(debugPort).then(portPid => {
+    debug.start(debugPort, 
+      err => {
+        debug.scripts((err, scripts) => {
+          const firstNonInternal = scripts.find(s => s.name[0] === '/')
+          dispatch(receiveSource(
+            firstNonInternal ? firstNonInternal.source : scripts[0].source
+          ))
+          dispatch(receiveSources(scripts))
+          dispatch(selectFile(
+            firstNonInternal ? firstNonInternal.name : scripts[0].name
+          ))
+        })
+      },
+      (err, {source, bp: {callFrames: callstack}}) => {
+        dispatch(receiveSource(source))
+        dispatch(receiveCallstack(callstack))
+        dispatch(selectFile(callstack[0].location))
+      })
   })
+
 
   screen.key(['escape', 'q', 'C-c'], function(ch, key) {
     return process.exit(0);
@@ -94,7 +109,6 @@ export default async (pid) => {
   screen.key(['F8', 'C-\\', 'r'], () => dispatch(resume()))
   screen.key(['S-F8', 'C-S-\\', 'p'], () => dispatch(pause()))
   screen.key(['F10', 'C-\'', 'n'], () => dispatch(stepOver()))
-
 
 
   return render(
