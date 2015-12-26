@@ -31,12 +31,20 @@ Logger middleware in `store/create.js` is commented out, this
 will output every action and corresponding state change to the
 log. It's commented out because it's a firehose.
 
+### Protocol Logging
+
+Use `--trace-debug-json` to see debugger API request/response JSON.
+
+```sh
+$ node --debug-brk --trace-debug-json somefile.js
+```
+
 ## `lib/debug`
 
 * refactored from original to es6
 * the `debugger-api` module lacks some fundamental functionality
-* currently using yadc alongside debugger-api to make raw calls
-* plan to move entirely over to yadc to remove the cruft (debugger-api depends on node-inspector)
+* ~~currently using yadc alongside debugger-api to make raw calls~~
+  * `debugger-api` has been swapped out for `yadc`
 * v8 protocol documented here: https://chromium.googlesource.com/external/github.com/v8/v8.wiki/+/84541b3cd196e8d5026f6b988d6d0627bd6c4954/debugger_protocol.md
 
 
