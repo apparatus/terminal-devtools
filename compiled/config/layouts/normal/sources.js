@@ -31,7 +31,7 @@ var editor = exports.editor = {
 var editorstatus = exports.editorstatus = {
   top: '72.5%-1',
   left: '56%',
-  width: 30,
+  width: '21%',
   height: 3,
   align: 'right',
   padding: { right: 1 }
