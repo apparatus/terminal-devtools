@@ -78,7 +78,8 @@ $ pbpaste | JSONStream | pbcopy
 
 ## text editor window
 
-* known issue with scrolling, sticks to bottom 
+* ~~known issue with scrolling, sticks to bottom~~
+  * fixed but new issue with scroll jumping depending on various factors
 
 
 
@@ -113,7 +114,8 @@ $ pbpaste | JSONStream | pbcopy
 * console tab
 * examples/demos
 * tests
-* fix editor sticking to bottom issue
+* ~~fix editor sticking to bottom issue~~
+  * fixed, but new remaining scroll issue
 * improve selection indicator (partial yellow border)
   * maybe paint a border over the top
 * panel resizing

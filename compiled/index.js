@@ -107,8 +107,8 @@ exports.default = (function () {
               sendFocus: true,
               dockBorders: true,
               autoPadding: true,
-              // log: './log',
-              log: '/dev/ttys002',
+              log: './log',
+              // log: '/dev/ttys001',
               ignoreLocked: ['C-c']
             });
 
