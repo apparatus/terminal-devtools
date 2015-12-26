@@ -39,6 +39,34 @@ Use `--trace-debug-json` to see debugger API request/response JSON.
 $ node --debug-brk --trace-debug-json somefile.js
 ```
 
+### Reverse engineering Node Inspector
+
+We can use protocol logging whilst interacting with node inspector to 
+see how node inspector performs certain functions - this can be useful
+to supplement the protocol docs and bring clarity to implementation details. 
+
+First run node-inspector as a service (important to do this *first*)
+
+```sh
+$ node-inspector
+```
+
+In another terminal, run node on a file along with debug-brk and trace-debug-json
+
+```sh
+$ node --debug-brk --trace-debug-json somefile.js
+```
+
+Now open the node inspector url http://127.0.0.1:8080/?ws=127.0.0.1:8080&port=5858
+and start using features. 
+
+Easy way to format the debugger request/response JSON output, copy it then:
+
+```sh
+$ npm i -g JSONStream
+$ pbpaste | JSONStream | pbcopy
+```
+
 ## `lib/debug`
 
 * refactored from original to es6
@@ -52,8 +80,30 @@ $ node --debug-brk --trace-debug-json somefile.js
 
 * known issue with scrolling, sticks to bottom 
 
+
+
 ## Tasks
 
+### In Progress
+
+* **scope**
+  * currently only displays local scope
+    * global, closure, with and catch scopes are implemented at the debug interaction level, we just need to do some ui/ux work/thought to display the different scope areas
+  * currently non-interactive
+    * e.g. we can't interact with it like a tree and see it's props
+    * some work around this is necessary, 
+      * need to do a lookup on props when an object is interacted with 
+      * need to integrate tree component also to support ui interaction
+  * missing advanced features such as
+    * `this` context
+    * __proto__ lookup
+    * prototype lookup
+    * getter/setter dynamic lookups
+    * none of these are worth implementing until we have ability to explore properties
+
+### Todo
+
+* support for other ports
 * highlight breakpoints in editor
 * optimize react to blessed rendering life cycle
 * debug/log output customization via environment vars
@@ -61,7 +111,6 @@ $ node --debug-brk --trace-debug-json somefile.js
 * support for devtools short cuts (e.g. ctrl+' for step etc.)
 * console/repl
 * console tab
-* scope
 * examples/demos
 * tests
 * fix editor sticking to bottom issue
