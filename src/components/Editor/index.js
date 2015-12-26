@@ -1,4 +1,5 @@
 import React from 'react'
+import functional from 'react-functional'
 import * as style from '../../style'
 
 const ed = {
@@ -42,5 +43,11 @@ const Editor = ({
   />
 )
 
-
 export default Editor
+
+export default functional(Editor, {
+  shouldComponentUpdate: (props, nextProps) => {
+    if (!nextProps.focused && props.selected !== nextProps.selected) return true
+    return props.focused !== nextProps.focused || props.items !== nextProps.items
+  }
+})

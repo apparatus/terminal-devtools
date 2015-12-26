@@ -26,6 +26,7 @@ var Navigator = function Navigator(_ref) {
   var index = _ref.index;
   var _ref$actions = _ref.actions;
   var selectFile = _ref$actions.selectFile;
+  var setEditorLine = _ref$actions.setEditorLine;
   var focusPanel = _ref$actions.focusPanel;
   return _react2.default.createElement('list', {
     label: 'Navigator',
@@ -42,7 +43,9 @@ var Navigator = function Navigator(_ref) {
     inputOnFocused: true,
     onSelectItem: function onSelectItem(_ref2) {
       var item = _ref2.content;
-      return selectFile(item);
+
+      selectFile(item);
+      setEditorLine(0);
     },
     onFocus: function onFocus() {
       return focused || focusPanel('navigator');

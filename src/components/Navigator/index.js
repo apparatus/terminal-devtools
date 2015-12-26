@@ -3,7 +3,7 @@ import * as style from '../../style'
 
 const Navigator = ({
   items, top, left, width, height, focused, index,
-  actions: {selectFile, focusPanel}
+  actions: {selectFile, setEditorLine, focusPanel}
 }) => (
   <list 
     label='Navigator'
@@ -18,7 +18,12 @@ const Navigator = ({
     keys={true}
     vi={true}
     inputOnFocused={true}
-    onSelectItem={({content: item}) => selectFile(item)}
+    onSelectItem={
+      ({content: item}) => {
+        selectFile(item)
+        setEditorLine(0)
+      }
+    }
     onFocus={() => focused || focusPanel('navigator')}
   />
 )

@@ -209,8 +209,6 @@ export default () => {
           properties // only on non-primitives (objects, functions, arrays)
         } = refs.find(({handle}) => handle === ref)
 
-        console.log(refs.find(({handle}) => handle === ref))
-
         a.push({name, type, className, value, text, source, properties})
 
         return a

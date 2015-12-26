@@ -242,8 +242,8 @@ exports.default = function () {
 
         var _refs$find = //functions
         // only on non-primitives (objects, functions, arrays)
-        refs.find(function (_ref8) {
-          var handle = _ref8.handle;
+        refs.find(function (_ref7) {
+          var handle = _ref7.handle;
           return handle === ref;
         });
 
@@ -258,11 +258,6 @@ exports.default = function () {
         source = _refs$find.source;
         var properties = _refs$find.properties;
 
-        console.log(refs.find(function (_ref7) {
-          var handle = _ref7.handle;
-          return handle === ref;
-        }));
-
         a.push({ name: name, type: type, className: className, value: value, text: text, source: source, properties: properties });
 
         return a;
@@ -273,9 +268,9 @@ exports.default = function () {
   };
 
   var callstack = function callstack(cb) {
-    return backtrace(function (err, _ref9) {
-      var frames = _ref9.frames;
-      var totalFrames = _ref9.totalFrames;
+    return backtrace(function (err, _ref8) {
+      var frames = _ref8.frames;
+      var totalFrames = _ref8.totalFrames;
 
       if (err) return cb(err);
       if (totalFrames === 0) {
@@ -289,11 +284,11 @@ exports.default = function () {
       scripts(fetch);
 
       function fetch() {
-        cb(null, frames.map(function (_ref10) {
-          var index = _ref10.index;
-          var func = _ref10.func;
-          var line = _ref10.line;
-          var column = _ref10.column;
+        cb(null, frames.map(function (_ref9) {
+          var index = _ref9.index;
+          var func = _ref9.func;
+          var line = _ref9.line;
+          var column = _ref9.column;
           return {
             callFrameId: index,
             functionName: func.inferredName || func.name,

@@ -70,8 +70,8 @@ export default async (pid) => {
     sendFocus: true,
     dockBorders: true,
     autoPadding: true,
-    log: './log',
-    // log: '/dev/ttys002',
+    // log: './log',
+    log: '/dev/ttys002',
     ignoreLocked: ['C-c']
   })
 

@@ -8,6 +8,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactFunctional = require('react-functional');
+
+var _reactFunctional2 = _interopRequireDefault(_reactFunctional);
+
 var _style = require('../../style');
 
 var style = _interopRequireWildcard(_style);
@@ -68,4 +72,10 @@ var Editor = function Editor(_ref) {
 };
 
 exports.default = Editor;
+exports.default = (0, _reactFunctional2.default)(Editor, {
+  shouldComponentUpdate: function shouldComponentUpdate(props, nextProps) {
+    if (!nextProps.focused && props.selected !== nextProps.selected) return true;
+    return props.focused !== nextProps.focused || props.items !== nextProps.items;
+  }
+});
 //# sourceMappingURL=index.js.map
