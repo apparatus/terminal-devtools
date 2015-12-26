@@ -34,6 +34,9 @@ var Scope = function Scope(_ref) {
     height: height,
     items: items,
     mouse: true,
+    inputOnFocused: true,
+    keys: true,
+    scrollbar: true,
     onFocus: function onFocus() {
       return focused || focusPanel('scope');
     }

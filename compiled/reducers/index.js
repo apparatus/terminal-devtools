@@ -172,17 +172,46 @@ function scope() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
   var _ref15 = arguments[1];
   var type = _ref15.type;
-  var payload = _ref15.payload;
+  var _ref15$payload = _ref15.payload;
+  _ref15$payload = _ref15$payload === undefined ? {} : _ref15$payload;
+  var area = _ref15$payload.area;
+  var scope = _ref15$payload.scope;
 
   if (type !== _actions.RECEIVE_SCOPE) return state;
-  return payload;
+  //TODO: this will be changed when we integrate the tree component,
+  //so instead of returning strings it returns objects to populate the
+  //tree
+  return scope.map(function (_ref16) {
+    var name = _ref16.name;
+    var type = _ref16.type;
+    var value = _ref16.value;
+    var text = _ref16.text;
+    var source = _ref16.source;
+    var className = _ref16.className;
+    var properties = _ref16.properties;
+
+    if (type === 'object') {
+      value = className;
+    }
+    if (className === 'Array') {
+      value = 'Array(' + properties.filter(function (_ref17) {
+        var name = _ref17.name;
+        return !isNaN(name);
+      }).length + ')';
+    }
+    if (type === 'string') {
+      value = '\'' + value + '\'';
+    }
+    value = value || source || text;
+    return name + ': ' + value;
+  });
 }
 
 function source() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-  var _ref16 = arguments[1];
-  var type = _ref16.type;
-  var payload = _ref16.payload;
+  var _ref18 = arguments[1];
+  var type = _ref18.type;
+  var payload = _ref18.payload;
 
   if (type !== _actions.RECEIVE_SOURCE) return state;
   return payload;
@@ -190,8 +219,8 @@ function source() {
 
 function paused() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
-  var _ref17 = arguments[1];
-  var type = _ref17.type;
+  var _ref19 = arguments[1];
+  var type = _ref19.type;
 
   if (type !== _actions.RESUME || type !== _actions.PAUSE) return state;
   return type === _actions.PAUSE;
@@ -199,9 +228,9 @@ function paused() {
 
 function layout() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-  var _ref18 = arguments[1];
-  var type = _ref18.type;
-  var payload = _ref18.payload;
+  var _ref20 = arguments[1];
+  var type = _ref20.type;
+  var payload = _ref20.payload;
 
   if (type !== _actions.SET_DIMENSIONS) return state;
   return payload;

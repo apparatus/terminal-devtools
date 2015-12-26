@@ -12,6 +12,9 @@ const Scope = ({items, top, left, width, height, focused, actions: {focusPanel}}
     height={height}
     items={items}
     mouse={true}
+    inputOnFocused={true}
+    keys={true}
+    scrollbar={true}
     onFocus={() => focused || focusPanel('scope')}
   />
 )

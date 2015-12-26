@@ -92,9 +92,24 @@ export function breakpoints(state = [], {type, payload}) {
   return payload.map(({script_name:name, line}) => basename(name) + ':' + line)
 }
 
-export function scope(state = [], {type, payload}) {
+export function scope(state = [], {type, payload:{area, scope} = {}}) {
   if (type !== RECEIVE_SCOPE) return state
-  return payload
+  //TODO: this will be changed when we integrate the tree component,
+  //so instead of returning strings it returns objects to populate the
+  //tree
+  return scope.map(
+    ({name, type, value, text, source, className, properties}) => {
+      if (type === 'object') { value = className }
+      if (className === 'Array') {
+        value = 'Array(' + properties.filter(({name}) => !isNaN(name)).length + ')'
+      }
+      if (type === 'string') {
+        value = '\'' + value + '\''
+      }
+      value = value || source || text
+      return name + ': ' + value
+    }
+  )
 }
 
 export function source(state = {}, {type, payload}) {

@@ -183,11 +183,15 @@ function selectFrame(payload) {
     var location = frame.location;
 
     dispatch({ type: SELECT_FRAME, payload: frame });
-    try {
-      dispatch(selectFile(location));
-    } catch (e) {
-      console.error(e);
-    }
+    dispatch(selectFile(location));
+
+    _.debug.scopes(frame, function (err, scopes) {
+      var local = scopes.local;
+
+      _.debug.scope(local, function (err, scope) {
+        dispatch(receiveScope({ area: 'local', scope: scope }));
+      });
+    });
   };
 }
 

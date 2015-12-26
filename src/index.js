@@ -20,6 +20,7 @@ import {
   receiveSource,
   receiveSources,
   selectFile,
+  selectFrame,
   pause,
   resume,
   stepOver,
@@ -69,7 +70,8 @@ export default async (pid) => {
     sendFocus: true,
     dockBorders: true,
     autoPadding: true,
-    log: __dirname + '/log', //'/dev/ttys002',
+    log: './log',
+    // log: '/dev/ttys002',
     ignoreLocked: ['C-c']
   })
 
@@ -84,7 +86,7 @@ export default async (pid) => {
       debug.scripts((err, scripts) => {
         dispatch(receiveSources(scripts))
         if (callstack) {
-          return dispatch(selectFile(callstack[0].location))
+          return dispatch(selectFrame(0))
         }
         const {name} = (scripts.find(s => s.name[0] === '/') || scripts[0])
         dispatch(selectFile(name))

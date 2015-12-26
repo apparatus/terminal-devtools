@@ -107,7 +107,8 @@ exports.default = (function () {
               sendFocus: true,
               dockBorders: true,
               autoPadding: true,
-              log: __dirname + '/log', //'/dev/ttys002',
+              log: './log',
+              // log: '/dev/ttys002',
               ignoreLocked: ['C-c']
             });
 
@@ -122,7 +123,7 @@ exports.default = (function () {
                 debug.scripts(function (err, scripts) {
                   dispatch((0, _actions.receiveSources)(scripts));
                   if (callstack) {
-                    return dispatch((0, _actions.selectFile)(callstack[0].location));
+                    return dispatch((0, _actions.selectFrame)(0));
                   }
 
                   var _ref3 = scripts.find(function (s) {

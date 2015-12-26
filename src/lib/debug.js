@@ -14,6 +14,9 @@
 
 import {Debugger} from 'yadc'
 
+//important: preserve order
+const SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch']
+
 export default () => {
   let raw
   let seq = 0
@@ -28,11 +31,12 @@ export default () => {
         types: 4,
         includeSource: true
       } 
-    }, (err, scripts) => {
+    }, (err, out) => {
       if (err) return cb(err)
-      if (!scripts.res) return cb(Error('no response'))
-      const {res} = scripts
+      if (!out.res) return cb(Error('no response'))
+      const {res} = out
       if (!res.body) return cb(Error('no scripts'))
+
       res.body.forEach(({id, name}) => scriptIdToUrl.set(id, name))
       cb(null, res.body)
     })
@@ -48,10 +52,10 @@ export default () => {
         fromFrame: 0,
         maxStringLength: 10000
       }
-    }, (err, bt) => {
+    }, (err, out) => {
       if (err) return cb(err)
-      if (!bt.res) return cb(Error('no response'))
-      const {res} = bt
+      if (!out.res) return cb(Error('no response'))
+      const {res} = out
       if (!res.body) return cb(Error('no backtrace'))
       cb(null, res.body)
     })
@@ -62,10 +66,10 @@ export default () => {
       seq: ++seq,
       type: 'request',
       command: 'listbreakpoints'
-    }, (err, breakpoints) => {
+    }, (err, out) => {
       if (err) return cb(err)
-      if (!breakpoints.res) return cb(Error('no response'))
-      const {res} = breakpoints
+      if (!out.res) return cb(Error('no response'))
+      const {res} = out
       if (!res.body) return cb(Error('no breakpoints'))
       res.body.breakpoints = res.body.breakpoints.filter(bp => bp.type === 'scriptName')
       cb(null, res.body)
@@ -80,10 +84,10 @@ export default () => {
       arguments: {
         type: 'script', target, line
       }
-    }, (err, breakpoint) => {
+    }, (err, out) => {
       if (err) return cb(err)
-      if (!breakpoint.res) return cb(Error('no response'))
-      const {res} = breakpoint
+      if (!out.res) return cb(Error('no response'))
+      const {res} = out
       if (!res.body) return cb(Error('unable to set breakpoint'))
       cb(null, res.body)
     })
@@ -98,10 +102,10 @@ export default () => {
         type: 'script',
         breakpoint
       }
-    }, (err, breakpoint) => {
+    }, (err, out) => {
       if (err) return cb(err)
-      if (!breakpoint.res) return cb(Error('no response'))
-      const {res} = breakpoint
+      if (!out.res) return cb(Error('no response'))
+      const {res} = out
       if (!res.body) return cb(Error('unable to unset breakpoint'))
       cb(null, res.body)
     })
@@ -143,6 +147,80 @@ export default () => {
     })
   }
 
+
+  const lookup = ({handles}, cb) => {
+    raw.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'lookup',
+      arguments: {
+        handles
+      }
+    }, (err, out) => {
+      if (err) return cb(err)
+      if (!out.res) return cb(Error('no response'))
+      const {res} = out
+      cb(null, res)
+    })
+  }
+
+  const scopes = ({callFrameId: frameNumber}, cb) => {
+    raw.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'scopes',
+      arguments: {
+        number: 0, //<-- TODO what is? seen: 0, 1, 2 
+        frameNumber
+      }
+    }, (err, out) => {
+      if (err) return cb(err)
+      if (!out.res) return cb(Error('no response'))
+      const {res} = out
+      if (!res.body) return cb(Error('unable to get scopes'))
+
+      const scopes = res.body.scopes.reduce((o, scope) => {
+        const {type, object:{ref}} = scope
+        if (type > 4) { return o }
+        o[SCOPE_TYPES[type]] = scope
+        scope.context = res.refs.find(({handle}) => handle === ref)
+        return o
+      }, {})
+
+      cb(null, scopes)
+    })
+  }
+
+  const scope = (scope, cb) => {
+    //TODO: 
+    //prototype, __proto__, this, getter/setter functions
+    const {object:{ref}} = scope
+
+    lookup({handles:[ref]}, (err, out) => {
+      const {properties} = out.body[ref]
+      const {refs} = out
+      const props = properties.reduce((a, {name, ref}) => {
+        const {
+          type, //typeof string
+          className, // [[Class]] constructor, only non-primitives
+          value,  //only on primitives
+          text, //fallback for null/undefined
+          source, //functions
+          properties // only on non-primitives (objects, functions, arrays)
+        } = refs.find(({handle}) => handle === ref)
+
+        console.log(refs.find(({handle}) => handle === ref))
+
+        a.push({name, type, className, value, text, source, properties})
+
+        return a
+      }, [])
+
+      cb(null, props)
+    })
+  }
+
+
   const callstack = cb => backtrace((err, {frames, totalFrames}) => {
     if (err) return cb(err)
     if (totalFrames === 0) { return cb() }
@@ -150,7 +228,9 @@ export default () => {
 
     //populate scripts cache
     scripts(fetch)
-    
+
+
+
     function fetch () {
       cb(null, frames.map(({index, func, line, column}) => ({
         callFrameId: index,
@@ -213,6 +293,9 @@ export default () => {
     breakpoints,
     resume,
     pause,
+    scopes,
+    scope,
+    lookup,
     // evaluate,
     setBreakpoint,
     clearBreakpoint,

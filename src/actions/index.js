@@ -122,11 +122,16 @@ export function selectFrame(payload) {
     const frame = frames[frameIndex]
     const {location} = frame
     dispatch({type: SELECT_FRAME, payload: frame})
-    try {
     dispatch(selectFile(location))
-    } catch (e) {
-      console.error(e)
-    }
+
+    debug.scopes(frame, (err, scopes) => {
+      const {local} = scopes
+
+      debug.scope(local, (err, scope) => {
+        dispatch(receiveScope({area: 'local', scope}))
+      })
+      
+    })
 
   }
 }
