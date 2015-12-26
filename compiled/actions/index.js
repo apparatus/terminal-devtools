@@ -83,7 +83,9 @@ function selectFile(payload) {
     var _getState$files = _getState.files;
     var files = _getState$files === undefined ? [] : _getState$files;
 
+    if (!sources.length) return;
     var payloadIsObject = Object(payload) === payload;
+
     var script = payloadIsObject ? sources.find(function (s) {
       return +s.id === +payload.scriptId;
     }) : sources.find(function (s) {
@@ -97,7 +99,8 @@ function selectFile(payload) {
     dispatch({ type: SET_FILE_INDEX, payload: files.indexOf(name) });
 
     if (payloadIsObject) {
-      var lineNumber = payload.lineNumber;
+      var _payload$lineNumber = payload.lineNumber;
+      var lineNumber = _payload$lineNumber === undefined ? 0 : _payload$lineNumber;
 
       dispatch(setEditorLine(lineNumber));
     }
@@ -153,7 +156,7 @@ function toggleBreakpoint() {
       return;
     }
 
-    _.debug.setBreakpoint(editorLine, script.id, function (err, result) {
+    _.debug.setBreakpoint({ line: editorLine, file: file }, function (err, result) {
       if (err) {
         return error(err);
       }
@@ -232,12 +235,9 @@ function receiveSource(payload) {
 function pause() {
   return function (dispatch) {
     dispatch({ type: PAUSE });
-    _.debug.pause(function (err, _ref4) {
-      var source = _ref4.source;
-      var callstack = _ref4.bp.callFrames;
-
-      dispatch(receiveSource(source));
+    _.debug.pause(function (err, callstack) {
       dispatch(receiveCallstack(callstack));
+      dispatch(selectFile(callstack[0].location));
     });
   };
 }
@@ -254,12 +254,9 @@ function resume() {
 function stepOver() {
   return function (dispatch) {
     dispatch({ type: STEP_OVER });
-    _.debug.step(function (err, _ref5) {
-      var source = _ref5.source;
-      var callstack = _ref5.bp.callFrames;
-
-      dispatch(receiveSource(source));
+    _.debug.step(function (err, callstack) {
       dispatch(receiveCallstack(callstack));
+      dispatch(selectFile(callstack[0].location));
     });
   };
 }

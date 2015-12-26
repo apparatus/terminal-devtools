@@ -52,7 +52,9 @@ export function selectFile(payload) {
   
   return (dispatch, getState) => {
     const {sources, file, files = []} = getState()
+    if (!sources.length) return
     const payloadIsObject = Object(payload) === payload
+
     const script = payloadIsObject ?
       sources.find(s => +s.id === +payload.scriptId) :
       sources.find(s => s.name === payload) 
@@ -63,7 +65,7 @@ export function selectFile(payload) {
     dispatch({type: SET_FILE_INDEX, payload: files.indexOf(name)})
 
     if (payloadIsObject) {
-      const {lineNumber} = payload
+      const {lineNumber = 0} = payload
       dispatch(setEditorLine(lineNumber))
     }
 
@@ -102,7 +104,7 @@ export function toggleBreakpoint() {
       return
     }
 
-    debug.setBreakpoint(editorLine, script.id, (err, result) => {
+    debug.setBreakpoint({line: editorLine, file}, (err, result) => {
       if (err) { return error(err) }
       debug.breakpoints((err, {breakpoints}) => {
         if (err) { return error(err) }
@@ -173,9 +175,9 @@ export function receiveSource(payload) {
 export function pause() {
   return dispatch => {
     dispatch({type: PAUSE})
-    debug.pause((err, {source, bp: {callFrames: callstack}}) => {
-      dispatch(receiveSource(source))
+    debug.pause((err, callstack) => {
       dispatch(receiveCallstack(callstack))
+      dispatch(selectFile(callstack[0].location))
     })
   }
 }
@@ -192,9 +194,9 @@ export function resume() {
 export function stepOver() {
   return dispatch => {
     dispatch({type: STEP_OVER})
-    debug.step((err, {source, bp: {callFrames: callstack}}) => {
-      dispatch(receiveSource(source))
+    debug.step((err, callstack) => {
       dispatch(receiveCallstack(callstack))
+      dispatch(selectFile(callstack[0].location))
     })
   }
 }

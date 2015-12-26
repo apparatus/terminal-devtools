@@ -12,48 +12,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-'use strict';
-
-import DebuggerApi from 'debugger-api'
 import {Debugger} from 'yadc'
 
 export default () => {
-  const currentContext = {breakpoints: []}
-  let dbg
   let raw
   let seq = 0
-  let handler
-
-  const augmentStack = bp => {
-    let url
-    let script
-
-    bp.callFrames.forEach(({location}) => {
-      script = dbg.scripts.findScriptByID(location.scriptId)
-      if (script) {
-        url = dbg.scripts.findScriptByID(location.scriptId).url
-      }
-      location.url = url
-    })
-  }
-
-  const updateContext = (bp, cb) => {
-    dbg.getScriptSource({scriptId: bp.callFrames[0].location.scriptId}, (err, result) => {
-      currentContext.bp = bp
-      currentContext.source = result.scriptSource
-      currentContext.scriptId = bp.callFrames[0].location.scriptId
-      currentContext.lineNumber = bp.callFrames[0].location.lineNumber
-      currentContext.columnNumber = bp.callFrames[0].location.columnNumber
-      augmentStack(bp)
-      cb(err, currentContext)
-    })
-  }
-
-  const fetchContext = cb => dbg.once('Debugger.paused', bp => {
-    updateContext(bp, (err, context) => {
-      cb(err, context)
-    })
-  })
+  const scriptIdToUrl = new Map
 
   const scripts = cb => {
     raw.send({
@@ -64,123 +28,194 @@ export default () => {
         types: 4,
         includeSource: true
       } 
-    }, function (err, scripts) {
+    }, (err, scripts) => {
       if (err) return cb(err)
       if (!scripts.res) return cb(Error('no response'))
       const {res} = scripts
       if (!res.body) return cb(Error('no scripts'))
+      res.body.forEach(({id, name}) => scriptIdToUrl.set(id, name))
       cb(null, res.body)
     })
   }
 
-  const start = (debugPort = 5858, cb, contextCb) => {
-
-    raw = new Debugger({port: debugPort, host: 'localhost'})
-    raw.connect(() => {
-      dbg = new DebuggerApi({debugPort})
-      dbg.enable()
-      cb()
-      fetchContext(contextCb)
+  const backtrace = cb => {
+    raw.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'backtrace',
+      arguments: {
+        inlineRefs: true,
+        fromFrame: 0,
+        maxStringLength: 10000
+      }
+    }, (err, bt) => {
+      if (err) return cb(err)
+      if (!bt.res) return cb(Error('no response'))
+      const {res} = bt
+      if (!res.body) return cb(Error('no backtrace'))
+      cb(null, res.body)
     })
-
   }
-
-  const currentLine = () => {}
 
   const breakpoints = cb => {
     raw.send({
       seq: ++seq,
       type: 'request',
       command: 'listbreakpoints'
-    }, function (err, scripts) {
+    }, (err, breakpoints) => {
       if (err) return cb(err)
-      if (!scripts.res) return cb(Error('no response'))
-      const {res} = scripts
-      if (!res.body) return cb(Error('no scripts'))
+      if (!breakpoints.res) return cb(Error('no response'))
+      const {res} = breakpoints
+      if (!res.body) return cb(Error('no breakpoints'))
+      res.body.breakpoints = res.body.breakpoints.filter(bp => bp.type === 'scriptName')
       cb(null, res.body)
     })
   }
 
-  const setHandler = h => {
-    handler = h
-    dbg.on('Debugger.paused', breakPoint => {
-      updateContext(breakPoint, (err, context) => {
-        handler(err, context)
-      })
+  const setBreakpoint = ({line, file:target}, cb) => {
+    raw.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'setbreakpoint',
+      arguments: {
+        type: 'script', target, line
+      }
+    }, (err, breakpoint) => {
+      if (err) return cb(err)
+      if (!breakpoint.res) return cb(Error('no response'))
+      const {res} = breakpoint
+      if (!res.body) return cb(Error('unable to set breakpoint'))
+      cb(null, res.body)
     })
   }
 
-  const step = (cb=()=>{}) => dbg.stepOver(null, () => fetchContext(cb))
+  const clearBreakpoint = (breakpoint, cb) => {
+    raw.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'clearbreakpoint',
+      arguments: {
+        type: 'script',
+        breakpoint
+      }
+    }, (err, breakpoint) => {
+      if (err) return cb(err)
+      if (!breakpoint.res) return cb(Error('no response'))
+      const {res} = breakpoint
+      if (!res.body) return cb(Error('unable to unset breakpoint'))
+      cb(null, res.body)
+    })
+  }
 
-  const resume = (cb=()=>{}) => dbg.resume(null, err => {
-    if (err) { return cb(err) }
-    dbg.disable(null, cb)
-  })
+  const step = (cb=()=>{}) => {
+    raw.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'continue',
+      arguments: {
+        stepaction: 'next'
+      }
+    }, (err) => {
+      if (err) return cb(err)
+      callstack(cb)
+    })
+  }
 
-  const pause = (cb=()=>{}) => dbg.enable(null, err => {
-    if (err) { return cb(err) }
-    dbg.pause(null, cb)
-  })
+  const resume = (cb=()=>{}) => {
+    raw.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'continue',
+    }, (err) => {
+      if (err) return cb(err)
+      cb()
+    })
+  }
 
-  const source = (scriptId, cb) => dbg.getScriptSource({scriptId}, cb)
+  const pause = (cb=()=>{}) => {
+    raw.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'suspend',
+    }, (err) => {
+      if (err) return cb(err)
+      callstack(cb)
+    })
+  }
 
-  const evaluate = (expression, cb) => {
-    let value
-    let type = 'object'
-    const opts = {
-      expression, 
-      callFrameId: currentContext.bp.callFrames[0].callFrameId
-    }
+  const callstack = cb => backtrace((err, {frames, totalFrames}) => {
+    if (err) return cb(err)
+    if (totalFrames === 0) { return cb() }
+    if (scriptIdToUrl.size) { return fetch() }
 
-    dbg.evaluateOnCallFrame(opts, (err, result) => {
-      if (err) { return cb(err) }
-
-      if (result.result.type === 'object') {
-        const opts = {
-          expression: 'JSON.stringify(' + expression + ')', 
-          callFrameId: currentContext.bp.callFrames[0].callFrameId
+    //populate scripts cache
+    scripts(fetch)
+    
+    function fetch () {
+      cb(null, frames.map(({index, func, line, column}) => ({
+        callFrameId: index,
+        functionName: func.inferredName || func.name,
+        location: {
+          scriptId: func.scriptId,
+          lineNumber: line,
+          columnNumber: column,
+          url: scriptIdToUrl.get(func.scriptId)
         }
-        dbg.evaluateOnCallFrame(opts, (err, {result:{result}}) => {
-          if (err) { return cb(err) }
-          try {
-            value = JSON.parse(result.description)
-          }
-          catch (e) {
-            value = result.description
-            type = 'string'
-          }
-          cb(null, {type: type, value: value})
-        });
-      }
-      else {
-        cb(null, {type: result.type, value: result.description})
-      }
-    })
+      })))
+    }
+  })
+  
+  const start = (debugPort = 5858, cb) => {
+
+    raw = new Debugger({port: debugPort, host: 'localhost'})
+    raw.connect(() => callstack(cb))
+
   }
 
-  const setBreakpoint = (line, scriptId = currentContext.scriptId, cb) => {
-    const {url} = dbg.scripts.findScriptByID(scriptId)
-    dbg.setBreakpointByUrl({url, lineNumber: line}, cb)
-  }
+  // const evaluate = (expression, cb) => {
+  //   let value
+  //   let type = 'object'
+  //   const opts = {
+  //     expression, 
+  //     callFrameId: currentContext.bp.callFrames[0].callFrameId
+  //   }
 
-  const clearBreakpoint = (breakpointId, cb) => {
-    dbg.removeBreakpoint({breakpointId}, cb)
-  }
+  //   dbg.evaluateOnCallFrame(opts, (err, result) => {
+  //     if (err) { return cb(err) }
+
+  //     if (result.result.type === 'object') {
+  //       const opts = {
+  //         expression: 'JSON.stringify(' + expression + ')', 
+  //         callFrameId: currentContext.bp.callFrames[0].callFrameId
+  //       }
+  //       dbg.evaluateOnCallFrame(opts, (err, {result:{result}}) => {
+  //         if (err) { return cb(err) }
+  //         try {
+  //           value = JSON.parse(result.description)
+  //         }
+  //         catch (e) {
+  //           value = result.description
+  //           type = 'string'
+  //         }
+  //         cb(null, {type: type, value: value})
+  //       });
+  //     }
+  //     else {
+  //       cb(null, {type: result.type, value: result.description})
+  //     }
+  //   })
+  // }
 
 
   return {
     scripts,
     start,
-    setHandler,
-    currentLine,
     breakpoints,
     resume,
     pause,
-    source,
-    evaluate,
+    // evaluate,
     setBreakpoint,
     clearBreakpoint,
     step
   }
-}
- 
+} 

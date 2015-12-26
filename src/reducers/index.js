@@ -60,7 +60,7 @@ export function editorLine(state = 0, {type, payload}) {
   return payload
 }
 
-export function callstack(state = [], {type, payload}) {
+export function callstack(state = [], {type, payload = []}) {
   if (type !== RECEIVE_CALLSTACK) return state
   return payload.map(({
       functionName,
@@ -71,7 +71,7 @@ export function callstack(state = [], {type, payload}) {
   )
 }
 
-export function frames(state = [], {type, payload}) {
+export function frames(state = [], {type, payload = []}) {
   if (type !== RECEIVE_CALLSTACK) return state
   return payload
 }

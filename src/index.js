@@ -69,7 +69,7 @@ export default async (pid) => {
     sendFocus: true,
     dockBorders: true,
     autoPadding: true,
-    log: './log', //'/dev/ttys004',
+    log: __dirname + '/log', //'/dev/ttys002',
     ignoreLocked: ['C-c']
   })
 
@@ -78,28 +78,23 @@ export default async (pid) => {
 
   dispatch(receiveSource('Waiting for port debug port ' + debugPort))
   portly(debugPort).then(portPid => {
-    debug.start(debugPort, 
-      err => {
-        debug.scripts((err, scripts) => {
-          const firstNonInternal = scripts.find(s => s.name[0] === '/')
-          dispatch(receiveSource(
-            firstNonInternal ? firstNonInternal.source : scripts[0].source
-          ))
-          dispatch(receiveSources(scripts))
-          dispatch(selectFile(
-            firstNonInternal ? firstNonInternal.name : scripts[0].name
-          ))
-        })
-      },
-      (err, {source, bp: {callFrames: callstack}}) => {
-        dispatch(receiveSource(source))
-        dispatch(receiveCallstack(callstack))
-        dispatch(selectFile(callstack[0].location))
-        debug.breakpoints((err, {breakpoints}) => {
-          if (err) { return console.error(err) }
-          receiveBreakpoints(breakpoints)
-        })
+    debug.start(debugPort, (err, callstack) => {
+      dispatch(receiveCallstack(callstack))
+
+      debug.scripts((err, scripts) => {
+        dispatch(receiveSources(scripts))
+        if (callstack) {
+          return dispatch(selectFile(callstack[0].location))
+        }
+        const {name} = (scripts.find(s => s.name[0] === '/') || scripts[0])
+        dispatch(selectFile(name))
       })
+
+      debug.breakpoints((err, {breakpoints}) => {
+        if (err) { return console.error(err) }
+        receiveBreakpoints(breakpoints)
+      })
+    })
   })
 
 

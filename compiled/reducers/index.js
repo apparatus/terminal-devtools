@@ -109,7 +109,8 @@ function callstack() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
   var _ref8 = arguments[1];
   var type = _ref8.type;
-  var payload = _ref8.payload;
+  var _ref8$payload = _ref8.payload;
+  var payload = _ref8$payload === undefined ? [] : _ref8$payload;
 
   if (type !== _actions.RECEIVE_CALLSTACK) return state;
   return payload.map(function (_ref9) {
@@ -126,7 +127,8 @@ function frames() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
   var _ref10 = arguments[1];
   var type = _ref10.type;
-  var payload = _ref10.payload;
+  var _ref10$payload = _ref10.payload;
+  var payload = _ref10$payload === undefined ? [] : _ref10$payload;
 
   if (type !== _actions.RECEIVE_CALLSTACK) return state;
   return payload;

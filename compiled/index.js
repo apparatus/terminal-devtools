@@ -107,7 +107,7 @@ exports.default = (function () {
               sendFocus: true,
               dockBorders: true,
               autoPadding: true,
-              log: '/dev/ttys004',
+              log: __dirname + '/log', //'/dev/ttys002',
               ignoreLocked: ['C-c']
             });
 
@@ -116,22 +116,24 @@ exports.default = (function () {
 
             dispatch((0, _actions.receiveSource)('Waiting for port debug port ' + debugPort));
             (0, _portly2.default)(debugPort).then(function (portPid) {
-              debug.start(debugPort, function (err) {
-                debug.scripts(function (err, scripts) {
-                  var firstNonInternal = scripts.find(function (s) {
-                    return s.name[0] === '/';
-                  });
-                  dispatch((0, _actions.receiveSource)(firstNonInternal ? firstNonInternal.source : scripts[0].source));
-                  dispatch((0, _actions.receiveSources)(scripts));
-                  dispatch((0, _actions.selectFile)(firstNonInternal ? firstNonInternal.name : scripts[0].name));
-                });
-              }, function (err, _ref3) {
-                var source = _ref3.source;
-                var callstack = _ref3.bp.callFrames;
-
-                dispatch((0, _actions.receiveSource)(source));
+              debug.start(debugPort, function (err, callstack) {
                 dispatch((0, _actions.receiveCallstack)(callstack));
-                dispatch((0, _actions.selectFile)(callstack[0].location));
+
+                debug.scripts(function (err, scripts) {
+                  dispatch((0, _actions.receiveSources)(scripts));
+                  if (callstack) {
+                    return dispatch((0, _actions.selectFile)(callstack[0].location));
+                  }
+
+                  var _ref3 = scripts.find(function (s) {
+                    return s.name[0] === '/';
+                  }) || scripts[0];
+
+                  var name = _ref3.name;
+
+                  dispatch((0, _actions.selectFile)(name));
+                });
+
                 debug.breakpoints(function (err, _ref4) {
                   var breakpoints = _ref4.breakpoints;
 
