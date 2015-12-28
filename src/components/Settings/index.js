@@ -84,9 +84,30 @@ const Settings = ({refresh, layout, focused, top, left, width, height, align, pa
             refresh()
           }}
           height={1} 
-          width={28} 
+          width={22} 
           checked={layout.name === 'normal'} 
           text='Normal'   
+          class={{...bg}}
+        />
+        <radiobutton
+          onKeypress={(ch, {name}) => {
+            if (name === 'left') {
+              cmp.refs.form.focusPrevious()
+            }
+            if (name === 'right') {
+              cmp.refs.form.focusNext()
+            }
+            hideWhen(dispatch)(ch)
+          }} 
+          onCheck={() => {
+            dispatch(setDimensions(layouts.compact))
+            refresh()
+          }}
+          left={22} 
+          height={1} 
+          width={22} 
+          checked={layout.name === 'compact'} 
+          text='Compact' 
           class={{...bg}}
         />
         <radiobutton
@@ -97,14 +118,14 @@ const Settings = ({refresh, layout, focused, top, left, width, height, align, pa
             hideWhen(dispatch)(ch)
           }} 
           onCheck={() => {
-            dispatch(setDimensions(layouts.compact))
+            dispatch(setDimensions(layouts.minimal))
             refresh()
           }}
-          left={28} 
+          left={44} 
           height={1} 
-          width={28} 
-          checked={layout.name === 'compact'} 
-          text='Compact' 
+          width={22} 
+          checked={layout.name === 'minimal'} 
+          text='Minimal' 
           class={{...bg}}
         />
       </radioset>

@@ -12,20 +12,20 @@ var element = exports.element = {
 };
 
 //ordering specifies order of panels
-var ordering = exports.ordering = ['navigator', 'editor', 'callstack', 'breakpoints', 'scope', 'console'];
+var ordering = exports.ordering = ['editor', 'callstack', 'breakpoints'];
 
 var navigator = exports.navigator = {
   top: 0,
   left: 0,
-  width: '18%',
-  height: '75%+1'
+  width: 0,
+  height: 0
 };
 
 var editor = exports.editor = {
   top: 0,
-  left: '16%',
-  width: '60%',
-  height: '75%+1'
+  left: 0,
+  width: '67.5%',
+  height: '100%'
 };
 
 var editorstatus = exports.editorstatus = {
@@ -39,29 +39,29 @@ var editorstatus = exports.editorstatus = {
 
 var callstack = exports.callstack = {
   top: 0,
-  left: '75%-1',
-  width: '25%+1',
-  height: '37%'
+  left: '67.5%-1',
+  width: '32.5%+1',
+  height: '50%+1'
 };
 
 var breakpoints = exports.breakpoints = {
-  top: '36%-1',
-  left: '75%-1',
-  width: '25%+1',
-  height: '15%+4'
+  top: '50%',
+  left: '67.5%-1',
+  width: '32.5%+1',
+  height: '50%'
 };
 
 var scope = exports.scope = {
-  top: '53%',
-  left: '75%-1',
-  width: '25%+1',
-  height: '20%+2'
+  top: 0,
+  left: 0,
+  width: 0,
+  height: 0
 };
 
 var console = exports.console = {
-  top: '72.5%+1',
+  top: 0,
   left: 0,
-  width: '100%-1',
-  height: '25%'
+  width: 0,
+  height: 0
 };
 //# sourceMappingURL=sources.js.map

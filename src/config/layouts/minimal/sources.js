@@ -8,26 +8,23 @@ export const element = {
 
 //ordering specifies order of panels
 export const ordering = [
-  'navigator',
   'editor',
   'callstack',
-  'breakpoints',
-  'scope',
-  'console'
+  'breakpoints'
 ]
 
 export const navigator = {
   top: 0,
   left: 0,
-  width: '18%',
-  height: '75%+1'
+  width: 0,
+  height: 0,
 }
 
 export const editor = {
   top: 0,
-  left: '16%',
-  width: '60%',
-  height: '75%+1'
+  left: 0,
+  width: '67.5%',
+  height: '100%'
 }
 
 export const editorstatus = {
@@ -41,28 +38,28 @@ export const editorstatus = {
 
 export const callstack = {
   top: 0,
-  left: '75%-1',
-  width: '25%+1',
-  height: '37%'
+  left: '67.5%-1',
+  width: '32.5%+1',
+  height: '50%+1'
 }
 
 export const breakpoints = {
-  top: '36%-1',
-  left: '75%-1',
-  width: '25%+1',
-  height: '15%+4'
+  top: '50%',
+  left: '67.5%-1',
+  width: '32.5%+1',
+  height: '50%'
 }
 
 export const scope = {
-  top: '53%',
-  left: '75%-1',
-  width: '25%+1',
-  height: '20%+2'
+  top: 0,
+  left: 0,
+  width: 0,
+  height: 0
 }
 
 export const console = {
-  top: '72.5%+1',
+  top: 0,
   left: 0,
-  width: '100%-1',
-  height: '25%'
+  width: 0,
+  height: 0
 }

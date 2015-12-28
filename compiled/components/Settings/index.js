@@ -119,7 +119,7 @@ var Settings = function Settings(_ref, cmp) {
             refresh();
           },
           height: 1,
-          width: 28,
+          width: 22,
           checked: layout.name === 'normal',
           text: 'Normal',
           'class': _extends({}, bg)
@@ -131,17 +131,40 @@ var Settings = function Settings(_ref, cmp) {
             if (name === 'left') {
               cmp.refs.form.focusPrevious();
             }
+            if (name === 'right') {
+              cmp.refs.form.focusNext();
+            }
             hideWhen(dispatch)(ch);
           },
           onCheck: function onCheck() {
             dispatch((0, _actions.setDimensions)(_layouts2.default.compact));
             refresh();
           },
-          left: 28,
+          left: 22,
           height: 1,
-          width: 28,
+          width: 22,
           checked: layout.name === 'compact',
           text: 'Compact',
+          'class': _extends({}, bg)
+        }),
+        _react2.default.createElement('radiobutton', {
+          onKeypress: function onKeypress(ch, _ref4) {
+            var name = _ref4.name;
+
+            if (name === 'left') {
+              cmp.refs.form.focusPrevious();
+            }
+            hideWhen(dispatch)(ch);
+          },
+          onCheck: function onCheck() {
+            dispatch((0, _actions.setDimensions)(_layouts2.default.minimal));
+            refresh();
+          },
+          left: 44,
+          height: 1,
+          width: 22,
+          checked: layout.name === 'minimal',
+          text: 'Minimal',
           'class': _extends({}, bg)
         })
       )

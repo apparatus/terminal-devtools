@@ -1,7 +1,7 @@
 import React from 'react'
 import * as style from '../../style'
 
-const Console = ({top, left, width, height, focused, actions: {focusPanel}}) => (
+const Console = ({top, left, width, height, focused, actions}) => (
   <textarea 
     label='Console'
     focused={focused}
@@ -12,7 +12,7 @@ const Console = ({top, left, width, height, focused, actions: {focusPanel}}) => 
     height={height}
     mouse={true}
     value='> '
-    onFocus={() => focused || focusPanel('console')}
+    onFocus={() => actions && (focused || actions.focusPanel('console'))}
   />
 )
 
