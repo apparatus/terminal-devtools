@@ -33,6 +33,10 @@ var _create = require('./store/create');
 
 var _create2 = _interopRequireDefault(_create);
 
+var _screen = require('./screen');
+
+var _screen2 = _interopRequireDefault(_screen);
+
 var _config = require('./config');
 
 var _config2 = _interopRequireDefault(_config);
@@ -60,32 +64,13 @@ var dispatch = store.dispatch;
 
 var tabs = ['Sources', 'Networking', 'Profiling', 'Console'];
 
-var Devtools = function Devtools(_ref) {
-  var layout = _ref.layout;
-  var tab = _ref.tab;
-
-  return _react2.default.createElement(
-    'element',
-    null,
-    _react2.default.createElement(_components.Tabs, _extends({ dispatch: dispatch, items: tabs }, layout.tabs)),
-    tab === 'sources' && _react2.default.createElement(_containers.Sources, null),
-    tab === 'console' && _react2.default.createElement(_containers.Console, null)
-  );
-};
-
-Devtools = (0, _reactRedux.connect)(function (_ref2) {
-  var layout = _ref2.layout;
-  var tab = _ref2.tab;
-  return { layout: layout, tab: tab };
-})(Devtools);
-
 var debug = exports.debug = (0, _debug2.default)();
 
 exports.default = (function () {
   var _this = this;
 
   var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(pid) {
-    var debugPort, screen;
+    var debugPort, screen, output, refresh, Devtools, rendered;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -100,22 +85,10 @@ exports.default = (function () {
               }
             }
 
-            screen = _blessed2.default.screen({
-              autoPadding: true,
-              smartCSR: true,
-              title: 'Terminal Devtools',
-              sendFocus: true,
-              dockBorders: true,
-              autoPadding: true,
-              log: './log',
-              // log: '/dev/ttys001',
-              ignoreLocked: ['C-c']
-            });
-
-            console.log = screen.log.bind(screen);
-            console.error = screen.log.bind(screen, 'ERROR: ');
+            screen = (0, _screen2.default)(store);
 
             dispatch((0, _actions.receiveSource)('Waiting for port debug port ' + debugPort));
+
             (0, _portly2.default)(debugPort).then(function (portPid) {
               debug.start(debugPort, function (err, callstack) {
                 dispatch((0, _actions.receiveCallstack)(callstack));
@@ -126,17 +99,17 @@ exports.default = (function () {
                     return dispatch((0, _actions.selectFrame)(0));
                   }
 
-                  var _ref3 = scripts.find(function (s) {
+                  var _ref = scripts.find(function (s) {
                     return s.name[0] === '/';
                   }) || scripts[0];
 
-                  var name = _ref3.name;
+                  var name = _ref.name;
 
                   dispatch((0, _actions.selectFile)(name));
                 });
 
-                debug.breakpoints(function (err, _ref4) {
-                  var breakpoints = _ref4.breakpoints;
+                debug.breakpoints(function (err, _ref2) {
+                  var breakpoints = _ref2.breakpoints;
 
                   if (err) {
                     return console.error(err);
@@ -146,70 +119,48 @@ exports.default = (function () {
               });
             });
 
-            screen.key(['escape', 'q', 'C-c'], function (ch, key) {
-              return process.exit(0);
-            });
+            output = function output(screen) {
+              return (0, _reactBlessed.render)(_react2.default.createElement(
+                _reactRedux.Provider,
+                { store: store },
+                _react2.default.createElement(Devtools, null)
+              ), screen);
+            };
 
-            screen.key(['C-n'], function () {
-              return dispatch((0, _actions.focusPanel)('navigator'));
-            });
-            screen.key(['C-t'], function () {
-              return dispatch((0, _actions.focusPanel)('editor'));
-            });
-            screen.key(['C-s'], function () {
-              return dispatch((0, _actions.focusPanel)('callstack'));
-            });
-            screen.key(['C-p'], function () {
-              return dispatch((0, _actions.focusPanel)('breakpoints'));
-            });
-            screen.key(['C-o'], function () {
-              return dispatch((0, _actions.focusPanel)('scope'));
-            });
-            screen.key(['C-k'], function () {
-              return dispatch((0, _actions.focusPanel)('console'));
-            });
+            refresh = function refresh() {
+              var tmp = (0, _screen2.default)(store);
+              output(tmp);
+              if (!screen.destroyed) screen.destroy();
+              screen = tmp;
+            };
 
-            screen.key(['F8', 'C-\\', 'r'], function () {
-              return dispatch((0, _actions.resume)());
-            });
-            screen.key(['S-F8', 'C-S-\\', 'p'], function () {
-              return dispatch((0, _actions.pause)());
-            });
-            screen.key(['F10', 'C-\'', 'n'], function () {
-              return dispatch((0, _actions.stepOver)());
-            });
+            Devtools = function Devtools(_ref3) {
+              var layout = _ref3.layout;
+              var tab = _ref3.tab;
+              var panel = _ref3.panel;
 
-            screen.key(['tab'], function () {
-              var _store$getState = store.getState();
+              return _react2.default.createElement(
+                'element',
+                null,
+                _react2.default.createElement(_components.Tabs, _extends({ dispatch: dispatch, items: tabs }, layout.tabs)),
+                tab === 'sources' && _react2.default.createElement(_containers.Sources, null),
+                tab === 'console' && _react2.default.createElement(_containers.Console, null),
+                _react2.default.createElement(_components.Cog, _extends({}, layout.cog, { active: panel === 'settings', dispatch: dispatch })),
+                panel === 'settings' && _react2.default.createElement(_components.Settings, _extends({ refresh: refresh, dispatch: dispatch, layout: layout, focused: panel === 'settings' }, layout.settings))
+              );
+            };
 
-              var panel = _store$getState.panel;
-              var tab = _store$getState.tab;
-              var ordering = _config2.default.layout[tab].ordering;
+            Devtools = (0, _reactRedux.connect)(function (_ref4) {
+              var layout = _ref4.layout;
+              var tab = _ref4.tab;
+              var panel = _ref4.panel;
+              return { layout: layout, tab: tab, panel: panel };
+            })(Devtools);
 
-              var ix = ordering.indexOf(panel) + 1;
-              if (ix >= ordering.length) ix = 0;
-              dispatch((0, _actions.focusPanel)(ordering[ix]));
-            });
+            rendered = output(screen);
+            return _context.abrupt('return', rendered);
 
-            screen.key(['S-tab'], function () {
-              var _store$getState2 = store.getState();
-
-              var panel = _store$getState2.panel;
-              var tab = _store$getState2.tab;
-              var ordering = _config2.default.layout[tab].ordering;
-
-              var ix = ordering.indexOf(panel) - 1;
-              if (ix < 0) ix = ordering.length - 1;
-              dispatch((0, _actions.focusPanel)(ordering[ix]));
-            });
-
-            return _context.abrupt('return', (0, _reactBlessed.render)(_react2.default.createElement(
-              _reactRedux.Provider,
-              { store: store },
-              _react2.default.createElement(Devtools, null)
-            ), screen));
-
-          case 20:
+          case 11:
           case 'end':
             return _context.stop();
         }

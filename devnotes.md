@@ -1,3 +1,20 @@
+## Building
+
+### Single build
+
+```sh
+npm run build
+```
+
+### Continuous build
+
+```sh
+npm run watch
+```
+
+This watches the files and rebuilds, but we still have to restart the tui.
+
+
 ## Logging
 
 console.log and console.error calls go to a log file
@@ -66,6 +83,17 @@ Easy way to format the debugger request/response JSON output, copy it then:
 $ npm i -g JSONStream
 $ pbpaste | JSONStream | pbcopy
 ```
+
+## Design principles
+
+* **Every** component is pure - no components handle state, ever (e.g. no `setState`)
+  * Each component is a function not a class, life cycle methods can added using [`react-functional`](http://npmjs.com/react-functional) if needed
+* Redux is responsible for a central store
+* container components hook up redux state to child dumb components
+  * container components currently map to tab screens (e.g. the `Sources` container) is composed of all the panels in the sources tab, and likewise passes down relevant state and action methods to the components
+* dumb components (e.g. non-containers) should not know anything about the app, they take props output JSX for rendering. 
+* If it can't be done declaratively, don't fall back to using `refs` - instead patch and PR against react-blessed so that it is declarative (e.g. <https://github.com/Yomguithereal/react-blessed/pull/40>, <https://github.com/Yomguithereal/react-blessed/pull/36>, <https://github.com/Yomguithereal/react-blessed/pull/38>, <https://github.com/Yomguithereal/react-blessed/pull/37>, <https://github.com/Yomguithereal/react-blessed/pull/35)
+* Avoid `refs` if at all possible, only use them for edge cases to control ui behaviour (e.g supporting a keypress on an element that calls a method on another element)
 
 ## `lib/debug`
 

@@ -25,7 +25,7 @@
     "portly": "^1.0.0",
     "react": "^0.14.3",
     "react-blessed": "davidmarkclements/react-blessed#patches",
-    "react-functional": "^1.1.0",
+    "react-functional": "^1.2.0",
     "react-redux": "^4.0.1",
     "redux": "^3.0.5",
     "redux-logger": "^2.3.1",

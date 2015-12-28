@@ -7,13 +7,12 @@ import {render} from 'react-blessed'
 import functional from 'react-functional'
 import portly from 'portly'
 import createStore from './store/create'
+import createScreen from './screen'
 import config from './config'
 import { Console, Sources } from './containers'
-import { Tabs } from './components'
+import { Tabs, Cog, Settings } from './components'
 import createDebugger from './lib/debug'
 import {
-  focusTab,
-  focusPanel,
   receiveCallstack,
   receiveBreakpoints,
   receiveScope,
@@ -38,18 +37,6 @@ const store = createStore({
 const {dispatch} = store
 const tabs = ['Sources', 'Networking', 'Profiling', 'Console']
 
-let Devtools = ({layout, tab}) => {
-  return (
-    <element>
-      <Tabs dispatch={dispatch} items={tabs} {...layout.tabs}/>
-      {tab === 'sources' && <Sources/>}
-      {tab === 'console' && <Console/>}
-    </element>
-  )
-}
-
-Devtools = connect(({layout, tab}) => ({layout, tab}))(Devtools)
-
 export const debug = createDebugger()
 
 export default async (pid) => {
@@ -63,22 +50,10 @@ export default async (pid) => {
     }
   }
 
-  const screen = blessed.screen({
-    autoPadding: true,
-    smartCSR: true,
-    title: 'Terminal Devtools',
-    sendFocus: true,
-    dockBorders: true,
-    autoPadding: true,
-    log: './log',
-    // log: '/dev/ttys001',
-    ignoreLocked: ['C-c']
-  })
-
-  console.log = screen.log.bind(screen)
-  console.error = screen.log.bind(screen, 'ERROR: ')
+  let screen = createScreen(store)
 
   dispatch(receiveSource('Waiting for port debug port ' + debugPort))
+  
   portly(debugPort).then(portPid => {
     debug.start(debugPort, (err, callstack) => {
       dispatch(receiveCallstack(callstack))
@@ -99,43 +74,35 @@ export default async (pid) => {
     })
   })
 
+  const output = (screen) => render(<Provider store={store}><Devtools/></Provider>, screen)
 
-  screen.key(['escape', 'q', 'C-c'], function(ch, key) {
-    return process.exit(0);
-  })
+  const refresh = () => {
+    const tmp = createScreen(store)
+    output(tmp)
+    if (!screen.destroyed) screen.destroy()
+    screen = tmp  
+  }
+
+  let Devtools = ({layout, tab, panel}) => {
+    return (
+      <element>
+        <Tabs dispatch={dispatch} items={tabs} {...layout.tabs}/>
+        {tab === 'sources' && <Sources/>}
+        {tab === 'console' && <Console/>}
+        <Cog {...layout.cog} active={panel === 'settings'} dispatch={dispatch}/>
+        {
+          panel === 'settings' && 
+            <Settings refresh={refresh} dispatch={dispatch} layout={layout} focused={panel === 'settings'} {...layout.settings} />
+        }
+      </element>
+    )
+  }
+
+  Devtools = connect(({layout, tab, panel}) => ({layout, tab, panel}))(Devtools)
 
 
-  screen.key(['C-n'], () => dispatch(focusPanel('navigator')))
-  screen.key(['C-t'], () => dispatch(focusPanel('editor')))
-  screen.key(['C-s'], () => dispatch(focusPanel('callstack')))
-  screen.key(['C-p'], () => dispatch(focusPanel('breakpoints')))
-  screen.key(['C-o'], () => dispatch(focusPanel('scope')))
-  screen.key(['C-k'], () => dispatch(focusPanel('console')))
+  const rendered = output(screen)
 
-  screen.key(['F8', 'C-\\', 'r'], () => dispatch(resume()))
-  screen.key(['S-F8', 'C-S-\\', 'p'], () => dispatch(pause()))
-  screen.key(['F10', 'C-\'', 'n'], () => dispatch(stepOver()))
-
-  screen.key(['tab'], () => {
-    const {panel, tab} = store.getState()
-    const {ordering} = config.layout[tab]
-    let ix = ordering.indexOf(panel) + 1
-    if (ix >= ordering.length) ix = 0
-    dispatch(focusPanel(ordering[ix]))
-  })
-
-  screen.key(['S-tab'], () => {
-    const {panel, tab} = store.getState()
-    const {ordering} = config.layout[tab]
-    let ix = ordering.indexOf(panel) - 1
-    if (ix < 0) ix = ordering.length -1
-    dispatch(focusPanel(ordering[ix]))
-  })
-
-  return render(
-    <Provider store={store}>
-      <Devtools/>
-    </Provider>
-  , screen)
+  return rendered
 
 }

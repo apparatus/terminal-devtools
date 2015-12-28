@@ -26,6 +26,7 @@ devtools <pid>
 
 ## Navigating
 
+* Press the **?** key in terminal devtools to see help and settings.
 * use tab key to move forward between panels, use shift+tab to move backward
 * also
   * ctrl+n - **n**avigator
