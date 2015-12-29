@@ -74,7 +74,7 @@ function focusPanel(payload) {
   };
 }
 function selectFile(payload) {
-
+  console.trace('allo there');
   return function (dispatch, getState) {
     var _getState = getState();
 
