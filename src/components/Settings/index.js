@@ -35,10 +35,22 @@ const help = `
 
 const hideWhen = dispatch => (ch, key) => {
   if (ch === '?') { dispatch(focusPanel('editor')) }
-  console.log(ch, key)  
 }
 
-const Settings = ({refresh, layout, focused, top, left, width, height, align, padding, dispatch}, cmp) => (
+const changeLayout = (to, dispatch) => () => {
+  //hack - react-blessed and/or blessed currently 
+  //doesn't do well with multiple rendering changes 
+  //in the same event loop
+  setImmediate(() => {
+    dispatch(focusPanel('editor'))
+    setImmediate(() => {
+      dispatch(setDimensions(layouts[to]))
+      dispatch(focusPanel('settings'))
+    })
+  })  
+}
+
+const Settings = ({layout, focused, top, left, width, height, align, padding, dispatch}, cmp) => (
   <box
     keys={true}
     mouse={true}
@@ -79,10 +91,7 @@ const Settings = ({refresh, layout, focused, top, left, width, height, align, pa
             }
             hideWhen(dispatch)(ch)
           }} 
-          onCheck={() => {
-            dispatch(setDimensions(layouts.normal))
-            refresh()
-          }}
+          onCheck={changeLayout('normal', dispatch)}
           height={1} 
           width={22} 
           checked={layout.name === 'normal'} 
@@ -99,10 +108,7 @@ const Settings = ({refresh, layout, focused, top, left, width, height, align, pa
             }
             hideWhen(dispatch)(ch)
           }} 
-          onCheck={() => {
-            dispatch(setDimensions(layouts.compact))
-            refresh()
-          }}
+          onCheck={changeLayout('compact', dispatch)}
           left={22} 
           height={1} 
           width={22} 
@@ -117,10 +123,7 @@ const Settings = ({refresh, layout, focused, top, left, width, height, align, pa
             }
             hideWhen(dispatch)(ch)
           }} 
-          onCheck={() => {
-            dispatch(setDimensions(layouts.minimal))
-            refresh()
-          }}
+          onCheck={changeLayout('minimal', dispatch)}
           left={44} 
           height={1} 
           width={22} 

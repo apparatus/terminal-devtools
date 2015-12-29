@@ -57,9 +57,7 @@ exports.default = function (store) {
     return dispatch((0, _actions.focusPanel)('console'));
   });
   screen.key(['?'], function () {
-    var k
-    try { k = dispatch((0, _actions.focusPanel)('settings')); } catch (e) { }
-    return k
+    return dispatch((0, _actions.focusPanel)('settings'));
   });
 
   screen.key(['F8', 'C-\\', 'r'], function () {

@@ -53,7 +53,7 @@ export default async (pid) => {
   let screen = createScreen(store)
 
   dispatch(receiveSource('Waiting for port debug port ' + debugPort))
-  
+
   portly(debugPort).then(portPid => {
     debug.start(debugPort, (err, callstack) => {
       dispatch(receiveCallstack(callstack))
@@ -74,15 +74,6 @@ export default async (pid) => {
     })
   })
 
-  const output = (screen) => render(<Provider store={store}><Devtools/></Provider>, screen)
-
-  const refresh = () => {
-    const tmp = createScreen(store)
-    output(tmp)
-    if (!screen.destroyed) screen.destroy()
-    screen = tmp  
-  }
-
   let Devtools = ({layout, tab, panel}) => {
     return (
       <element>
@@ -92,7 +83,7 @@ export default async (pid) => {
         <Cog {...layout.cog} active={panel === 'settings'} dispatch={dispatch}/>
         {
           panel === 'settings' && 
-            <Settings refresh={refresh} dispatch={dispatch} layout={layout} focused={panel === 'settings'} {...layout.settings} />
+            <Settings dispatch={dispatch} layout={layout} focused={panel === 'settings'} {...layout.settings} />
         }
       </element>
     )
@@ -100,9 +91,5 @@ export default async (pid) => {
 
   Devtools = connect(({layout, tab, panel}) => ({layout, tab, panel}))(Devtools)
 
-
-  const rendered = output(screen)
-
-  return rendered
-
+  return render(<Provider store={store}><Devtools/></Provider>, screen)
 }

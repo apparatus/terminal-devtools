@@ -70,7 +70,7 @@ exports.default = (function () {
   var _this = this;
 
   var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(pid) {
-    var debugPort, screen, output, refresh, Devtools, rendered;
+    var debugPort, screen, Devtools;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -119,21 +119,6 @@ exports.default = (function () {
               });
             });
 
-            output = function output(screen) {
-              return (0, _reactBlessed.render)(_react2.default.createElement(
-                _reactRedux.Provider,
-                { store: store },
-                _react2.default.createElement(Devtools, null)
-              ), screen);
-            };
-
-            refresh = function refresh() {
-              var tmp = (0, _screen2.default)(store);
-              output(tmp);
-              if (!screen.destroyed) screen.destroy();
-              screen = tmp;
-            };
-
             Devtools = function Devtools(_ref3) {
               var layout = _ref3.layout;
               var tab = _ref3.tab;
@@ -146,7 +131,7 @@ exports.default = (function () {
                 tab === 'sources' && _react2.default.createElement(_containers.Sources, null),
                 tab === 'console' && _react2.default.createElement(_containers.Console, null),
                 _react2.default.createElement(_components.Cog, _extends({}, layout.cog, { active: panel === 'settings', dispatch: dispatch })),
-                panel === 'settings' && _react2.default.createElement(_components.Settings, _extends({ refresh: refresh, dispatch: dispatch, layout: layout, focused: panel === 'settings' }, layout.settings))
+                panel === 'settings' && _react2.default.createElement(_components.Settings, _extends({ dispatch: dispatch, layout: layout, focused: panel === 'settings' }, layout.settings))
               );
             };
 
@@ -157,10 +142,13 @@ exports.default = (function () {
               return { layout: layout, tab: tab, panel: panel };
             })(Devtools);
 
-            rendered = output(screen);
-            return _context.abrupt('return', rendered);
+            return _context.abrupt('return', (0, _reactBlessed.render)(_react2.default.createElement(
+              _reactRedux.Provider,
+              { store: store },
+              _react2.default.createElement(Devtools, null)
+            ), screen));
 
-          case 11:
+          case 8:
           case 'end':
             return _context.stop();
         }

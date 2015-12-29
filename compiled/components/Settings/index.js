@@ -49,12 +49,25 @@ var hideWhen = function hideWhen(dispatch) {
     if (ch === '?') {
       dispatch((0, _actions.focusPanel)('editor'));
     }
-    console.log(ch, key);
+  };
+};
+
+var changeLayout = function changeLayout(to, dispatch) {
+  return function () {
+    //hack - react-blessed and/or blessed currently
+    //doesn't do well with multiple rendering changes
+    //in the same event loop
+    setImmediate(function () {
+      dispatch((0, _actions.focusPanel)('editor'));
+      setImmediate(function () {
+        dispatch((0, _actions.setDimensions)(_layouts2.default[to]));
+        dispatch((0, _actions.focusPanel)('settings'));
+      });
+    });
   };
 };
 
 var Settings = function Settings(_ref, cmp) {
-  var refresh = _ref.refresh;
   var layout = _ref.layout;
   var focused = _ref.focused;
   var top = _ref.top;
@@ -114,10 +127,7 @@ var Settings = function Settings(_ref, cmp) {
             }
             hideWhen(dispatch)(ch);
           },
-          onCheck: function onCheck() {
-            dispatch((0, _actions.setDimensions)(_layouts2.default.normal));
-            refresh();
-          },
+          onCheck: changeLayout('normal', dispatch),
           height: 1,
           width: 22,
           checked: layout.name === 'normal',
@@ -136,10 +146,7 @@ var Settings = function Settings(_ref, cmp) {
             }
             hideWhen(dispatch)(ch);
           },
-          onCheck: function onCheck() {
-            dispatch((0, _actions.setDimensions)(_layouts2.default.compact));
-            refresh();
-          },
+          onCheck: changeLayout('compact', dispatch),
           left: 22,
           height: 1,
           width: 22,
@@ -156,10 +163,7 @@ var Settings = function Settings(_ref, cmp) {
             }
             hideWhen(dispatch)(ch);
           },
-          onCheck: function onCheck() {
-            dispatch((0, _actions.setDimensions)(_layouts2.default.minimal));
-            refresh();
-          },
+          onCheck: changeLayout('minimal', dispatch),
           left: 44,
           height: 1,
           width: 22,

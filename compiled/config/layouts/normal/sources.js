@@ -34,7 +34,12 @@ var editorstatus = exports.editorstatus = {
   width: '21%',
   height: 3,
   align: 'right',
-  padding: { right: 1 }
+  padding: {
+    left: 0,
+    right: 1,
+    top: 0,
+    bottom: 0
+  }
 };
 
 var callstack = exports.callstack = {
