@@ -134,9 +134,9 @@ exports.default = (function () {
                 _react2.default.createElement(_components.Tabs, _extends({ dispatch: dispatch, items: tabs }, layout.tabs)),
                 tab === 'sources' && _react2.default.createElement(_containers.Sources, null),
                 tab === 'console' && _react2.default.createElement(_containers.Console, null),
-                _react2.default.createElement(_components.Cog, _extends({}, layout.cog, { active: panel === 'settings', dispatch: dispatch })),
-                panel === 'settings' && _react2.default.createElement(_components.Settings, _extends({ dispatch: dispatch, layout: layout, focused: panel === 'settings' }, layout.settings)),
-                _react2.default.createElement(_components.Controls, layout.controls)
+                _react2.default.createElement(_containers.Cog, _extends({}, layout.cog, { active: panel === 'settings' })),
+                panel === 'settings' && _react2.default.createElement(_containers.Settings, { focused: panel === 'settings' }),
+                _react2.default.createElement(_containers.Controls, layout.controls)
               );
             };
 

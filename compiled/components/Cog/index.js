@@ -12,8 +12,6 @@ var _style = require('../../style');
 
 var style = _interopRequireWildcard(_style);
 
-var _actions = require('../../actions');
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -27,7 +25,7 @@ var Cog = function Cog(_ref) {
   var height = _ref.height;
   var align = _ref.align;
   var padding = _ref.padding;
-  var dispatch = _ref.dispatch;
+  var onClick = _ref.onClick;
   return _react2.default.createElement(
     'button',
     {
@@ -38,9 +36,7 @@ var Cog = function Cog(_ref) {
       height: height,
       align: align,
       padding: padding,
-      onClick: function onClick() {
-        return dispatch((0, _actions.focusPanel)('settings'));
-      }
+      onClick: onClick
     },
     active ? '⚒' : '⚙'
   );

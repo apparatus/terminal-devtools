@@ -1,8 +1,7 @@
 import React from 'react'
 import * as style from '../../style'
-import {focusPanel} from '../../actions'
 
-const Cog = ({active, file, top, left, width, height, align, padding, dispatch}) => (
+const Cog = ({active, file, top, left, width, height, align, padding, onClick}) => (
   <button
     mouse={true}
     left={left}
@@ -11,9 +10,8 @@ const Cog = ({active, file, top, left, width, height, align, padding, dispatch})
     height={height}
     align={align}
     padding={padding}
-    onClick={() => dispatch(focusPanel('settings'))}
+    onClick={onClick}
   >{active ? '⚒' : '⚙'}</button>
 )
-
 
 export default Cog

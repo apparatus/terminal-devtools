@@ -12,8 +12,8 @@ import portly from 'portly'
 import createStore from './store/create'
 import createScreen from './screen'
 import config from './config'
-import { Console, Sources } from './containers'
-import { Tabs, Cog, Settings, Controls } from './components'
+import {Console, Sources, Controls, Cog, Settings} from './containers'
+import { Tabs } from './components'
 import createDebugger from './lib/debug'
 import {
   receiveCallstack,
@@ -83,10 +83,10 @@ export default async (pid) => {
         <Tabs dispatch={dispatch} items={tabs} {...layout.tabs}/>
         {tab === 'sources' && <Sources/>}
         {tab === 'console' && <Console/>}
-        <Cog {...layout.cog} active={panel === 'settings'} dispatch={dispatch}/>
+        <Cog {...layout.cog} active={panel === 'settings'}/>
         {
           panel === 'settings' && 
-            <Settings dispatch={dispatch} layout={layout} focused={panel === 'settings'} {...layout.settings} />
+            <Settings focused={panel === 'settings'}/>
         }
         <Controls {...layout.controls}/>
       </element>

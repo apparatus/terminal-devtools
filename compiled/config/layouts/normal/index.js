@@ -39,7 +39,7 @@ var settings = exports.settings = {
 };
 
 var controls = exports.controls = {
-  left: '100%-20',
+  left: '100%-24',
   width: 10,
   height: 1,
   top: 0

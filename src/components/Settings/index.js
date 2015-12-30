@@ -1,7 +1,5 @@
 import React from 'react'
 import * as style from '../../style'
-import {focusPanel, setDimensions} from '../../actions'
-import layouts from '../../config/layouts'
 import functional from 'react-functional'
 
 const bg = {
@@ -33,25 +31,10 @@ const help = `
     {bold}b{/bold} - toggle {bold}b{/bold}reakpoint                {bold}ctrl+o{/bold} - sc{bold}o{/bold}pe
 `
 
-const hideWhen = dispatch => (ch, key) => {
-  if (ch === '?') { dispatch(focusPanel('editor')) }
-}
 
-const changeLayout = (to, dispatch) => () => {
-  //hack - react-blessed and/or blessed currently 
-  //doesn't do well with multiple rendering changes 
-  //in the same event loop
-  setImmediate(() => {
-    dispatch(focusPanel('editor'))
-    setImmediate(() => {
-      dispatch(setDimensions(layouts[to]))
-      dispatch(focusPanel('settings'))
-    })
-  })  
-}
+const Settings = ({layout, focused, top, left, width, height, align, padding, hideWhen, changeLayout}, cmp) => {
 
-const Settings = ({layout, focused, top, left, width, height, align, padding, dispatch}, cmp) => (
-  <box
+  return (<box
     keys={true}
     mouse={true}
     clickable={true}
@@ -72,7 +55,7 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, di
       mouse={true}
       keys={true}
       class={{...bg}}
-      onKeypress={hideWhen(dispatch)}
+      onKeypress={hideWhen}
     >
       <box tags={true} top={1} class={{...bg}}>
         {'{underline}{bold}Layout{/bold}{/underline}'}
@@ -89,9 +72,9 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, di
             if (name === 'right') {
               cmp.refs.form.focusNext()
             }
-            hideWhen(dispatch)(ch)
+            hideWhen(ch)
           }} 
-          onCheck={changeLayout('normal', dispatch)}
+          onCheck={changeLayout('normal')}
           height={1} 
           width={22} 
           checked={layout.name === 'normal'} 
@@ -106,9 +89,9 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, di
             if (name === 'right') {
               cmp.refs.form.focusNext()
             }
-            hideWhen(dispatch)(ch)
+            hideWhen(ch)
           }} 
-          onCheck={changeLayout('compact', dispatch)}
+          onCheck={changeLayout('compact')}
           left={22} 
           height={1} 
           width={22} 
@@ -121,9 +104,9 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, di
             if (name === 'left') {
               cmp.refs.form.focusPrevious()
             }
-            hideWhen(dispatch)(ch)
+            hideWhen(ch)
           }} 
-          onCheck={changeLayout('minimal', dispatch)}
+          onCheck={changeLayout('minimal')}
           left={44} 
           height={1} 
           width={22} 
@@ -136,8 +119,8 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, di
     <box top={9} height={10} tags={true}  class={{...bg}}>
     {help}
     </box>
-  </box>
-)
+  </box>)
+}
 
 
 export default functional(Settings, {
