@@ -49,7 +49,6 @@ export function focusPanel(payload) {
   }
 }
 export function selectFile(payload) {
-  console.trace('allo there')
   return (dispatch, getState) => {
     const {sources, file, files = []} = getState()
     if (!sources.length) return

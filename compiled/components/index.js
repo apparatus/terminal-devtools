@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Cog = exports.Settings = exports.Tabs = exports.Scope = exports.Navigator = exports.EditorStatus = exports.Editor = exports.Console = exports.CallStack = exports.BreakPoints = undefined;
+exports.Controls = exports.Cog = exports.Settings = exports.Tabs = exports.Scope = exports.Navigator = exports.EditorStatus = exports.Editor = exports.Console = exports.CallStack = exports.BreakPoints = undefined;
 
 var _BreakPoints = require('./BreakPoints');
 
@@ -45,6 +45,10 @@ var _Cog = require('./Cog');
 
 var _Cog2 = _interopRequireDefault(_Cog);
 
+var _Controls = require('./Controls');
+
+var _Controls2 = _interopRequireDefault(_Controls);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.BreakPoints = _BreakPoints2.default;
@@ -57,4 +61,5 @@ exports.Scope = _Scope2.default;
 exports.Tabs = _Tabs2.default;
 exports.Settings = _Settings2.default;
 exports.Cog = _Cog2.default;
+exports.Controls = _Controls2.default;
 //# sourceMappingURL=index.js.map

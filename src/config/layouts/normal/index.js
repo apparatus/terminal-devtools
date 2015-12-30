@@ -24,4 +24,11 @@ export const settings = {
   height: '75%'
 }
 
-export default {name, sources, console, cog, tabs, settings}
+export const controls = {
+  left: '100%-20',
+  width: 10,
+  height: 1,
+  top: 0
+}
+
+export default {name, sources, console, cog, tabs, settings, controls}

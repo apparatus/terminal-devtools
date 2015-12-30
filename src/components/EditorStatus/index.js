@@ -1,26 +1,26 @@
 import React from 'react'
-import * as style from '../../style'
 
 const stat =  {
-  border: {
-    type: 'bg'
-  },
   style: {
-    transparent: true,
+    transparent: true
   }
 }
 
-const EditorStatus = ({line, file, top, left, width, height, align, padding}) => (
-  <box
-    class={[style.panel, stat]}
+const EditorStatus = ({line, file, top, rightEdgeLeft, height}) => {
+
+  const status = `${file}:${line} `
+  const width = status.length - 1
+  const lineNumLength = (line+'').length
+  const left = rightEdgeLeft + '-' + (width + lineNumLength + (lineNumLength < 2 ? 2 : 1))
+
+  return (<text
+    class={stat}
     left={left}
     width={width}
     top={top}
     height={height}
-    align={align}
-    padding={padding}
-  >{file}:{line} </box>
-)
+  >{status}</text>)
+}
 
 
 export default EditorStatus

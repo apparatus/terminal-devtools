@@ -30,12 +30,6 @@ var editor = exports.editor = {
 
 var editorstatus = exports.editorstatus = {
   height: 0
-  // top: '72.5%-1',
-  // left: '56%',
-  // width: '21%',
-  // height: 3,
-  // align: 'right',
-  // padding: {right: 1}
 };
 
 var callstack = exports.callstack = {

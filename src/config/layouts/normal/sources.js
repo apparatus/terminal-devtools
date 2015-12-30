@@ -31,17 +31,10 @@ export const editor = {
 }
 
 export const editorstatus = {
-  top: '72.5%-1',
-  left: '56%',
-  width: '21%',
-  height: 3,
-  align: 'right',
-  padding: {
-    left: 0,
-    right: 1,
-    top: 0,
-    bottom: 0
-  }
+  top: '72.5%',
+  rightEdgeLeft: '76%', //<-- the dynamic width is subtracted from rightEdgeLeft
+  // width - width calculated in component
+  height: 1
 }
 
 export const callstack = {

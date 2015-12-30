@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.settings = exports.tabs = exports.cog = exports.name = undefined;
+exports.controls = exports.settings = exports.tabs = exports.cog = exports.name = undefined;
 
 var _sources = require('./sources');
 
@@ -38,5 +38,12 @@ var settings = exports.settings = {
   height: '75%'
 };
 
-exports.default = { name: name, sources: sources, console: console, cog: cog, tabs: tabs, settings: settings };
+var controls = exports.controls = {
+  left: 0,
+  width: 0,
+  height: 0,
+  top: 0
+};
+
+exports.default = { name: name, sources: sources, console: console, cog: cog, tabs: tabs, settings: settings, controls: controls };
 //# sourceMappingURL=index.js.map

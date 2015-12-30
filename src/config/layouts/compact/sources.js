@@ -32,12 +32,6 @@ export const editor = {
 
 export const editorstatus = {
   height: 0
-  // top: '72.5%-1',
-  // left: '56%',
-  // width: '21%',
-  // height: 3,
-  // align: 'right',
-  // padding: {right: 1}
 }
 
 export const callstack = {

@@ -13,7 +13,7 @@ import createStore from './store/create'
 import createScreen from './screen'
 import config from './config'
 import { Console, Sources } from './containers'
-import { Tabs, Cog, Settings } from './components'
+import { Tabs, Cog, Settings, Controls } from './components'
 import createDebugger from './lib/debug'
 import {
   receiveCallstack,
@@ -88,6 +88,7 @@ export default async (pid) => {
           panel === 'settings' && 
             <Settings dispatch={dispatch} layout={layout} focused={panel === 'settings'} {...layout.settings} />
         }
+        <Controls {...layout.controls}/>
       </element>
     )
   }

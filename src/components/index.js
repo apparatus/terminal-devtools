@@ -8,9 +8,9 @@ import Scope from './Scope'
 import Settings from './Settings'
 import Tabs from './Tabs'
 import Cog from './Cog'
-
+import Controls from './Controls'
 
 export {
   BreakPoints, CallStack, Console, Editor, 
-  EditorStatus, Navigator, Scope, Tabs, Settings, Cog
+  EditorStatus, Navigator, Scope, Tabs, Settings, Cog, Controls
 }
