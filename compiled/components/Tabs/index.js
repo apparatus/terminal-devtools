@@ -16,8 +16,6 @@ var _reactFunctional = require('react-functional');
 
 var _reactFunctional2 = _interopRequireDefault(_reactFunctional);
 
-var _actions = require('../../actions');
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -28,8 +26,7 @@ var Tabs = function Tabs(_ref) {
   var left = _ref.left;
   var width = _ref.width;
   var height = _ref.height;
-  var tab = _ref.tab;
-  var dispatch = _ref.dispatch;
+  var onSelectTab = _ref.onSelectTab;
   return _react2.default.createElement('listbar', {
     'class': style.list,
     top: top,
@@ -37,11 +34,9 @@ var Tabs = function Tabs(_ref) {
     width: width,
     height: height,
     autoCommandKeys: true,
+    mouse: true,
     items: items,
-    onSelectTab: function onSelectTab(_ref2) {
-      var tab = _ref2.data.cmd.text;
-      return dispatch((0, _actions.focusTab)(tab));
-    }
+    onSelectTab: onSelectTab
   });
 };
 

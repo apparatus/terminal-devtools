@@ -117,8 +117,8 @@ export function source(state = {}, {type, payload}) {
   return payload
 }
 
-export function paused(state = true, {type}) {
-  if (type !== RESUME || type !== PAUSE) return state
+export function paused(state = false, {type}) {
+  if (type !== RESUME && type !== PAUSE) return state
   return type === PAUSE
 }
 

@@ -5,10 +5,11 @@ import {
   Controls as ControlsCmp
 } from '../../components'
 
-const Controls = ({layout}) => (
-  <ControlsCmp {...layout}/>
+const Controls = ({layout, paused}) => (
+  <ControlsCmp {...layout} paused={paused} />
 )
 
-export default connect(({layout}) => ({
-  layout: layout.controls
+export default connect(({layout, paused}) => ({
+  layout: layout.controls,
+  paused
 }))(Controls)

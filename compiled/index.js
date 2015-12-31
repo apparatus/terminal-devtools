@@ -45,8 +45,6 @@ var _config2 = _interopRequireDefault(_config);
 
 var _containers = require('./containers');
 
-var _components = require('./components');
-
 var _debug = require('./lib/debug');
 
 var _debug2 = _interopRequireDefault(_debug);
@@ -65,9 +63,6 @@ var store = (0, _create2.default)({
   layout: _config2.default.layout
 });
 var dispatch = store.dispatch;
-
-var tabs = ['Sources', 'Networking', 'Profiling', 'Console'];
-
 var debug = exports.debug = (0, _debug2.default)();
 
 exports.default = (function () {
@@ -100,7 +95,9 @@ exports.default = (function () {
                 debug.scripts(function (err, scripts) {
                   dispatch((0, _actions.receiveSources)(scripts));
                   if (callstack) {
-                    return dispatch((0, _actions.selectFrame)(0));
+                    dispatch((0, _actions.pause)());
+                    dispatch((0, _actions.selectFrame)(0));
+                    return;
                   }
 
                   var _ref = scripts.find(function (s) {
@@ -131,7 +128,7 @@ exports.default = (function () {
               return _react2.default.createElement(
                 'element',
                 null,
-                _react2.default.createElement(_components.Tabs, _extends({ dispatch: dispatch, items: tabs }, layout.tabs)),
+                _react2.default.createElement(_containers.Tabs, null),
                 tab === 'sources' && _react2.default.createElement(_containers.Sources, null),
                 tab === 'console' && _react2.default.createElement(_containers.Console, null),
                 _react2.default.createElement(_containers.Cog, _extends({}, layout.cog, { active: panel === 'settings' })),

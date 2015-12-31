@@ -218,11 +218,11 @@ function source() {
 }
 
 function paused() {
-  var state = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+  var state = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
   var _ref19 = arguments[1];
   var type = _ref19.type;
 
-  if (type !== _actions.RESUME || type !== _actions.PAUSE) return state;
+  if (type !== _actions.RESUME && type !== _actions.PAUSE) return state;
   return type === _actions.PAUSE;
 }
 

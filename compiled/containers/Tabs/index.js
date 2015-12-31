@@ -12,22 +12,26 @@ var _React2 = _interopRequireDefault(_React);
 
 var _reactRedux = require('react-redux');
 
+var _actions = require('../../actions');
+
 var _components = require('../../components');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Controls = function Controls(_ref) {
+var tabs = ['Sources', 'Networking', 'Profiling', 'Console'];
+
+var Tabs = function Tabs(_ref) {
   var layout = _ref.layout;
-  var paused = _ref.paused;
-  return _React2.default.createElement(_components.Controls, _extends({}, layout, { paused: paused }));
+  var dispatch = _ref.dispatch;
+  return _React2.default.createElement(_components.Tabs, _extends({}, layout, { items: tabs, onSelectTab: function onSelectTab(_, ix) {
+      return dispatch((0, _actions.focusTab)(tabs[ix]));
+    } }));
 };
 
 exports.default = (0, _reactRedux.connect)(function (_ref2) {
   var layout = _ref2.layout;
-  var paused = _ref2.paused;
   return {
-    layout: layout.controls,
-    paused: paused
+    layout: layout.tabs
   };
-})(Controls);
+})(Tabs);
 //# sourceMappingURL=index.js.map

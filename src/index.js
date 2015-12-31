@@ -12,8 +12,9 @@ import portly from 'portly'
 import createStore from './store/create'
 import createScreen from './screen'
 import config from './config'
-import {Console, Sources, Controls, Cog, Settings} from './containers'
-import { Tabs } from './components'
+import {
+  Console, Sources, Controls, Cog, Settings, Tabs
+} from './containers'
 import createDebugger from './lib/debug'
 import {
   receiveCallstack,
@@ -38,7 +39,6 @@ const store = createStore({
   layout: config.layout,
 })
 const {dispatch} = store
-const tabs = ['Sources', 'Networking', 'Profiling', 'Console']
 
 export const debug = createDebugger()
 
@@ -64,7 +64,9 @@ export default async (pid) => {
       debug.scripts((err, scripts) => {
         dispatch(receiveSources(scripts))
         if (callstack) {
-          return dispatch(selectFrame(0))
+          dispatch(pause())
+          dispatch(selectFrame(0))
+          return
         }
         const {name} = (scripts.find(s => s.name[0] === '/') || scripts[0])
         dispatch(selectFile(name))
@@ -80,7 +82,7 @@ export default async (pid) => {
   let Devtools = ({layout, tab, panel}) => {
     return (
       <element>
-        <Tabs dispatch={dispatch} items={tabs} {...layout.tabs}/>
+        <Tabs />
         {tab === 'sources' && <Sources/>}
         {tab === 'console' && <Console/>}
         <Cog {...layout.cog} active={panel === 'settings'}/>

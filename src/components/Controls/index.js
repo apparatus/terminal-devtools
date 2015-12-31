@@ -8,6 +8,9 @@ const btn = {
   mouse: true,
   keys: true,
   vi: true,
+}
+
+const enable = {
   class: {
     style: {
       fg: 'white'
@@ -15,28 +18,69 @@ const btn = {
   }
 }
 
+const disable = {
+  class: {
+    style: {
+      fg: 'blue'
+    }
+  }
+}
+
 const PauseResume = ({paused, onPress}) => (
-  <button {...btn} onPress={onPress}>{paused ? '⫸' : '‖'}</button>
+  <button 
+    onPress={onPress}
+    hoverText='resume (r)'
+  >
+    {paused ? '⫸' : '‖'}
+  </button>
 )
 
-const StepOver = ({onPress}) => (
-  <button {...btn} onPress={onPress}>⤼</button>
+const StepOver = ({enabled, onPress}) => (
+  <button 
+    {...(enabled ? enable : disable)} 
+    onPress={onPress}
+    hoverText='step over (n)'
+  >
+    ⤼
+  </button>
 )
 
-const StepInto = ({onPress}) => (
-  <button {...btn} onPress={onPress}>⤈</button>
+const StepInto = ({enabled, onPress}) => (
+  <button 
+    {...(enabled ? enable : disable)} 
+    onPress={onPress}
+    hoverText='step into (i)'
+  >
+    ⤈
+  </button>
 )
 
-const StepOut = ({onPress}) => (
-  <button {...btn} onPress={onPress}>⤉</button>  
+const StepOut = ({enabled, onPress}) => (
+  <button 
+    {...(enabled ? enable : disable)} 
+    onPress={onPress}
+    hoverText='step into (o)'
+  >
+    ⤉
+  </button>  
 )
  
 const BreakPointsActive = ({active, onPress}) => (
-  <button {...btn} onPress={onPress}>{active ? '⤃' : '⤇'}</button>
+  <button 
+    onPress={onPress}
+    hoverText={`${active ? '' : 'de'}activate breakpoints (p)`}
+  > 
+    {active ? '⤇' : '⤃'}
+  </button>
 )
 
 const UncaughtExceptions = ({onPress}) => (
-  <button {...btn} onPress={onPress}>⬣</button>
+  <button 
+    onPress={onPress}
+    hoverText='break on exception (x)'
+  >
+    ⬣
+  </button>
 )
 
 
@@ -53,9 +97,9 @@ const Controls = ({
     height={height}
   >
     <PauseResume paused={paused} onPress={pauseResume}/>
-    <StepOver onPress={stepOver}/> 
-    <StepInto onPress={stepInto}/>
-    <StepOut onPress={stepOut}/>
+    <StepOver enabled={paused} onPress={stepOver}/> 
+    <StepInto enabled={paused} onPress={stepInto}/>
+    <StepOut enabled={paused} onPress={stepOut}/>
     <BreakPointsActive active={areBreakpointsActive} onPress={breakpointsActive}/>
     <UncaughtExceptions onPress={uncaughtExceptions}/>
   </layout>
