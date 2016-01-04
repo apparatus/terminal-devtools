@@ -91,7 +91,6 @@ export default async (pid) => {
       })
     })
 
-    dbg.on('event', console.log)
 
     dbg.on('event', ({event, body}) => {
 

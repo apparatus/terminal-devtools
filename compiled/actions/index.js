@@ -254,7 +254,6 @@ function pause() {
 function resume() {
   return function (dispatch) {
     dispatch({ type: RESUME });
-    dispatch(receiveSource(''));
     dispatch(receiveCallstack([]));
     _.debug.resume(function () {});
   };
@@ -307,6 +306,11 @@ function toggleTooltips() {
 function step(act, type) {
   return function (dispatch) {
     dispatch({ type: type });
+
+    _.debug.instance.once('unpaused', function () {
+      dispatch({ type: RESUME });
+    });
+
     _.debug['step' + act](function (err, callstack) {
       if (!callstack || !callstack.length) {
         return receiveCallstack([]);

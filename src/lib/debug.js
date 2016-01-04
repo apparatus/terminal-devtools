@@ -57,6 +57,10 @@ export default () => {
       if (err) return cb(err)
       if (!out.res) return cb(Error('no response'))
       const {res} = out
+      if (res.running) {
+        debug.emit('unpaused')
+      } 
+
       if (!res.body) return cb(Error('no backtrace'))
       cb(null, res.body)
     })
@@ -294,6 +298,7 @@ export default () => {
 
 
   return {
+    get instance() { return debug },
     scripts,
     start,
     breakpoints,

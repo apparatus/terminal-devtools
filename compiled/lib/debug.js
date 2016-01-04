@@ -66,6 +66,10 @@ exports.default = function () {
       if (!out.res) return cb(Error('no response'));
       var res = out.res;
 
+      if (res.running) {
+        debug.emit('unpaused');
+      }
+
       if (!res.body) return cb(Error('no backtrace'));
       cb(null, res.body);
     });
@@ -362,6 +366,9 @@ exports.default = function () {
   // }
 
   return {
+    get instance() {
+      return debug;
+    },
     scripts: scripts,
     start: start,
     breakpoints: breakpoints,

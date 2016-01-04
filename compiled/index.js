@@ -136,8 +136,6 @@ exports.default = (function () {
                 });
               });
 
-              dbg.on('event', console.log);
-
               dbg.on('event', function (_ref3) {
                 var event = _ref3.event;
                 var body = _ref3.body;

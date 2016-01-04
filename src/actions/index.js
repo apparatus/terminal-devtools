@@ -194,7 +194,6 @@ export function pause() {
 export function resume() {
   return dispatch => {
     dispatch({type: RESUME})
-    dispatch(receiveSource(''))
     dispatch(receiveCallstack([]))
     debug.resume(() => {})
   }
@@ -248,6 +247,11 @@ export function toggleTooltips() {
 function step(act, type) {
   return dispatch => {
     dispatch({type})
+
+    debug.instance.once('unpaused', () => {
+      dispatch({type: RESUME})
+    })
+
     debug['step' + act]((err, callstack) => {
       if (!callstack || !callstack.length) {
         return receiveCallstack([])
