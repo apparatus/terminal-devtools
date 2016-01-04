@@ -11,6 +11,14 @@ require('babel-polyfill');
 
 require('source-map-support/register');
 
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -57,11 +65,19 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 Error.stackTraceLimit = Infinity;
 
-var store = (0, _create2.default)({
+var userSettings = _path2.default.join(__dirname, 'config', 'user-settings.json');
+console.log(userSettings);
+var defaultCfg = { tooltips: true, layout: 'normal' };
+
+var userCfg = _fs2.default.existsSync(userSettings) ? _extends({}, defaultCfg, require(userSettings)) : _extends({}, defaultCfg);
+
+userCfg.layout = _config2.default.layouts[userCfg.layout];
+
+var store = (0, _create2.default)(_extends({
   tab: 'sources',
-  panel: 'editor',
-  layout: _config2.default.layout
-});
+  panel: 'editor'
+}, userCfg));
+
 var dispatch = store.dispatch;
 var debug = exports.debug = (0, _debug2.default)();
 

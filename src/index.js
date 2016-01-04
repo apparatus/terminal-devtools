@@ -1,7 +1,8 @@
 Error.stackTraceLimit = Infinity
 import 'babel-polyfill'
 import 'source-map-support/register'
-
+import fs from 'fs'
+import path from 'path'
 import React from 'react'
 import {Component} from 'react'
 import blessed from 'blessed'
@@ -33,11 +34,22 @@ import {
   previousFrame
 } from './actions'
 
+const userSettings = path.join(__dirname, 'config', 'user-settings.json')
+console.log(userSettings)
+const defaultCfg = {tooltips: true, layout: 'normal'}
+
+const userCfg = (fs.existsSync(userSettings)) ? 
+  {...defaultCfg, ...require(userSettings)} :
+  {...defaultCfg}
+
+userCfg.layout = config.layouts[userCfg.layout]
+
 const store = createStore({
   tab: 'sources',
   panel: 'editor',
-  layout: config.layout,
+  ...userCfg
 })
+
 const {dispatch} = store
 
 export const debug = createDebugger()

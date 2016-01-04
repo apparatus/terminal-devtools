@@ -10,10 +10,5 @@ var _layouts2 = _interopRequireDefault(_layouts);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// TODO make profile this user configurable
-var profile = 'normal';
-
-var layout = _layouts2.default[profile];
-
-exports.default = { layout: layout };
+exports.default = { layouts: _layouts2.default };
 //# sourceMappingURL=index.js.map
