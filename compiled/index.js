@@ -105,7 +105,8 @@ exports.default = (function () {
             dispatch((0, _actions.receiveSource)('Waiting for port debug port ' + debugPort));
 
             (0, _portly2.default)(debugPort).then(function (portPid) {
-              debug.start(debugPort, function (err, callstack) {
+
+              var dbg = debug.start(debugPort, function (err, callstack) {
                 dispatch((0, _actions.receiveCallstack)(callstack));
 
                 debug.scripts(function (err, scripts) {
@@ -134,12 +135,35 @@ exports.default = (function () {
                   (0, _actions.receiveBreakpoints)(breakpoints);
                 });
               });
+
+              dbg.on('event', console.log);
+
+              dbg.on('event', function (_ref3) {
+                var event = _ref3.event;
+                var body = _ref3.body;
+
+                if (event !== 'break') {
+                  return;
+                }
+                var lineNumber = body.sourceLine;
+                var scriptId = body.script.id;
+
+                dispatch((0, _actions.selectFile)({ scriptId: scriptId, lineNumber: lineNumber }));
+                debug.callstack(function (err, callstack) {
+                  if (!callstack) {
+                    return;
+                  }
+                  dispatch((0, _actions.receiveCallstack)(callstack));
+                  dispatch((0, _actions.pause)());
+                  dispatch((0, _actions.selectFrame)(0));
+                });
+              });
             });
 
-            Devtools = function Devtools(_ref3) {
-              var layout = _ref3.layout;
-              var tab = _ref3.tab;
-              var panel = _ref3.panel;
+            Devtools = function Devtools(_ref4) {
+              var layout = _ref4.layout;
+              var tab = _ref4.tab;
+              var panel = _ref4.panel;
 
               return _react2.default.createElement(
                 'element',
@@ -153,10 +177,10 @@ exports.default = (function () {
               );
             };
 
-            Devtools = (0, _reactRedux.connect)(function (_ref4) {
-              var layout = _ref4.layout;
-              var tab = _ref4.tab;
-              var panel = _ref4.panel;
+            Devtools = (0, _reactRedux.connect)(function (_ref5) {
+              var layout = _ref5.layout;
+              var tab = _ref5.tab;
+              var panel = _ref5.panel;
               return { layout: layout, tab: tab, panel: panel };
             })(Devtools);
 

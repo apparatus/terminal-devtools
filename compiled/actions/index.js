@@ -103,6 +103,7 @@ function selectFile(payload) {
       var _payload$lineNumber = payload.lineNumber;
       var lineNumber = _payload$lineNumber === undefined ? 0 : _payload$lineNumber;
 
+      lineNumber += 1; //accounts for added module function wrapper
       dispatch(setEditorLine(lineNumber));
     }
 

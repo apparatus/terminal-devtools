@@ -46,11 +46,15 @@ exports.default = function (store, screen) {
     dispatch((0, _actions.focusPanel)('settings'));
   });
 
-  screen.key(['F8', 'C-\\', 'r'], function () {
-    return dispatch((0, _actions.resume)());
-  });
-  screen.key(['S-F8', 'C-S-\\', 'p'], function () {
-    return dispatch((0, _actions.pause)());
+  screen.key(['F8', 'C-\\', 'c'], function () {
+    var _getState2 = getState();
+
+    var paused = _getState2.paused;
+
+    if (paused) {
+      return dispatch((0, _actions.resume)());
+    }
+    dispatch((0, _actions.pause)());
   });
   screen.key(['F10', 'C-\'', 'n'], function () {
     return dispatch((0, _actions.stepOver)());
@@ -63,11 +67,11 @@ exports.default = function (store, screen) {
   });
 
   screen.key(['tab'], function () {
-    var _getState2 = getState();
+    var _getState3 = getState();
 
-    var panel = _getState2.panel;
-    var tab = _getState2.tab;
-    var layout = _getState2.layout;
+    var panel = _getState3.panel;
+    var tab = _getState3.tab;
+    var layout = _getState3.layout;
 
     if (panel === 'settings') return;
     var ordering = layout[tab].ordering;
@@ -78,11 +82,11 @@ exports.default = function (store, screen) {
   });
 
   screen.key(['S-tab'], function () {
-    var _getState3 = getState();
+    var _getState4 = getState();
 
-    var panel = _getState3.panel;
-    var tab = _getState3.tab;
-    var layout = _getState3.layout;
+    var panel = _getState4.panel;
+    var tab = _getState4.tab;
+    var layout = _getState4.layout;
 
     if (panel === 'settings') return;
     var ordering = layout[tab].ordering;

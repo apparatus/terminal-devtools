@@ -12,7 +12,6 @@ import {TOGGLE_TOOLTIPS, SET_DIMENSIONS} from '../actions'
 
 const persist = persistance(path.join(__dirname, '..', 'config', 'user-settings.json'))
 
-
 const persistanceMap = {
   [TOGGLE_TOOLTIPS]: 'tooltips',
   [SET_DIMENSIONS]: {

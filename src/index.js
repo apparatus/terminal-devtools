@@ -70,7 +70,8 @@ export default async (pid) => {
   dispatch(receiveSource('Waiting for port debug port ' + debugPort))
 
   portly(debugPort).then(portPid => {
-    debug.start(debugPort, (err, callstack) => {
+    
+    const dbg = debug.start(debugPort, (err, callstack) => {
       dispatch(receiveCallstack(callstack))
 
       debug.scripts((err, scripts) => {
@@ -89,6 +90,24 @@ export default async (pid) => {
         receiveBreakpoints(breakpoints)
       })
     })
+
+    dbg.on('event', console.log)
+
+    dbg.on('event', ({event, body}) => {
+
+      if (event !== 'break') { return }
+      const {sourceLine: lineNumber, script: {id: scriptId}} = body
+      dispatch(selectFile({scriptId, lineNumber}))
+      debug.callstack((err, callstack) => {
+        if (!callstack) { return }
+        dispatch(receiveCallstack(callstack))
+        dispatch(pause())
+        dispatch(selectFrame(0))
+
+      })
+
+    })
+
   })
 
   let Devtools = ({layout, tab, panel}) => {

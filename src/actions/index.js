@@ -65,7 +65,8 @@ export function selectFile(payload) {
     dispatch({type: SET_FILE_INDEX, payload: files.indexOf(name)})
 
     if (payloadIsObject) {
-      const {lineNumber = 0} = payload
+      let {lineNumber = 0} = payload
+      lineNumber += 1 //accounts for added module function wrapper
       dispatch(setEditorLine(lineNumber))
     }
 

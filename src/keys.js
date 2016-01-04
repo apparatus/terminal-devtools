@@ -24,8 +24,13 @@ export default (store, screen) => {
     dispatch(focusPanel('settings'))
   })
 
-  screen.key(['F8', 'C-\\', 'r'], () => dispatch(resume()))
-  screen.key(['S-F8', 'C-S-\\', 'p'], () => dispatch(pause()))
+  screen.key(['F8', 'C-\\', 'c'], () => {
+    const {paused} = getState()
+    if (paused) {
+      return dispatch(resume())  
+    }
+    dispatch(pause())
+  })
   screen.key(['F10', 'C-\'', 'n'], () => dispatch(stepOver()))
   screen.key(['F11', 'C-;', 'i'], () => dispatch(stepInto()))
   screen.key(['S-F11', 'C-S-;', 'o'], () => dispatch(stepOut()))

@@ -22,12 +22,12 @@ var SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch']; /*
                                                                     */
 
 exports.default = function () {
-  var raw = undefined;
+  var debug = undefined;
   var seq = 0;
   var scriptIdToUrl = new Map();
 
   var scripts = function scripts(cb) {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'scripts',
@@ -52,7 +52,7 @@ exports.default = function () {
   };
 
   var backtrace = function backtrace(cb) {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'backtrace',
@@ -72,7 +72,7 @@ exports.default = function () {
   };
 
   var breakpoints = function breakpoints(cb) {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'listbreakpoints'
@@ -93,7 +93,7 @@ exports.default = function () {
     var line = _ref2.line;
     var target = _ref2.file;
 
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'setbreakpoint',
@@ -111,7 +111,7 @@ exports.default = function () {
   };
 
   var clearBreakpoint = function clearBreakpoint(breakpoint, cb) {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'clearbreakpoint',
@@ -132,7 +132,7 @@ exports.default = function () {
   var step = function step(act) {
     var cb = arguments.length <= 1 || arguments[1] === undefined ? function () {} : arguments[1];
 
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'continue',
@@ -158,7 +158,7 @@ exports.default = function () {
   var resume = function resume() {
     var cb = arguments.length <= 0 || arguments[0] === undefined ? function () {} : arguments[0];
 
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'continue'
@@ -171,7 +171,7 @@ exports.default = function () {
   var pause = function pause() {
     var cb = arguments.length <= 0 || arguments[0] === undefined ? function () {} : arguments[0];
 
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'suspend'
@@ -184,7 +184,7 @@ exports.default = function () {
   var lookup = function lookup(_ref3, cb) {
     var handles = _ref3.handles;
 
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'lookup',
@@ -203,7 +203,7 @@ exports.default = function () {
   var scopes = function scopes(_ref4, cb) {
     var frameNumber = _ref4.callFrameId;
 
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'scopes',
@@ -318,10 +318,13 @@ exports.default = function () {
     var debugPort = arguments.length <= 0 || arguments[0] === undefined ? 5858 : arguments[0];
     var cb = arguments[1];
 
-    raw = new _yadc.Debugger({ port: debugPort, host: 'localhost' });
-    raw.connect(function () {
+    debug = new _yadc.Debugger({ port: debugPort, host: 'localhost' });
+
+    debug.connect(function () {
       return callstack(cb);
     });
+
+    return debug;
   };
 
   // const evaluate = (expression, cb) => {
@@ -362,6 +365,7 @@ exports.default = function () {
     scripts: scripts,
     start: start,
     breakpoints: breakpoints,
+    callstack: callstack,
     resume: resume,
     pause: pause,
     scopes: scopes,

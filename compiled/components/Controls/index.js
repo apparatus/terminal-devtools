@@ -51,7 +51,7 @@ var PauseResume = function PauseResume(_ref) {
     'button',
     {
       onClick: onClick,
-      hoverText: tooltips && 'resume (r) '
+      hoverText: tooltips && (paused ? 'resume (c) ' : 'pause (c)')
     },
     paused ? '⫸' : '‖'
   );

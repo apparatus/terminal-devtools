@@ -18,12 +18,13 @@ import {Debugger} from 'yadc'
 const SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch']
 
 export default () => {
-  let raw
+  let debug
   let seq = 0
   const scriptIdToUrl = new Map
 
+
   const scripts = cb => {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'scripts',
@@ -43,7 +44,7 @@ export default () => {
   }
 
   const backtrace = cb => {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'backtrace',
@@ -62,7 +63,7 @@ export default () => {
   }
 
   const breakpoints = cb => {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'listbreakpoints'
@@ -77,7 +78,7 @@ export default () => {
   }
 
   const setBreakpoint = ({line, file:target}, cb) => {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'setbreakpoint',
@@ -94,7 +95,7 @@ export default () => {
   }
 
   const clearBreakpoint = (breakpoint, cb) => {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'clearbreakpoint',
@@ -112,7 +113,7 @@ export default () => {
   }
 
   const step = (act, cb=()=>{}) => {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'continue',
@@ -130,7 +131,7 @@ export default () => {
   const stepOut = cb => step('out', cb)
 
   const resume = (cb=()=>{}) => {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'continue',
@@ -141,7 +142,7 @@ export default () => {
   }
 
   const pause = (cb=()=>{}) => {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'suspend',
@@ -153,7 +154,7 @@ export default () => {
 
 
   const lookup = ({handles}, cb) => {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'lookup',
@@ -169,7 +170,7 @@ export default () => {
   }
 
   const scopes = ({callFrameId: frameNumber}, cb) => {
-    raw.send({
+    debug.send({
       seq: ++seq,
       type: 'request',
       command: 'scopes',
@@ -249,8 +250,11 @@ export default () => {
   
   const start = (debugPort = 5858, cb) => {
 
-    raw = new Debugger({port: debugPort, host: 'localhost'})
-    raw.connect(() => callstack(cb))
+    debug = new Debugger({port: debugPort, host: 'localhost'})
+
+    debug.connect(() => callstack(cb))
+
+    return debug
 
   }
 
@@ -293,6 +297,7 @@ export default () => {
     scripts,
     start,
     breakpoints,
+    callstack,
     resume,
     pause,
     scopes,
