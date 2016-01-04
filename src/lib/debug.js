@@ -111,19 +111,23 @@ export default () => {
     })
   }
 
-  const step = (cb=()=>{}) => {
+  const step = (act, cb=()=>{}) => {
     raw.send({
       seq: ++seq,
       type: 'request',
       command: 'continue',
       arguments: {
-        stepaction: 'next'
+        stepaction: act
       }
     }, (err) => {
       if (err) return cb(err)
       callstack(cb)
     })
   }
+
+  const stepOver = cb => step('next', cb)
+  const stepInto = cb => step('in', cb)
+  const stepOut = cb => step('out', cb)
 
   const resume = (cb=()=>{}) => {
     raw.send({
@@ -297,6 +301,8 @@ export default () => {
     // evaluate,
     setBreakpoint,
     clearBreakpoint,
-    step
+    stepOver,
+    stepOut,
+    stepInto,
   }
 } 

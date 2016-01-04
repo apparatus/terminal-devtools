@@ -196,27 +196,15 @@ export function resume() {
 }
 
 export function stepOver() {
-  return dispatch => {
-    dispatch({type: STEP_OVER})
-    debug.step((err, callstack) => {
-      dispatch(receiveCallstack(callstack))
-      dispatch(selectFile(callstack[0].location))
-    })
-  }
+  return step('Over', STEP_OVER)
 }
 
 export function stepInto(payload) {
-  return {
-    type: STEP_INTO,
-    payload
-  }
+  return step('Into', STEP_INTO)
 }
 
 export function stepOut(payload) {
-  return {
-    type: STEP_OUT,
-    payload
-  }
+  return step('Out', STEP_OUT)
 }
 
 export function nextFrame(payload) {
@@ -239,5 +227,18 @@ export function setDimensions(payload) {
   return {
     type: SET_DIMENSIONS,
     payload
+  }
+}
+
+
+//utils:
+
+function step(act, type) {
+  return dispatch => {
+    dispatch({type})
+    debug['step' + act]((err, callstack) => {
+      dispatch(receiveCallstack(callstack))
+      dispatch(selectFile(callstack[0].location))
+    })
   }
 }

@@ -69,6 +69,12 @@ exports.default = function (store) {
   screen.key(['F10', 'C-\'', 'n'], function () {
     return dispatch((0, _actions.stepOver)());
   });
+  screen.key(['F11', 'C-;', 'i'], function () {
+    return dispatch((0, _actions.stepInto)());
+  });
+  screen.key(['S-F11', 'C-S-;', 'o'], function () {
+    return dispatch((0, _actions.stepOut)());
+  });
 
   screen.key(['tab'], function () {
     var _getState = getState();

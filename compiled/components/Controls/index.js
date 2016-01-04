@@ -45,12 +45,12 @@ var disable = {
 
 var PauseResume = function PauseResume(_ref) {
   var paused = _ref.paused;
-  var onPress = _ref.onPress;
+  var onClick = _ref.onClick;
   return _react2.default.createElement(
     'button',
     {
-      onPress: onPress,
-      hoverText: 'resume (r)'
+      onClick: onClick,
+      hoverText: 'resume (r) '
     },
     paused ? '⫸' : '‖'
   );
@@ -58,11 +58,11 @@ var PauseResume = function PauseResume(_ref) {
 
 var StepOver = function StepOver(_ref2) {
   var enabled = _ref2.enabled;
-  var onPress = _ref2.onPress;
+  var onClick = _ref2.onClick;
   return _react2.default.createElement(
     'button',
     _extends({}, enabled ? enable : disable, {
-      onPress: onPress,
+      onClick: onClick,
       hoverText: 'step over (n)'
     }),
     '⤼'
@@ -71,11 +71,11 @@ var StepOver = function StepOver(_ref2) {
 
 var StepInto = function StepInto(_ref3) {
   var enabled = _ref3.enabled;
-  var onPress = _ref3.onPress;
+  var onClick = _ref3.onClick;
   return _react2.default.createElement(
     'button',
     _extends({}, enabled ? enable : disable, {
-      onPress: onPress,
+      onClick: onClick,
       hoverText: 'step into (i)'
     }),
     '⤈'
@@ -84,12 +84,12 @@ var StepInto = function StepInto(_ref3) {
 
 var StepOut = function StepOut(_ref4) {
   var enabled = _ref4.enabled;
-  var onPress = _ref4.onPress;
+  var onClick = _ref4.onClick;
   return _react2.default.createElement(
     'button',
     _extends({}, enabled ? enable : disable, {
-      onPress: onPress,
-      hoverText: 'step into (o)'
+      onClick: onClick,
+      hoverText: 'step out (o)'
     }),
     '⤉'
   );
@@ -97,11 +97,11 @@ var StepOut = function StepOut(_ref4) {
 
 var BreakPointsActive = function BreakPointsActive(_ref5) {
   var active = _ref5.active;
-  var onPress = _ref5.onPress;
+  var onClick = _ref5.onClick;
   return _react2.default.createElement(
     'button',
     {
-      onPress: onPress,
+      onClick: onClick,
       hoverText: (active ? '' : 'de') + 'activate breakpoints (p)'
     },
     active ? '⤇' : '⤃'
@@ -109,11 +109,11 @@ var BreakPointsActive = function BreakPointsActive(_ref5) {
 };
 
 var UncaughtExceptions = function UncaughtExceptions(_ref6) {
-  var onPress = _ref6.onPress;
+  var onClick = _ref6.onClick;
   return _react2.default.createElement(
     'button',
     {
-      onPress: onPress,
+      onClick: onClick,
       hoverText: 'break on exception (x)'
     },
     '⬣'
@@ -142,12 +142,12 @@ var Controls = function Controls(_ref7) {
       top: top,
       height: height
     },
-    _react2.default.createElement(PauseResume, { paused: paused, onPress: pauseResume }),
-    _react2.default.createElement(StepOver, { enabled: paused, onPress: stepOver }),
-    _react2.default.createElement(StepInto, { enabled: paused, onPress: stepInto }),
-    _react2.default.createElement(StepOut, { enabled: paused, onPress: stepOut }),
-    _react2.default.createElement(BreakPointsActive, { active: areBreakpointsActive, onPress: breakpointsActive }),
-    _react2.default.createElement(UncaughtExceptions, { onPress: uncaughtExceptions })
+    _react2.default.createElement(PauseResume, { paused: paused, onClick: pauseResume }),
+    _react2.default.createElement(StepOver, { enabled: paused, onClick: stepOver }),
+    _react2.default.createElement(StepInto, { enabled: paused, onClick: stepInto }),
+    _react2.default.createElement(StepOut, { enabled: paused, onClick: stepOut }),
+    _react2.default.createElement(BreakPointsActive, { active: areBreakpointsActive, onClick: breakpointsActive }),
+    _react2.default.createElement(UncaughtExceptions, { onClick: uncaughtExceptions })
   );
 };
 

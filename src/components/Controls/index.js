@@ -26,57 +26,57 @@ const disable = {
   }
 }
 
-const PauseResume = ({paused, onPress}) => (
+const PauseResume = ({paused, onClick}) => (
   <button 
-    onPress={onPress}
-    hoverText='resume (r)'
+    onClick={onClick}
+    hoverText={'resume (r) '}
   >
     {paused ? '⫸' : '‖'}
   </button>
 )
 
-const StepOver = ({enabled, onPress}) => (
+const StepOver = ({enabled, onClick}) => (
   <button 
     {...(enabled ? enable : disable)} 
-    onPress={onPress}
+    onClick={onClick}
     hoverText='step over (n)'
   >
     ⤼
   </button>
 )
 
-const StepInto = ({enabled, onPress}) => (
+const StepInto = ({enabled, onClick}) => (
   <button 
     {...(enabled ? enable : disable)} 
-    onPress={onPress}
+    onClick={onClick}
     hoverText='step into (i)'
   >
     ⤈
   </button>
 )
 
-const StepOut = ({enabled, onPress}) => (
+const StepOut = ({enabled, onClick}) => (
   <button 
     {...(enabled ? enable : disable)} 
-    onPress={onPress}
-    hoverText='step into (o)'
+    onClick={onClick}
+    hoverText='step out (o)'
   >
     ⤉
   </button>  
 )
  
-const BreakPointsActive = ({active, onPress}) => (
+const BreakPointsActive = ({active, onClick}) => (
   <button 
-    onPress={onPress}
+    onClick={onClick}
     hoverText={`${active ? '' : 'de'}activate breakpoints (p)`}
   > 
     {active ? '⤇' : '⤃'}
   </button>
 )
 
-const UncaughtExceptions = ({onPress}) => (
+const UncaughtExceptions = ({onClick}) => (
   <button 
-    onPress={onPress}
+    onClick={onClick}
     hoverText='break on exception (x)'
   >
     ⬣
@@ -96,12 +96,12 @@ const Controls = ({
     top={top}
     height={height}
   >
-    <PauseResume paused={paused} onPress={pauseResume}/>
-    <StepOver enabled={paused} onPress={stepOver}/> 
-    <StepInto enabled={paused} onPress={stepInto}/>
-    <StepOut enabled={paused} onPress={stepOut}/>
-    <BreakPointsActive active={areBreakpointsActive} onPress={breakpointsActive}/>
-    <UncaughtExceptions onPress={uncaughtExceptions}/>
+    <PauseResume paused={paused} onClick={pauseResume}/>
+    <StepOver enabled={paused} onClick={stepOver}/> 
+    <StepInto enabled={paused} onClick={stepInto}/>
+    <StepOut enabled={paused} onClick={stepOut}/>
+    <BreakPointsActive active={areBreakpointsActive} onClick={breakpointsActive}/>
+    <UncaughtExceptions onClick={uncaughtExceptions}/>
   </layout>
 )
 

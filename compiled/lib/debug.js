@@ -129,20 +129,30 @@ exports.default = function () {
     });
   };
 
-  var step = function step() {
-    var cb = arguments.length <= 0 || arguments[0] === undefined ? function () {} : arguments[0];
+  var step = function step(act) {
+    var cb = arguments.length <= 1 || arguments[1] === undefined ? function () {} : arguments[1];
 
     raw.send({
       seq: ++seq,
       type: 'request',
       command: 'continue',
       arguments: {
-        stepaction: 'next'
+        stepaction: act
       }
     }, function (err) {
       if (err) return cb(err);
       callstack(cb);
     });
+  };
+
+  var stepOver = function stepOver(cb) {
+    return step('next', cb);
+  };
+  var stepInto = function stepInto(cb) {
+    return step('in', cb);
+  };
+  var stepOut = function stepOut(cb) {
+    return step('out', cb);
   };
 
   var resume = function resume() {
@@ -360,7 +370,9 @@ exports.default = function () {
     // evaluate,
     setBreakpoint: setBreakpoint,
     clearBreakpoint: clearBreakpoint,
-    step: step
+    stepOver: stepOver,
+    stepOut: stepOut,
+    stepInto: stepInto
   };
 };
 //# sourceMappingURL=debug.js.map

@@ -12,6 +12,8 @@ var _React2 = _interopRequireDefault(_React);
 
 var _reactRedux = require('react-redux');
 
+var _actions = require('../../actions');
+
 var _components = require('../../components');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -19,7 +21,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Controls = function Controls(_ref) {
   var layout = _ref.layout;
   var paused = _ref.paused;
-  return _React2.default.createElement(_components.Controls, _extends({}, layout, { paused: paused }));
+  var dispatch = _ref.dispatch;
+  return _React2.default.createElement(_components.Controls, _extends({}, layout, {
+    paused: paused,
+    pauseResume: function pauseResume() {
+      return paused ? dispatch((0, _actions.resume)()) : dispatch((0, _actions.pause)());
+    },
+    stepOver: function stepOver() {
+      return dispatch((0, _actions.stepOver)());
+    },
+    stepInto: function stepInto() {
+      return dispatch((0, _actions.stepInto)());
+    },
+    stepOut: function stepOut() {
+      return dispatch((0, _actions.stepOut)());
+    }
+  }));
 };
 
 exports.default = (0, _reactRedux.connect)(function (_ref2) {

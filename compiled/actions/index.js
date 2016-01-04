@@ -255,27 +255,15 @@ function resume() {
 }
 
 function stepOver() {
-  return function (dispatch) {
-    dispatch({ type: STEP_OVER });
-    _.debug.step(function (err, callstack) {
-      dispatch(receiveCallstack(callstack));
-      dispatch(selectFile(callstack[0].location));
-    });
-  };
+  return step('Over', STEP_OVER);
 }
 
 function stepInto(payload) {
-  return {
-    type: STEP_INTO,
-    payload: payload
-  };
+  return step('Into', STEP_INTO);
 }
 
 function stepOut(payload) {
-  return {
-    type: STEP_OUT,
-    payload: payload
-  };
+  return step('Out', STEP_OUT);
 }
 
 function nextFrame(payload) {
@@ -298,6 +286,18 @@ function setDimensions(payload) {
   return {
     type: SET_DIMENSIONS,
     payload: payload
+  };
+}
+
+//utils:
+
+function step(act, type) {
+  return function (dispatch) {
+    dispatch({ type: type });
+    _.debug['step' + act](function (err, callstack) {
+      dispatch(receiveCallstack(callstack));
+      dispatch(selectFile(callstack[0].location));
+    });
   };
 }
 //# sourceMappingURL=index.js.map

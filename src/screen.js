@@ -1,4 +1,4 @@
-import {focusTab, focusPanel, resume, pause, stepOver} from './actions'
+import {focusTab, focusPanel, resume, pause, stepOver, stepInto, stepOut} from './actions'
 
 import blessed from 'blessed'
 
@@ -35,6 +35,8 @@ export default store => {
   screen.key(['F8', 'C-\\', 'r'], () => dispatch(resume()))
   screen.key(['S-F8', 'C-S-\\', 'p'], () => dispatch(pause()))
   screen.key(['F10', 'C-\'', 'n'], () => dispatch(stepOver()))
+  screen.key(['F11', 'C-;', 'i'], () => dispatch(stepInto()))
+  screen.key(['S-F11', 'C-S-;', 'o'], () => dispatch(stepOut()))
 
   screen.key(['tab'], () => {
     const {panel, tab, layout} = getState()
