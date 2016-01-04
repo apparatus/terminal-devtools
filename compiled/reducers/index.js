@@ -19,6 +19,7 @@ exports.scope = scope;
 exports.source = source;
 exports.paused = paused;
 exports.layout = layout;
+exports.tooltips = tooltips;
 
 var _path = require('path');
 
@@ -234,5 +235,14 @@ function layout() {
 
   if (type !== _actions.SET_DIMENSIONS) return state;
   return payload;
+}
+
+function tooltips() {
+  var state = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+  var _ref21 = arguments[1];
+  var type = _ref21.type;
+
+  if (type !== _actions.TOGGLE_TOOLTIPS) return state;
+  return !state;
 }
 //# sourceMappingURL=index.js.map

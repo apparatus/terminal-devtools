@@ -23,6 +23,7 @@ var BreakPoints = function BreakPoints(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var tooltips = _ref.tooltips;
   var focusPanel = _ref.actions.focusPanel;
   return _react2.default.createElement('list', {
     label: 'BreakPoints',
@@ -36,7 +37,8 @@ var BreakPoints = function BreakPoints(_ref) {
     mouse: true,
     onFocus: function onFocus() {
       return focused || focusPanel('breakpoints');
-    }
+    },
+    hoverText: tooltips && 'ctrl+p'
   });
 };
 

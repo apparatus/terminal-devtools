@@ -7,10 +7,11 @@ import {
   Controls as ControlsCmp
 } from '../../components'
 
-const Controls = ({layout, paused, dispatch}) => (
+const Controls = ({layout, tooltips, paused, dispatch}) => (
   <ControlsCmp 
     {...layout} 
     paused={paused} 
+    tooltips={tooltips}
     pauseResume={()=>(paused ? dispatch(resume()) : dispatch(pause()))}
     stepOver={()=>dispatch(stepOver())}
     stepInto={()=>dispatch(stepInto())}
@@ -18,7 +19,8 @@ const Controls = ({layout, paused, dispatch}) => (
   />
 )
 
-export default connect(({layout, paused}) => ({
+export default connect(({layout, tooltips, paused}) => ({
   layout: layout.controls,
+  tooltips,
   paused
 }))(Controls)

@@ -28,10 +28,10 @@ var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2.default
 //   // actionTransformer: action => {
 //   //   const {payload} = action
 //   //   if (Array.isArray(payload)) payload.forEach(o => {
-//   //     if (o.source) o.source = o.source.substr(0, 150) + '...'
+//   //     if (o.source) o.source = o.source.substr(0, 150)
 //   //   })
 //   //   if (typeof payload === 'string') {
-//   //     action.payload = payload.substr(0, 150) + '...'
+//   //     action.payload = payload.substr(0, 150)
 //   //   }
 //   //   return action
 //   // },
@@ -39,7 +39,6 @@ var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2.default
 //   //   if (Array.isArray(state)) state.forEach(o => {
 //   //     if (o.source) o.source = o.source.substr(0, 150) + '...'
 //   //   })
-//   //   if (state.source) state.source = (state.source + '').substr(0, 150) + '...'
 //   //   return state
 //   // },
 //   colors: {

@@ -14,10 +14,10 @@ const createStoreWithMiddleware =
   //   // actionTransformer: action => {
   //   //   const {payload} = action
   //   //   if (Array.isArray(payload)) payload.forEach(o => {
-  //   //     if (o.source) o.source = o.source.substr(0, 150) + '...'
+  //   //     if (o.source) o.source = o.source.substr(0, 150)
   //   //   })
   //   //   if (typeof payload === 'string') {
-  //   //     action.payload = payload.substr(0, 150) + '...'
+  //   //     action.payload = payload.substr(0, 150)
   //   //   }
   //   //   return action
   //   // },
@@ -25,7 +25,6 @@ const createStoreWithMiddleware =
   //   //   if (Array.isArray(state)) state.forEach(o => {
   //   //     if (o.source) o.source = o.source.substr(0, 150) + '...'
   //   //   })
-  //   //   if (state.source) state.source = (state.source + '').substr(0, 150) + '...'
   //   //   return state
   //   // },
   //   colors: {

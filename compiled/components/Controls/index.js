@@ -45,12 +45,13 @@ var disable = {
 
 var PauseResume = function PauseResume(_ref) {
   var paused = _ref.paused;
+  var tooltips = _ref.tooltips;
   var onClick = _ref.onClick;
   return _react2.default.createElement(
     'button',
     {
       onClick: onClick,
-      hoverText: 'resume (r) '
+      hoverText: tooltips && 'resume (r) '
     },
     paused ? '⫸' : '‖'
   );
@@ -58,12 +59,13 @@ var PauseResume = function PauseResume(_ref) {
 
 var StepOver = function StepOver(_ref2) {
   var enabled = _ref2.enabled;
+  var tooltips = _ref2.tooltips;
   var onClick = _ref2.onClick;
   return _react2.default.createElement(
     'button',
     _extends({}, enabled ? enable : disable, {
       onClick: onClick,
-      hoverText: 'step over (n)'
+      hoverText: tooltips && 'step over (n)'
     }),
     '⤼'
   );
@@ -71,12 +73,13 @@ var StepOver = function StepOver(_ref2) {
 
 var StepInto = function StepInto(_ref3) {
   var enabled = _ref3.enabled;
+  var tooltips = _ref3.tooltips;
   var onClick = _ref3.onClick;
   return _react2.default.createElement(
     'button',
     _extends({}, enabled ? enable : disable, {
       onClick: onClick,
-      hoverText: 'step into (i)'
+      hoverText: tooltips && 'step into (i)'
     }),
     '⤈'
   );
@@ -84,12 +87,13 @@ var StepInto = function StepInto(_ref3) {
 
 var StepOut = function StepOut(_ref4) {
   var enabled = _ref4.enabled;
+  var tooltips = _ref4.tooltips;
   var onClick = _ref4.onClick;
   return _react2.default.createElement(
     'button',
     _extends({}, enabled ? enable : disable, {
       onClick: onClick,
-      hoverText: 'step out (o)'
+      hoverText: tooltips && 'step out (o)'
     }),
     '⤉'
   );
@@ -97,24 +101,26 @@ var StepOut = function StepOut(_ref4) {
 
 var BreakPointsActive = function BreakPointsActive(_ref5) {
   var active = _ref5.active;
+  var tooltips = _ref5.tooltips;
   var onClick = _ref5.onClick;
   return _react2.default.createElement(
     'button',
     {
       onClick: onClick,
-      hoverText: (active ? '' : 'de') + 'activate breakpoints (p)'
+      hoverText: tooltips && (active ? '' : 'de') + 'activate breakpoints (p)'
     },
     active ? '⤇' : '⤃'
   );
 };
 
 var UncaughtExceptions = function UncaughtExceptions(_ref6) {
+  var tooltips = _ref6.tooltips;
   var onClick = _ref6.onClick;
   return _react2.default.createElement(
     'button',
     {
       onClick: onClick,
-      hoverText: 'break on exception (x)'
+      hoverText: tooltips && 'break on exception (x)'
     },
     '⬣'
   );
@@ -133,6 +139,7 @@ var Controls = function Controls(_ref7) {
   var stepOut = _ref7.stepOut;
   var breakpointsActive = _ref7.breakpointsActive;
   var uncaughtExceptions = _ref7.uncaughtExceptions;
+  var tooltips = _ref7.tooltips;
   return _react2.default.createElement(
     'layout',
     {
@@ -142,12 +149,12 @@ var Controls = function Controls(_ref7) {
       top: top,
       height: height
     },
-    _react2.default.createElement(PauseResume, { paused: paused, onClick: pauseResume }),
-    _react2.default.createElement(StepOver, { enabled: paused, onClick: stepOver }),
-    _react2.default.createElement(StepInto, { enabled: paused, onClick: stepInto }),
-    _react2.default.createElement(StepOut, { enabled: paused, onClick: stepOut }),
-    _react2.default.createElement(BreakPointsActive, { active: areBreakpointsActive, onClick: breakpointsActive }),
-    _react2.default.createElement(UncaughtExceptions, { onClick: uncaughtExceptions })
+    _react2.default.createElement(PauseResume, { paused: paused, onClick: pauseResume, tooltips: tooltips }),
+    _react2.default.createElement(StepOver, { enabled: paused, onClick: stepOver, tooltips: tooltips }),
+    _react2.default.createElement(StepInto, { enabled: paused, onClick: stepInto, tooltips: tooltips }),
+    _react2.default.createElement(StepOut, { enabled: paused, onClick: stepOut, tooltips: tooltips }),
+    _react2.default.createElement(BreakPointsActive, { active: areBreakpointsActive, onClick: breakpointsActive, tooltips: tooltips }),
+    _react2.default.createElement(UncaughtExceptions, { onClick: uncaughtExceptions, tooltips: tooltips })
   );
 };
 

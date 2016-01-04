@@ -22,16 +22,13 @@ var _components = require('../../components');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var focusedInput = 'normal';
+
 var Settings = function Settings(_ref) {
   var layout = _ref.layout;
+  var tooltips = _ref.tooltips;
   var dispatch = _ref.dispatch;
   var focused = _ref.focused;
-
-  var hideWhen = function hideWhen(ch, key) {
-    if (ch === '?') {
-      dispatch((0, _actions.focusPanel)('editor'));
-    }
-  };
 
   var changeLayout = function changeLayout(to) {
     return function () {
@@ -42,22 +39,37 @@ var Settings = function Settings(_ref) {
         dispatch((0, _actions.focusPanel)('editor'));
         setImmediate(function () {
           dispatch((0, _actions.setDimensions)(_layouts2.default[to]));
+          focusedInput = to;
           dispatch((0, _actions.focusPanel)('settings'));
         });
       });
     };
   };
 
+  var tooltipsToggle = function tooltipsToggle() {
+    setImmediate(function () {
+      dispatch((0, _actions.focusPanel)('editor'));
+      setImmediate(function () {
+        dispatch((0, _actions.toggleTooltips)());
+        focusedInput = 'tooltips';
+        dispatch((0, _actions.focusPanel)('settings'));
+      });
+    });
+  };
+
   return _React2.default.createElement(_components.Settings, _extends({}, layout.settings, {
+    focusedInput: focusedInput || layout,
     focused: focused,
     layout: layout,
-    hideWhen: hideWhen,
-    changeLayout: changeLayout
+    tooltips: tooltips,
+    changeLayout: changeLayout,
+    toggleTooltips: tooltipsToggle
   }));
 };
 
 exports.default = (0, _reactRedux.connect)(function (_ref2) {
   var layout = _ref2.layout;
-  return { layout: layout };
+  var tooltips = _ref2.tooltips;
+  return { layout: layout, tooltips: tooltips };
 })(Settings);
 //# sourceMappingURL=index.js.map

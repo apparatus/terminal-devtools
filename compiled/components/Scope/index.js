@@ -23,6 +23,7 @@ var Scope = function Scope(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var tooltips = _ref.tooltips;
   var focusPanel = _ref.actions.focusPanel;
   return _react2.default.createElement('list', {
     label: 'Scope',
@@ -39,7 +40,8 @@ var Scope = function Scope(_ref) {
     scrollbar: true,
     onFocus: function onFocus() {
       return focused || focusPanel('scope');
-    }
+    },
+    hoverText: tooltips && 'ctrl+o'
   });
 };
 

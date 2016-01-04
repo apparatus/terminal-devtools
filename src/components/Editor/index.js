@@ -18,7 +18,7 @@ const ed = {
 }
 
 const Editor = ({
-  items, selected, top, left, width, height, focused, 
+  items, selected, top, left, width, height, focused, tooltips,
   actions: {setEditorLine, focusPanel, toggleBreakpoint}
 }) => (
   <list
@@ -40,6 +40,7 @@ const Editor = ({
       setEditorLine(item.parent.getItemIndex(item))
     }}
     onKeyB={() => toggleBreakpoint()}
+    hoverText={tooltips && 'Source Text (ctrl+t)'}
   />
 )
 

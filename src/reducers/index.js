@@ -19,7 +19,8 @@ import {
   STEP_OUT,
   NEXT_FRAME,
   PREVIOUS_FRAME,
-  SET_DIMENSIONS
+  SET_DIMENSIONS,
+  TOGGLE_TOOLTIPS
 } from '../actions'
 
 export function tab(state = 'sources', {type, payload}) {
@@ -125,5 +126,10 @@ export function paused(state = false, {type}) {
 export function layout(state = {}, {type, payload}) {
   if (type !== SET_DIMENSIONS) return state
   return payload
+}
+
+export function tooltips(state = true, {type}) {
+  if (type !== TOGGLE_TOOLTIPS) return state
+  return !state
 }
 

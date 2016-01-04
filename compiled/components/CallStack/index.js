@@ -23,6 +23,7 @@ var CallStack = function CallStack(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var tooltips = _ref.tooltips;
   var _ref$actions = _ref.actions;
   var selectFrame = _ref$actions.selectFrame;
   var focusPanel = _ref$actions.focusPanel;
@@ -50,7 +51,8 @@ var CallStack = function CallStack(_ref) {
     },
     onFocus: function onFocus() {
       return focused || focusPanel('callstack');
-    }
+    },
+    hoverText: tooltips && 'ctrl+s'
   });
 };
 

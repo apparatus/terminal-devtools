@@ -1,7 +1,7 @@
 import React from 'react'
 import * as style from '../../style'
 
-const Scope = ({items, top, left, width, height, focused, actions: {focusPanel}}) => (
+const Scope = ({items, top, left, width, height, focused, tooltips, actions: {focusPanel}}) => (
   <list 
     label='Scope'
     focused={focused}
@@ -16,6 +16,7 @@ const Scope = ({items, top, left, width, height, focused, actions: {focusPanel}}
     keys={true}
     scrollbar={true}
     onFocus={() => focused || focusPanel('scope')}
+    hoverText={tooltips && 'ctrl+o'}
   />
 )
 

@@ -2,7 +2,7 @@ import React from 'react'
 import * as style from '../../style'
 
 const CallStack = ({
-  items, top, left, width, height, focused,
+  items, top, left, width, height, focused, tooltips,
   actions: {selectFrame, focusPanel}
 }) => (
   <list
@@ -27,6 +27,7 @@ const CallStack = ({
         
     }}
     onFocus={() => focused || focusPanel('callstack')}
+    hoverText={tooltips && 'ctrl+s'}
   />
 )
 

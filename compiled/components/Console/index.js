@@ -22,6 +22,7 @@ var Console = function Console(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var tooltips = _ref.tooltips;
   var actions = _ref.actions;
   return _react2.default.createElement('textarea', {
     label: 'Console',
@@ -35,7 +36,8 @@ var Console = function Console(_ref) {
     value: '> ',
     onFocus: function onFocus() {
       return actions && (focused || actions.focusPanel('console'));
-    }
+    },
+    hoverText: actions && tooltips && 'ctrl+k'
   });
 };
 

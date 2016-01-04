@@ -1,7 +1,7 @@
 import React from 'react'
 import * as style from '../../style'
 
-const BreakPoints = ({items, top, left, width, height, focused, actions: {focusPanel}}) => (
+const BreakPoints = ({items, top, left, width, height, focused, tooltips, actions: {focusPanel}}) => (
   <list 
     label='BreakPoints'
     focused={focused}
@@ -13,6 +13,7 @@ const BreakPoints = ({items, top, left, width, height, focused, actions: {focusP
     items={items}
     mouse={true}
     onFocus={() => focused || focusPanel('breakpoints')}
+    hoverText={tooltips && 'ctrl+p'}
   />
 )
 

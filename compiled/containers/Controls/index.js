@@ -20,10 +20,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Controls = function Controls(_ref) {
   var layout = _ref.layout;
+  var tooltips = _ref.tooltips;
   var paused = _ref.paused;
   var dispatch = _ref.dispatch;
   return _React2.default.createElement(_components.Controls, _extends({}, layout, {
     paused: paused,
+    tooltips: tooltips,
     pauseResume: function pauseResume() {
       return paused ? dispatch((0, _actions.resume)()) : dispatch((0, _actions.pause)());
     },
@@ -41,9 +43,11 @@ var Controls = function Controls(_ref) {
 
 exports.default = (0, _reactRedux.connect)(function (_ref2) {
   var layout = _ref2.layout;
+  var tooltips = _ref2.tooltips;
   var paused = _ref2.paused;
   return {
     layout: layout.controls,
+    tooltips: tooltips,
     paused: paused
   };
 })(Controls);

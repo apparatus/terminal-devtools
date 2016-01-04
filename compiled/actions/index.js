@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.SET_DIMENSIONS = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.TOGGLE_BREAKPOINT = exports.SET_EDITOR_LINE = exports.SET_FILE_INDEX = exports.RECEIVE_SOURCE = exports.RECEIVE_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
+exports.TOGGLE_TOOLTIPS = exports.SET_DIMENSIONS = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.TOGGLE_BREAKPOINT = exports.SET_EDITOR_LINE = exports.SET_FILE_INDEX = exports.RECEIVE_SOURCE = exports.RECEIVE_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
 exports.focusTab = focusTab;
 exports.focusPanel = focusPanel;
 exports.selectFile = selectFile;
@@ -24,6 +24,7 @@ exports.stepOut = stepOut;
 exports.nextFrame = nextFrame;
 exports.previousFrame = previousFrame;
 exports.setDimensions = setDimensions;
+exports.toggleTooltips = toggleTooltips;
 
 var _ = require('../');
 
@@ -58,6 +59,7 @@ var SELECT_FRAME = exports.SELECT_FRAME = 'SELECT_FRAME';
 //Configuration Action Types:
 
 var SET_DIMENSIONS = exports.SET_DIMENSIONS = 'SET_DIMENSIONS';
+var TOGGLE_TOOLTIPS = exports.TOGGLE_TOOLTIPS = 'TOGGLE_TOOLTIPS';
 
 //User Action Creators:
 
@@ -239,6 +241,9 @@ function pause() {
   return function (dispatch) {
     dispatch({ type: PAUSE });
     _.debug.pause(function (err, callstack) {
+      if (!callstack || !callstack.length) {
+        return receiveCallstack([]);
+      }
       dispatch(receiveCallstack(callstack));
       dispatch(selectFile(callstack[0].location));
     });
@@ -289,12 +294,22 @@ function setDimensions(payload) {
   };
 }
 
+function toggleTooltips() {
+  return {
+    type: TOGGLE_TOOLTIPS,
+    payload: {}
+  };
+}
+
 //utils:
 
 function step(act, type) {
   return function (dispatch) {
     dispatch({ type: type });
     _.debug['step' + act](function (err, callstack) {
+      if (!callstack || !callstack.length) {
+        return receiveCallstack([]);
+      }
       dispatch(receiveCallstack(callstack));
       dispatch(selectFile(callstack[0].location));
     });

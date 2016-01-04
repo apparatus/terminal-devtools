@@ -43,6 +43,7 @@ var Editor = function Editor(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var tooltips = _ref.tooltips;
   var _ref$actions = _ref.actions;
   var setEditorLine = _ref$actions.setEditorLine;
   var focusPanel = _ref$actions.focusPanel;
@@ -67,7 +68,8 @@ var Editor = function Editor(_ref) {
     },
     onKeyB: function onKeyB() {
       return toggleBreakpoint();
-    }
+    },
+    hoverText: tooltips && 'Source Text (ctrl+t)'
   });
 };
 

@@ -1,16 +1,15 @@
 import React from 'React'
 import {connect} from 'react-redux'
-import {focusPanel, setDimensions} from '../../actions'
+import {focusPanel, setDimensions, toggleTooltips} from '../../actions'
 import layouts from '../../config/layouts'
 
 import {
   Settings as SettingsCmp
 } from '../../components'
 
-const Settings = ({layout, dispatch, focused}) => {
-  const hideWhen = (ch, key) => {
-    if (ch === '?') { dispatch(focusPanel('editor')) }
-  }
+let focusedInput = 'normal'
+
+const Settings = ({layout, tooltips, dispatch, focused}) => {
 
   const changeLayout = (to) => () => {
     //hack - react-blessed and/or blessed currently 
@@ -20,6 +19,18 @@ const Settings = ({layout, dispatch, focused}) => {
       dispatch(focusPanel('editor'))
       setImmediate(() => {
         dispatch(setDimensions(layouts[to]))
+        focusedInput = to
+        dispatch(focusPanel('settings'))
+      })
+    })  
+  }
+
+  const tooltipsToggle = () => {
+    setImmediate(() => {
+      dispatch(focusPanel('editor'))
+      setImmediate(() => {
+        dispatch(toggleTooltips())
+        focusedInput = 'tooltips'
         dispatch(focusPanel('settings'))
       })
     })  
@@ -27,11 +38,13 @@ const Settings = ({layout, dispatch, focused}) => {
 
   return (<SettingsCmp 
     {...layout.settings}
+    focusedInput={focusedInput || layout}
     focused={focused}
     layout={layout}
-    hideWhen={hideWhen}
+    tooltips={tooltips}
     changeLayout={changeLayout} 
+    toggleTooltips={tooltipsToggle}
   />)
 }
 
-export default connect(({layout}) => ({layout}))(Settings)
+export default connect(({layout, tooltips}) => ({layout, tooltips}))(Settings)

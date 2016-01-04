@@ -40,16 +40,17 @@ var Sources = function Sources(_ref) {
   var scope = _ref.scope;
   var panel = _ref.panel;
   var actions = _ref.actions;
+  var tooltips = _ref.tooltips;
   return _React2.default.createElement(
     'element',
     layout.element,
-    _React2.default.createElement(_components.Navigator, _extends({ items: files, index: fileIndex, focused: panel === 'navigator', actions: actions }, layout.navigator)),
-    _React2.default.createElement(_components.Editor, _extends({ items: source, selected: editorLine, focused: panel === 'editor', actions: actions }, layout.editor)),
-    _React2.default.createElement(_components.EditorStatus, _extends({ line: editorLine, file: filename }, layout.editorstatus)),
-    _React2.default.createElement(_components.CallStack, _extends({ items: callstack, focused: panel === 'callstack', actions: actions }, layout.callstack)),
-    _React2.default.createElement(_components.BreakPoints, _extends({ items: breakpoints, focused: panel === 'breakpoints', actions: actions }, layout.breakpoints)),
-    _React2.default.createElement(_components.Scope, _extends({ items: scope, focused: panel === 'scope', actions: actions }, layout.scope)),
-    _React2.default.createElement(_components.Console, _extends({ focused: panel === 'console', actions: actions }, layout.console))
+    _React2.default.createElement(_components.Navigator, _extends({ tooltips: tooltips, items: files, index: fileIndex, focused: panel === 'navigator', actions: actions }, layout.navigator)),
+    _React2.default.createElement(_components.Editor, _extends({ tooltips: tooltips, items: source, selected: editorLine, focused: panel === 'editor', actions: actions }, layout.editor)),
+    _React2.default.createElement(_components.EditorStatus, _extends({ tooltips: tooltips, line: editorLine, file: filename }, layout.editorstatus)),
+    _React2.default.createElement(_components.CallStack, _extends({ tooltips: tooltips, items: callstack, focused: panel === 'callstack', actions: actions }, layout.callstack)),
+    _React2.default.createElement(_components.BreakPoints, _extends({ tooltips: tooltips, items: breakpoints, focused: panel === 'breakpoints', actions: actions }, layout.breakpoints)),
+    _React2.default.createElement(_components.Scope, _extends({ tooltips: tooltips, items: scope, focused: panel === 'scope', actions: actions }, layout.scope)),
+    _React2.default.createElement(_components.Console, _extends({ tooltips: tooltips, focused: panel === 'console', actions: actions }, layout.console))
   );
 };
 
@@ -64,6 +65,7 @@ var mapState = function mapState(_ref2) {
   var breakpoints = _ref2.breakpoints;
   var scope = _ref2.scope;
   var panel = _ref2.panel;
+  var tooltips = _ref2.tooltips;
   return {
     layout: layout.sources,
     source: source,
@@ -74,7 +76,9 @@ var mapState = function mapState(_ref2) {
     callstack: callstack,
     breakpoints: breakpoints,
     scope: scope,
-    panel: panel
+    panel: panel,
+    tooltips: tooltips
+
   };
 };
 

@@ -2,7 +2,7 @@ import React from 'react'
 import * as style from '../../style'
 
 const Navigator = ({
-  items, top, left, width, height, focused, index,
+  items, top, left, width, height, focused, index, tooltips,
   actions: {selectFile, setEditorLine, focusPanel}
 }) => (
   <list 
@@ -25,6 +25,7 @@ const Navigator = ({
       }
     }
     onFocus={() => focused || focusPanel('navigator')}
+    hoverText={tooltips && 'ctrl+n'}
   />
 )
 

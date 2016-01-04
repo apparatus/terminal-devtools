@@ -26,58 +26,58 @@ const disable = {
   }
 }
 
-const PauseResume = ({paused, onClick}) => (
+const PauseResume = ({paused, tooltips, onClick}) => (
   <button 
     onClick={onClick}
-    hoverText={'resume (r) '}
+    hoverText={tooltips && 'resume (r) '}
   >
     {paused ? '⫸' : '‖'}
   </button>
 )
 
-const StepOver = ({enabled, onClick}) => (
+const StepOver = ({enabled, tooltips, onClick}) => (
   <button 
     {...(enabled ? enable : disable)} 
     onClick={onClick}
-    hoverText='step over (n)'
+    hoverText={tooltips && 'step over (n)'}
   >
     ⤼
   </button>
 )
 
-const StepInto = ({enabled, onClick}) => (
+const StepInto = ({enabled, tooltips, onClick}) => (
   <button 
     {...(enabled ? enable : disable)} 
     onClick={onClick}
-    hoverText='step into (i)'
+    hoverText={tooltips && 'step into (i)'}
   >
     ⤈
   </button>
 )
 
-const StepOut = ({enabled, onClick}) => (
+const StepOut = ({enabled, tooltips, onClick}) => (
   <button 
     {...(enabled ? enable : disable)} 
     onClick={onClick}
-    hoverText='step out (o)'
+    hoverText={tooltips && 'step out (o)'}
   >
     ⤉
   </button>  
 )
  
-const BreakPointsActive = ({active, onClick}) => (
+const BreakPointsActive = ({active, tooltips, onClick}) => (
   <button 
     onClick={onClick}
-    hoverText={`${active ? '' : 'de'}activate breakpoints (p)`}
+    hoverText={tooltips && `${active ? '' : 'de'}activate breakpoints (p)`}
   > 
     {active ? '⤇' : '⤃'}
   </button>
 )
 
-const UncaughtExceptions = ({onClick}) => (
+const UncaughtExceptions = ({tooltips, onClick}) => (
   <button 
     onClick={onClick}
-    hoverText='break on exception (x)'
+    hoverText={tooltips && 'break on exception (x)'}
   >
     ⬣
   </button>
@@ -87,7 +87,7 @@ const UncaughtExceptions = ({onClick}) => (
 const Controls = ({
   top, left, width, height, paused, areBreakpointsActive,
   pauseResume, stepOver, stepInto, stepOut, breakpointsActive, 
-  uncaughtExceptions
+  uncaughtExceptions, tooltips
 }) => (
   <layout
     renderer={renderer}
@@ -96,12 +96,12 @@ const Controls = ({
     top={top}
     height={height}
   >
-    <PauseResume paused={paused} onClick={pauseResume}/>
-    <StepOver enabled={paused} onClick={stepOver}/> 
-    <StepInto enabled={paused} onClick={stepInto}/>
-    <StepOut enabled={paused} onClick={stepOut}/>
-    <BreakPointsActive active={areBreakpointsActive} onClick={breakpointsActive}/>
-    <UncaughtExceptions onClick={uncaughtExceptions}/>
+    <PauseResume paused={paused} onClick={pauseResume} tooltips={tooltips}/>
+    <StepOver enabled={paused} onClick={stepOver} tooltips={tooltips}/> 
+    <StepInto enabled={paused} onClick={stepInto} tooltips={tooltips}/>
+    <StepOut enabled={paused} onClick={stepOut} tooltips={tooltips}/>
+    <BreakPointsActive active={areBreakpointsActive} onClick={breakpointsActive} tooltips={tooltips}/>
+    <UncaughtExceptions onClick={uncaughtExceptions} tooltips={tooltips}/>
   </layout>
 )
 

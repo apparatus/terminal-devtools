@@ -24,6 +24,7 @@ var Navigator = function Navigator(_ref) {
   var height = _ref.height;
   var focused = _ref.focused;
   var index = _ref.index;
+  var tooltips = _ref.tooltips;
   var _ref$actions = _ref.actions;
   var selectFile = _ref$actions.selectFile;
   var setEditorLine = _ref$actions.setEditorLine;
@@ -49,7 +50,8 @@ var Navigator = function Navigator(_ref) {
     },
     onFocus: function onFocus() {
       return focused || focusPanel('navigator');
-    }
+    },
+    hoverText: tooltips && 'ctrl+n'
   });
 };
 

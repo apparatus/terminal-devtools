@@ -10,9 +10,7 @@ const bg = {
 }
 
 const settings =  {
-  border: {
-    type: 'bg'
-  },
+  border: null,
   padding: {left: 1, right: 1},
   ...bg
 }
@@ -20,19 +18,31 @@ const settings =  {
 const help = `
 {underline}{bold}Keys{/bold}{/underline}
 
-    {bold}1{/bold} - Sources                          {bold}?{/bold} - Settings/Help
-    {bold}2{/bold} - Networking                       {bold}tab{/bold} - next panel
-    {bold}3{/bold} - Profiling                        {bold}shift+tab{/bold} - previous panel  
-    {bold}4{/bold} - Console                            
-                                         {bold}ctrl+n{/bold} - {bold}n{/bold}avigator
-    {bold}n{/bold} - step over ({bold}n{/bold}ext)                 {bold}ctrl+t{/bold} - {bold}t{/bold}ext editor
-    {bold}r{/bold} - {bold}r{/bold}esume                           {bold}ctrl+s{/bold} - call{bold}s{/bold}tack
-    {bold}p{/bold} - {bold}p{/bold}ause                            {bold}ctrl+p{/bold} - break{bold}p{/bold}oints
-    {bold}b{/bold} - toggle {bold}b{/bold}reakpoint                {bold}ctrl+o{/bold} - sc{bold}o{/bold}pe
+    {bold}?{/bold} - Settings/help                    {bold}1{/bold} - Sources                          
+    {bold}tab{/bold} - next panel                     {bold}2{/bold} - Networking                       
+    {bold}shift+tab{/bold} - previous panel           {bold}3{/bold} - Profiling                          
+                                         {bold}4{/bold} - Console 
+
+    {bold}n{/bold} - step over ({bold}n{/bold}ext)                 {bold}ctrl+n{/bold} - {bold}n{/bold}avigator
+    {bold}i{/bold} - step {bold}i{/bold}nto                        {bold}ctrl+t{/bold} - source {bold}t{/bold}ext
+    {bold}o{/bold} - step {bold}o{/bold}ut                         {bold}ctrl+s{/bold} - call{bold}s{/bold}tack
+    {bold}c{/bold} - pause/resume ([dis]{bold}c{/bold}ontinue)     {bold}ctrl+p{/bold} - break{bold}p{/bold}oints
+    {bold}p{/bold} - [de]activiate break{bold}p{/bold}oints        {bold}ctrl+o{/bold} - sc{bold}o{/bold}pe
+    {bold}x{/bold} - break on e{bold}x{/bold}ception               {bold}ctrl+k{/bold} - console ({bold}k{/bold}onsole)
+
+    {underline}Source Panel{/underline}
+    {bold}b{/bold} - toggle {bold}b{/bold}reakpoint                
 `
+const nav = cmp => (ch, {name}) => {
+  if (name === 'left') {
+    cmp.refs.form.focusPrevious()
+  }
+  if (name === 'right') {
+    cmp.refs.form.focusNext()
+  }
+}
 
-
-const Settings = ({layout, focused, top, left, width, height, align, padding, hideWhen, changeLayout}, cmp) => {
+const Settings = ({layout, focused, top, left, width, height, align, tooltips, padding, toggleTooltips, changeLayout}, cmp) => {
 
   return (<box
     keys={true}
@@ -55,7 +65,6 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, hi
       mouse={true}
       keys={true}
       class={{...bg}}
-      onKeypress={hideWhen}
     >
       <box tags={true} top={1} class={{...bg}}>
         {'{underline}{bold}Layout{/bold}{/underline}'}
@@ -68,12 +77,7 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, hi
         class={{...bg, padding: {left: 4}}}
       >
         <radiobutton
-          onKeypress={(ch, {name}) => {
-            if (name === 'right') {
-              cmp.refs.form.focusNext()
-            }
-            hideWhen(ch)
-          }} 
+          onKeypress={nav(cmp)} 
           onCheck={changeLayout('normal')}
           height={1} 
           width={22} 
@@ -82,15 +86,7 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, hi
           class={{...bg}}
         />
         <radiobutton
-          onKeypress={(ch, {name}) => {
-            if (name === 'left') {
-              cmp.refs.form.focusPrevious()
-            }
-            if (name === 'right') {
-              cmp.refs.form.focusNext()
-            }
-            hideWhen(ch)
-          }} 
+          onKeypress={nav(cmp)} 
           onCheck={changeLayout('compact')}
           left={22} 
           height={1} 
@@ -100,12 +96,7 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, hi
           class={{...bg}}
         />
         <radiobutton
-          onKeypress={(ch, {name}) => {
-            if (name === 'left') {
-              cmp.refs.form.focusPrevious()
-            }
-            hideWhen(ch)
-          }} 
+          onKeypress={nav(cmp)} 
           onCheck={changeLayout('minimal')}
           left={44} 
           height={1} 
@@ -115,8 +106,24 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, hi
           class={{...bg}}
         />
       </radioset>
+      <box top={5} height={1} tags={true}  class={{...bg}}>
+      {'{underline}{bold}General{/bold}{/underline}'}
+      </box>
+      <checkbox 
+        onKeypress={nav(cmp)}
+        onCheck={toggleTooltips}
+        onUncheck={toggleTooltips}
+        top={7}
+        height={1}
+        width={22} 
+        left={4}
+        checked={tooltips} 
+        mouse={true} 
+        text='Tooltips'
+        class={{...bg}}
+      />
     </form>
-    <box top={9} height={10} tags={true}  class={{...bg}}>
+    <box top={8} height={18} tags={true}  class={{...bg}}>
     {help}
     </box>
   </box>)
@@ -124,9 +131,14 @@ const Settings = ({layout, focused, top, left, width, height, align, padding, hi
 
 
 export default functional(Settings, {
-  componentDidMount: (props, refs) => {
-    //workaround
-    const selected = refs.form.children[1].children.find(c => c.checked)
+  componentDidMount: ({focusedInput = 'normal'}, refs) => {
+    const {children: layout} = refs.form.children[1]
+    const tooltips = refs.form.children[3]
+
+    const selected = layout.find(c => c.text.toLowerCase() === focusedInput) || 
+      tooltips.options.text.toLowerCase() === focusedInput && tooltips 
+
+    if (!selected) { return }
     setTimeout(() => selected.focus())
   }
 })

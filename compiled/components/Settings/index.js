@@ -30,25 +30,36 @@ var bg = {
 };
 
 var settings = _extends({
-  border: {
-    type: 'bg'
-  },
+  border: null,
   padding: { left: 1, right: 1 }
 }, bg);
 
-var help = '\n{underline}{bold}Keys{/bold}{/underline}\n\n    {bold}1{/bold} - Sources                          {bold}?{/bold} - Settings/Help\n    {bold}2{/bold} - Networking                       {bold}tab{/bold} - next panel\n    {bold}3{/bold} - Profiling                        {bold}shift+tab{/bold} - previous panel  \n    {bold}4{/bold} - Console                            \n                                         {bold}ctrl+n{/bold} - {bold}n{/bold}avigator\n    {bold}n{/bold} - step over ({bold}n{/bold}ext)                 {bold}ctrl+t{/bold} - {bold}t{/bold}ext editor\n    {bold}r{/bold} - {bold}r{/bold}esume                           {bold}ctrl+s{/bold} - call{bold}s{/bold}tack\n    {bold}p{/bold} - {bold}p{/bold}ause                            {bold}ctrl+p{/bold} - break{bold}p{/bold}oints\n    {bold}b{/bold} - toggle {bold}b{/bold}reakpoint                {bold}ctrl+o{/bold} - sc{bold}o{/bold}pe\n';
+var help = '\n{underline}{bold}Keys{/bold}{/underline}\n\n    {bold}?{/bold} - Settings/help                    {bold}1{/bold} - Sources                          \n    {bold}tab{/bold} - next panel                     {bold}2{/bold} - Networking                       \n    {bold}shift+tab{/bold} - previous panel           {bold}3{/bold} - Profiling                          \n                                         {bold}4{/bold} - Console \n\n    {bold}n{/bold} - step over ({bold}n{/bold}ext)                 {bold}ctrl+n{/bold} - {bold}n{/bold}avigator\n    {bold}i{/bold} - step {bold}i{/bold}nto                        {bold}ctrl+t{/bold} - source {bold}t{/bold}ext\n    {bold}o{/bold} - step {bold}o{/bold}ut                         {bold}ctrl+s{/bold} - call{bold}s{/bold}tack\n    {bold}c{/bold} - pause/resume ([dis]{bold}c{/bold}ontinue)     {bold}ctrl+p{/bold} - break{bold}p{/bold}oints\n    {bold}p{/bold} - [de]activiate break{bold}p{/bold}oints        {bold}ctrl+o{/bold} - sc{bold}o{/bold}pe\n    {bold}x{/bold} - break on e{bold}x{/bold}ception               {bold}ctrl+k{/bold} - console ({bold}k{/bold}onsole)\n\n    {underline}Source Panel{/underline}\n    {bold}b{/bold} - toggle {bold}b{/bold}reakpoint                \n';
+var nav = function nav(cmp) {
+  return function (ch, _ref) {
+    var name = _ref.name;
 
-var Settings = function Settings(_ref, cmp) {
-  var layout = _ref.layout;
-  var focused = _ref.focused;
-  var top = _ref.top;
-  var left = _ref.left;
-  var width = _ref.width;
-  var height = _ref.height;
-  var align = _ref.align;
-  var padding = _ref.padding;
-  var hideWhen = _ref.hideWhen;
-  var changeLayout = _ref.changeLayout;
+    if (name === 'left') {
+      cmp.refs.form.focusPrevious();
+    }
+    if (name === 'right') {
+      cmp.refs.form.focusNext();
+    }
+  };
+};
+
+var Settings = function Settings(_ref2, cmp) {
+  var layout = _ref2.layout;
+  var focused = _ref2.focused;
+  var top = _ref2.top;
+  var left = _ref2.left;
+  var width = _ref2.width;
+  var height = _ref2.height;
+  var align = _ref2.align;
+  var tooltips = _ref2.tooltips;
+  var padding = _ref2.padding;
+  var toggleTooltips = _ref2.toggleTooltips;
+  var changeLayout = _ref2.changeLayout;
 
   return _react2.default.createElement(
     'box',
@@ -74,8 +85,7 @@ var Settings = function Settings(_ref, cmp) {
         inputOnFocused: true,
         mouse: true,
         keys: true,
-        'class': _extends({}, bg),
-        onKeypress: hideWhen
+        'class': _extends({}, bg)
       },
       _react2.default.createElement(
         'box',
@@ -92,14 +102,7 @@ var Settings = function Settings(_ref, cmp) {
           'class': _extends({}, bg, { padding: { left: 4 } })
         },
         _react2.default.createElement('radiobutton', {
-          onKeypress: function onKeypress(ch, _ref2) {
-            var name = _ref2.name;
-
-            if (name === 'right') {
-              cmp.refs.form.focusNext();
-            }
-            hideWhen(ch);
-          },
+          onKeypress: nav(cmp),
           onCheck: changeLayout('normal'),
           height: 1,
           width: 22,
@@ -108,17 +111,7 @@ var Settings = function Settings(_ref, cmp) {
           'class': _extends({}, bg)
         }),
         _react2.default.createElement('radiobutton', {
-          onKeypress: function onKeypress(ch, _ref3) {
-            var name = _ref3.name;
-
-            if (name === 'left') {
-              cmp.refs.form.focusPrevious();
-            }
-            if (name === 'right') {
-              cmp.refs.form.focusNext();
-            }
-            hideWhen(ch);
-          },
+          onKeypress: nav(cmp),
           onCheck: changeLayout('compact'),
           left: 22,
           height: 1,
@@ -128,14 +121,7 @@ var Settings = function Settings(_ref, cmp) {
           'class': _extends({}, bg)
         }),
         _react2.default.createElement('radiobutton', {
-          onKeypress: function onKeypress(ch, _ref4) {
-            var name = _ref4.name;
-
-            if (name === 'left') {
-              cmp.refs.form.focusPrevious();
-            }
-            hideWhen(ch);
-          },
+          onKeypress: nav(cmp),
           onCheck: changeLayout('minimal'),
           left: 44,
           height: 1,
@@ -144,22 +130,49 @@ var Settings = function Settings(_ref, cmp) {
           text: 'Minimal',
           'class': _extends({}, bg)
         })
-      )
+      ),
+      _react2.default.createElement(
+        'box',
+        { top: 5, height: 1, tags: true, 'class': _extends({}, bg) },
+        '{underline}{bold}General{/bold}{/underline}'
+      ),
+      _react2.default.createElement('checkbox', {
+        onKeypress: nav(cmp),
+        onCheck: toggleTooltips,
+        onUncheck: toggleTooltips,
+        top: 7,
+        height: 1,
+        width: 22,
+        left: 4,
+        checked: tooltips,
+        mouse: true,
+        text: 'Tooltips',
+        'class': _extends({}, bg)
+      })
     ),
     _react2.default.createElement(
       'box',
-      { top: 9, height: 10, tags: true, 'class': _extends({}, bg) },
+      { top: 8, height: 18, tags: true, 'class': _extends({}, bg) },
       help
     )
   );
 };
 
 exports.default = (0, _reactFunctional2.default)(Settings, {
-  componentDidMount: function componentDidMount(props, refs) {
-    //workaround
-    var selected = refs.form.children[1].children.find(function (c) {
-      return c.checked;
-    });
+  componentDidMount: function componentDidMount(_ref3, refs) {
+    var _ref3$focusedInput = _ref3.focusedInput;
+    var focusedInput = _ref3$focusedInput === undefined ? 'normal' : _ref3$focusedInput;
+    var layout = refs.form.children[1].children;
+
+    var tooltips = refs.form.children[3];
+
+    var selected = layout.find(function (c) {
+      return c.text.toLowerCase() === focusedInput;
+    }) || tooltips.options.text.toLowerCase() === focusedInput && tooltips;
+
+    if (!selected) {
+      return;
+    }
     setTimeout(function () {
       return selected.focus();
     });

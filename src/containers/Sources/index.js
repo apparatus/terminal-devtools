@@ -19,16 +19,17 @@ const Sources = ({
   breakpoints, 
   scope, 
   panel,
-  actions
+  actions,
+  tooltips
 }) => (
   <element {...layout.element}>
-    <Navigator items={files} index={fileIndex} focused={panel === 'navigator'} actions={actions} {...layout.navigator}/>
-    <Editor items={source} selected={editorLine} focused={panel === 'editor'} actions={actions} {...layout.editor}/>
-    <EditorStatus line={editorLine} file={filename} {...layout.editorstatus}/>
-    <CallStack items={callstack} focused={panel === 'callstack'} actions={actions} {...layout.callstack}/>
-    <BreakPoints items={breakpoints} focused={panel === 'breakpoints'} actions={actions} {...layout.breakpoints}/>
-    <Scope items={scope} focused={panel === 'scope'} actions={actions} {...layout.scope}/>
-    <Console focused={panel === 'console'} actions={actions} {...layout.console}/>
+    <Navigator tooltips={tooltips} items={files} index={fileIndex} focused={panel === 'navigator'} actions={actions} {...layout.navigator}/>
+    <Editor  tooltips={tooltips} items={source} selected={editorLine} focused={panel === 'editor'} actions={actions} {...layout.editor}/>
+    <EditorStatus  tooltips={tooltips} line={editorLine} file={filename} {...layout.editorstatus}/>
+    <CallStack  tooltips={tooltips} items={callstack} focused={panel === 'callstack'} actions={actions} {...layout.callstack}/>
+    <BreakPoints  tooltips={tooltips} items={breakpoints} focused={panel === 'breakpoints'} actions={actions} {...layout.breakpoints}/>
+    <Scope  tooltips={tooltips} items={scope} focused={panel === 'scope'} actions={actions} {...layout.scope}/>
+    <Console  tooltips={tooltips} focused={panel === 'console'} actions={actions} {...layout.console}/>
   </element>
 )
 
@@ -42,7 +43,8 @@ const mapState = ({
   callstack, 
   breakpoints, 
   scope, 
-  panel
+  panel,
+  tooltips
 }) => ({
   layout: layout.sources, 
   source,
@@ -53,7 +55,9 @@ const mapState = ({
   callstack, 
   breakpoints, 
   scope, 
-  panel
+  panel,
+  tooltips
+
 })
 
 const mapDispatch = dispatch => ({

@@ -32,6 +32,7 @@ export const SELECT_FRAME = 'SELECT_FRAME'
 //Configuration Action Types:
 
 export const SET_DIMENSIONS = 'SET_DIMENSIONS'
+export const TOGGLE_TOOLTIPS = 'TOGGLE_TOOLTIPS'
 
 
 //User Action Creators:
@@ -180,6 +181,9 @@ export function pause() {
   return dispatch => {
     dispatch({type: PAUSE})
     debug.pause((err, callstack) => {
+      if (!callstack || !callstack.length) {
+        return receiveCallstack([])
+      }
       dispatch(receiveCallstack(callstack))
       dispatch(selectFile(callstack[0].location))
     })
@@ -230,6 +234,13 @@ export function setDimensions(payload) {
   }
 }
 
+export function toggleTooltips() {
+  return {
+    type: TOGGLE_TOOLTIPS,
+    payload: {}
+  }
+}
+
 
 //utils:
 
@@ -237,6 +248,9 @@ function step(act, type) {
   return dispatch => {
     dispatch({type})
     debug['step' + act]((err, callstack) => {
+      if (!callstack || !callstack.length) {
+        return receiveCallstack([])
+      }
       dispatch(receiveCallstack(callstack))
       dispatch(selectFile(callstack[0].location))
     })
