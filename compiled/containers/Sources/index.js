@@ -16,8 +16,6 @@ var _redux = require('redux');
 
 var _reactRedux = require('react-redux');
 
-var _blessed = require('blessed');
-
 var _components = require('../../components');
 
 var _actions = require('../../actions');
@@ -78,7 +76,6 @@ var mapState = function mapState(_ref2) {
     scope: scope,
     panel: panel,
     tooltips: tooltips
-
   };
 };
 

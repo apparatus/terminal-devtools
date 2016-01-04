@@ -1,12 +1,12 @@
-//element is outer wrapper for the tab
+// element is outer wrapper for the tab
 export const element = {
   top: 1,
   left: 0,
   width: '100%',
-  height: '100%-1'  
+  height: '100%-1'
 }
 
-//ordering specifies order of panels
+// ordering specifies order of panels
 export const ordering = [
   'navigator',
   'editor',

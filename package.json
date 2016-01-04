@@ -7,7 +7,14 @@
   "main": "index.js",
   "scripts": {
     "build": "babel src --out-dir compiled/ --source-maps",
+    "lint": "standard",
     "watch": "npm-watch"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "ignore": [
+      "compiled/**"
+    ]
   },
   "watch": {
     "build": "src/**/*.js"
@@ -36,6 +43,7 @@
   },
   "description": "Terminal based Devtools for Node",
   "devDependencies": {
+    "babel-eslint": "^5.0.0-beta6",
     "npm-watch": "0.0.1"
   },
   "repository": {

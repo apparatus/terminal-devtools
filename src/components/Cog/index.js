@@ -1,9 +1,10 @@
 import React from 'react'
-import * as style from '../../style'
+
+/* eslint-disable react/no-unknown-property */
 
 const Cog = ({active, file, top, left, width, height, align, padding, onClick}) => (
   <button
-    mouse={true}
+    mouse
     left={left}
     width={width}
     top={top}
@@ -11,7 +12,9 @@ const Cog = ({active, file, top, left, width, height, align, padding, onClick}) 
     align={align}
     padding={padding}
     onClick={onClick}
-  >{active ? '⚒' : '⚙'}</button>
+  >
+    {active ? '⚒' : '⚙'}
+  </button>
 )
 
 export default Cog

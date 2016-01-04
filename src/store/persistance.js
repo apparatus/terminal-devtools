@@ -1,12 +1,11 @@
 import fs from 'fs'
 
-export default function persistance(to) {
+export default function persistance (to) {
   const exists = fs.existsSync(to)
   if (!exists) { fs.writeFileSync(to, '{}') }
-  
-  let data 
+  let data
 
-  try { 
+  try {
     data = !exists ? {} : JSON.parse(fs.readFileSync(to))
   } catch (e) {
     data = {}
@@ -23,13 +22,13 @@ export default function persistance(to) {
       if (~index) {
         const state = getState()
         let ns = namespaces[index]
-        
+
         if (Object(ns) === ns) {
           data[ns.namespace] = ns.transform(state[ns.namespace])
           return save(data, to)
-        } 
+        }
 
-        data[ns] = state[ns]        
+        data[ns] = state[ns]
         save(data, to)
       }
 
@@ -38,7 +37,7 @@ export default function persistance(to) {
   }
 }
 
-function save(data, to) {
-  //if necessary, make this function batch and throttle
+function save (data, to) {
+  // if necessary, make this function batch and throttle
   return fs.writeFileSync(to, JSON.stringify(data))
 }

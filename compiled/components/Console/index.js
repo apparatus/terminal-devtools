@@ -16,6 +16,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* eslint-disable react/no-unknown-property */
+
 var Console = function Console(_ref) {
   var top = _ref.top;
   var left = _ref.left;
@@ -25,6 +27,7 @@ var Console = function Console(_ref) {
   var tooltips = _ref.tooltips;
   var actions = _ref.actions;
   return _react2.default.createElement('textarea', {
+    mouse: true,
     label: 'Console',
     focused: focused,
     'class': [style.panel, focused && style.selected],
@@ -32,7 +35,6 @@ var Console = function Console(_ref) {
     left: left,
     width: width,
     height: height,
-    mouse: true,
     value: '> ',
     onFocus: function onFocus() {
       return actions && (focused || actions.focusPanel('console'));

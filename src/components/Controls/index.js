@@ -1,14 +1,6 @@
 import React from 'react'
-import * as style from '../../style'
 
-const btn = {
-  input: true,
-  keyable: true,
-  clickable: true,
-  mouse: true,
-  keys: true,
-  vi: true,
-}
+/* eslint-disable react/no-unknown-property */
 
 const enable = {
   class: {
@@ -27,7 +19,7 @@ const disable = {
 }
 
 const PauseResume = ({paused, tooltips, onClick}) => (
-  <button 
+  <button
     onClick={onClick}
     hoverText={tooltips && (paused ? 'resume (c) ' : 'pause (c)')}
   >
@@ -36,8 +28,8 @@ const PauseResume = ({paused, tooltips, onClick}) => (
 )
 
 const StepOver = ({enabled, tooltips, onClick}) => (
-  <button 
-    {...(enabled ? enable : disable)} 
+  <button
+    {...(enabled ? enable : disable)}
     onClick={onClick}
     hoverText={tooltips && 'step over (n)'}
   >
@@ -46,8 +38,8 @@ const StepOver = ({enabled, tooltips, onClick}) => (
 )
 
 const StepInto = ({enabled, tooltips, onClick}) => (
-  <button 
-    {...(enabled ? enable : disable)} 
+  <button
+    {...(enabled ? enable : disable)}
     onClick={onClick}
     hoverText={tooltips && 'step into (i)'}
   >
@@ -56,26 +48,26 @@ const StepInto = ({enabled, tooltips, onClick}) => (
 )
 
 const StepOut = ({enabled, tooltips, onClick}) => (
-  <button 
-    {...(enabled ? enable : disable)} 
+  <button
+    {...(enabled ? enable : disable)}
     onClick={onClick}
     hoverText={tooltips && 'step out (o)'}
   >
     ⤉
-  </button>  
+  </button>
 )
- 
+
 const BreakPointsActive = ({active, tooltips, onClick}) => (
-  <button 
+  <button
     onClick={onClick}
     hoverText={tooltips && `${active ? '' : 'de'}activate breakpoints (p)`}
-  > 
+  >
     {active ? '⤇' : '⤃'}
   </button>
 )
 
 const UncaughtExceptions = ({tooltips, onClick}) => (
-  <button 
+  <button
     onClick={onClick}
     hoverText={tooltips && 'break on exception (x)'}
   >
@@ -83,12 +75,7 @@ const UncaughtExceptions = ({tooltips, onClick}) => (
   </button>
 )
 
-
-const Controls = ({
-  top, left, width, height, paused, areBreakpointsActive,
-  pauseResume, stepOver, stepInto, stepOut, breakpointsActive, 
-  uncaughtExceptions, tooltips
-}) => (
+const Controls = ({top, left, width, height, paused, areBreakpointsActive, pauseResume, stepOver, stepInto, stepOut, breakpointsActive, uncaughtExceptions, tooltips}) => (
   <layout
     renderer={renderer}
     left={left}
@@ -97,7 +84,7 @@ const Controls = ({
     height={height}
   >
     <PauseResume paused={paused} onClick={pauseResume} tooltips={tooltips}/>
-    <StepOver enabled={paused} onClick={stepOver} tooltips={tooltips}/> 
+    <StepOver enabled={paused} onClick={stepOver} tooltips={tooltips}/>
     <StepInto enabled={paused} onClick={stepInto} tooltips={tooltips}/>
     <StepOut enabled={paused} onClick={stepOut} tooltips={tooltips}/>
     <BreakPointsActive active={areBreakpointsActive} onClick={breakpointsActive} tooltips={tooltips}/>
@@ -105,10 +92,7 @@ const Controls = ({
   </layout>
 )
 
-
-function renderer({xl, xi, yl, yi}) {
-  const width = xl - xi
-  const height = yl - yi
+function renderer ({xl, xi}) {
   return (el, i) => {
     el.shrink = true
     const last = this.getLastCoords(i)
@@ -116,7 +100,7 @@ function renderer({xl, xi, yl, yi}) {
       el.position.left = 0
       el.position.top = 0
       return
-    } 
+    }
     el.position.left = last.xl - xi + 2
   }
 }

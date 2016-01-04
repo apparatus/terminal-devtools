@@ -1,16 +1,17 @@
 import React from 'react'
 import * as style from '../../style'
-import functional from 'react-functional'
+
+/* eslint-disable react/no-unknown-property */
 
 const Tabs = ({items, top, left, width, height, onSelectTab}) => (
   <listbar
+    mouse
+    autoCommandKeys
     class={style.list}
     top={top}
     left={left}
     width={width}
     height={height}
-    autoCommandKeys={true}
-    mouse={true}
     items={items}
     onSelectTab={onSelectTab}
   />

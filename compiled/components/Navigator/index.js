@@ -16,6 +16,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* eslint-disable react/no-unknown-property */
+
 var Navigator = function Navigator(_ref) {
   var items = _ref.items;
   var top = _ref.top;
@@ -30,6 +32,10 @@ var Navigator = function Navigator(_ref) {
   var setEditorLine = _ref$actions.setEditorLine;
   var focusPanel = _ref$actions.focusPanel;
   return _react2.default.createElement('list', {
+    vi: true,
+    keys: true,
+    mouse: true,
+    inputOnFocused: true,
     label: 'Navigator',
     focused: focused,
     selected: index,
@@ -38,10 +44,6 @@ var Navigator = function Navigator(_ref) {
     top: top,
     height: height,
     items: items,
-    mouse: true,
-    keys: true,
-    vi: true,
-    inputOnFocused: true,
     onSelectItem: function onSelectItem(_ref2) {
       var item = _ref2.content;
 

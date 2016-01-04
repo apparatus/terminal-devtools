@@ -1,8 +1,11 @@
 import React from 'react'
 import * as style from '../../style'
 
+/* eslint-disable react/no-unknown-property */
+
 const BreakPoints = ({items, top, left, width, height, focused, tooltips, actions: {focusPanel}}) => (
-  <list 
+  <list
+    mouse
     label='BreakPoints'
     focused={focused}
     class={[style.panel, focused && style.selected]}
@@ -11,7 +14,6 @@ const BreakPoints = ({items, top, left, width, height, focused, tooltips, action
     width={width}
     height={height}
     items={items}
-    mouse={true}
     onFocus={() => focused || focusPanel('breakpoints')}
     hoverText={tooltips && 'ctrl+p'}
   />

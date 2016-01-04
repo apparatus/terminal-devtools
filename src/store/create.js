@@ -1,11 +1,13 @@
 import {
-  createStore, 
-  applyMiddleware, 
+  createStore,
+  applyMiddleware,
   combineReducers
 } from 'redux'
 import path from 'path'
 import thunk from 'redux-thunk'
+/* eslint-disable */
 import logger from 'redux-logger'
+/* eslint-enable */
 import persistance from './persistance'
 import * as reducers from '../reducers'
 import {TOGGLE_TOOLTIPS, SET_DIMENSIONS} from '../actions'
@@ -20,8 +22,9 @@ const persistanceMap = {
   }
 }
 
-const createStoreWithMiddleware = 
+const createStoreWithMiddleware =
   applyMiddleware(thunk, persist(persistanceMap)
+  /* eslint-disable */
   // , logger({
   //   logger: console,
   //   // actionTransformer: action => {
@@ -48,13 +51,10 @@ const createStoreWithMiddleware =
   //     error: false,
   //   }
   // })
+  /* eslint-enable */
   )(createStore)
 
 const reducer = combineReducers(reducers)
 
-export default initialState => 
+export default initialState =>
   createStoreWithMiddleware(reducer, initialState)
-
-
-
-

@@ -32,9 +32,9 @@ var Settings = function Settings(_ref) {
 
   var changeLayout = function changeLayout(to) {
     return function () {
-      //hack - react-blessed and/or blessed currently
-      //doesn't do well with multiple rendering changes
-      //in the same event loop
+      // hack - react-blessed and/or blessed currently
+      // doesn't do well with multiple rendering changes
+      // in the same event loop
       setImmediate(function () {
         dispatch((0, _actions.focusPanel)('editor'));
         setImmediate(function () {

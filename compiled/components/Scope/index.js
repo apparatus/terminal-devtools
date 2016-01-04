@@ -16,6 +16,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* eslint-disable react/no-unknown-property */
+
 var Scope = function Scope(_ref) {
   var items = _ref.items;
   var top = _ref.top;
@@ -26,6 +28,10 @@ var Scope = function Scope(_ref) {
   var tooltips = _ref.tooltips;
   var focusPanel = _ref.actions.focusPanel;
   return _react2.default.createElement('list', {
+    keys: true,
+    mouse: true,
+    scrollbar: true,
+    inputOnFocused: true,
     label: 'Scope',
     focused: focused,
     'class': [style.panel, focused && style.selected],
@@ -34,10 +40,6 @@ var Scope = function Scope(_ref) {
     width: width,
     height: height,
     items: items,
-    mouse: true,
-    inputOnFocused: true,
-    keys: true,
-    scrollbar: true,
     onFocus: function onFocus() {
       return focused || focusPanel('scope');
     },

@@ -1,4 +1,4 @@
-//element is outer wrapper for the tab
+// element is outer wrapper for the tab
 export const element = {
   top: 1,
   left: 0,

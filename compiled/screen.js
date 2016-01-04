@@ -21,7 +21,6 @@ exports.default = function (store) {
     title: 'Terminal Devtools',
     sendFocus: true,
     dockBorders: true,
-    autoPadding: true,
     log: './log',
     // log: '/dev/ttys001',
     ignoreLocked: ['C-c']

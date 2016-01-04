@@ -1,12 +1,12 @@
-import {debug} from '../'
+import { debug } from '../'
 
-//User Actions Types:
+// User Actions Types:
 
 export const FOCUS_TAB = 'FOCUS_TAB'
 export const FOCUS_PANEL = 'FOCUS_PANEL'
 export const SELECT_FILE = 'SELECT_FILE'
 
-//Operational Action Types:
+// Operational Action Types:
 
 export const ERROR = 'ERROR'
 export const RECEIVE_SOURCES = 'RECEIVE_SOURCES'
@@ -28,36 +28,34 @@ export const NEXT_FRAME = 'NEXT_FRAME'
 export const PREVIOUS_FRAME = 'PREVIOUS_FRAME'
 export const SELECT_FRAME = 'SELECT_FRAME'
 
-
-//Configuration Action Types:
+// Configuration Action Types:
 
 export const SET_DIMENSIONS = 'SET_DIMENSIONS'
 export const TOGGLE_TOOLTIPS = 'TOGGLE_TOOLTIPS'
 
+// User Action Creators:
 
-//User Action Creators:
-
-export function focusTab(payload) {
+export function focusTab (payload) {
   return {
     type: FOCUS_TAB,
     payload
   }
 }
-export function focusPanel(payload) {
+export function focusPanel (payload) {
   return {
     type: FOCUS_PANEL,
     payload
   }
 }
-export function selectFile(payload) {
+export function selectFile (payload) {
   return (dispatch, getState) => {
-    const {sources, file, files = []} = getState()
+    const {sources, files = []} = getState()
     if (!sources.length) return
     const payloadIsObject = Object(payload) === payload
 
-    const script = payloadIsObject ?
-      sources.find(s => +s.id === +payload.scriptId) :
-      sources.find(s => s.name === payload) 
+    const script = payloadIsObject
+      ? sources.find(s => +s.id === +payload.scriptId)
+      : sources.find(s => s.name === payload)
 
     const {source, name} = script
 
@@ -65,36 +63,32 @@ export function selectFile(payload) {
     dispatch({type: SET_FILE_INDEX, payload: files.indexOf(name)})
 
     if (payloadIsObject) {
-      let {lineNumber = 0} = payload
-      lineNumber += 1 //accounts for added module function wrapper
+      let { lineNumber = 0 } = payload
+      lineNumber += 1 // accounts for added module function wrapper
       dispatch(setEditorLine(lineNumber))
     }
 
     if (source) {
       dispatch(receiveSource(source))
     }
-    
   }
 }
 
-export function setEditorLine(payload) {
+export function setEditorLine (payload) {
   return {
     type: SET_EDITOR_LINE,
     payload
   }
 }
 
-export function toggleBreakpoint() {
+export function toggleBreakpoint () {
   return (dispatch, getState) => {
-    const {editorLine, sources, file, breaks} = getState()
-    const script = sources.find(s => s.name === file)
+    const {editorLine, file, breaks} = getState()
     dispatch({type: TOGGLE_BREAKPOINT})
 
-    const isSet = breaks.find(({line, script_name:name}) =>
-      (name === file && line === editorLine))
+    const isSet = breaks.find(({line, script_name: name}) => (name === file && line === editorLine))
 
     if (isSet) {
-
       debug.clearBreakpoint(isSet.number, (err, result) => {
         if (err) { return error(err) }
         debug.breakpoints((err, {breakpoints}) => {
@@ -115,8 +109,7 @@ export function toggleBreakpoint() {
   }
 }
 
-
-export function selectFrame(payload) {
+export function selectFrame (payload) {
   return (dispatch, getState) => {
     const {frames} = getState()
     const frameIndex = payload
@@ -126,50 +119,59 @@ export function selectFrame(payload) {
     dispatch(selectFile(location))
 
     debug.scopes(frame, (err, scopes) => {
+      if (err) {
+        return dispatch(error(err))
+      }
       const {local} = scopes
 
       debug.scope(local, (err, scope) => {
+        if (err) {
+          return dispatch(error(err))
+        }
         dispatch(receiveScope({area: 'local', scope}))
       })
-      
     })
-
   }
 }
 
-//Operational Action Creators:
+// Operational Action Creators:
 
-export function error(payload) {
+export function error (payload) {
   return {
     type: ERROR,
     payload
   }
 }
-export function receiveSources(payload) {
+
+export function receiveSources (payload) {
   return {
     type: RECEIVE_SOURCES,
     payload
   }
 }
-export function receiveCallstack(payload) {
+
+export function receiveCallstack (payload) {
   return {
     type: RECEIVE_CALLSTACK,
     payload
   }
 }
-export function receiveBreakpoints(payload) {
+
+export function receiveBreakpoints (payload) {
   return {
     type: RECEIVE_BREAKPOINTS,
     payload
   }
 }
-export function receiveScope(payload) {
+
+export function receiveScope (payload) {
   return {
     type: RECEIVE_SCOPE,
     payload
   }
 }
-export function receiveSource(payload) {
+
+export function receiveSource (payload) {
   return {
     type: RECEIVE_SOURCE,
     payload: (payload + '').split('\n')
@@ -178,10 +180,13 @@ export function receiveSource(payload) {
 
 // Debugger Action Creators
 
-export function pause() {
+export function pause () {
   return dispatch => {
     dispatch({type: PAUSE})
     debug.pause((err, callstack) => {
+      if (err) {
+        return dispatch(error(err))
+      }
       if (!callstack || !callstack.length) {
         return receiveCallstack([])
       }
@@ -191,60 +196,60 @@ export function pause() {
   }
 }
 
-export function resume() {
+export function resume () {
   return dispatch => {
     dispatch({type: RESUME})
     dispatch(receiveCallstack([]))
-    debug.resume(() => {})
+    debug.resume(() => {
+    })
   }
 }
 
-export function stepOver() {
+export function stepOver () {
   return step('Over', STEP_OVER)
 }
 
-export function stepInto(payload) {
+export function stepInto (payload) {
   return step('Into', STEP_INTO)
 }
 
-export function stepOut(payload) {
+export function stepOut (payload) {
   return step('Out', STEP_OUT)
 }
 
-export function nextFrame(payload) {
+export function nextFrame (payload) {
   return {
     type: NEXT_FRAME,
     payload
   }
 }
 
-export function previousFrame(payload) {
+export function previousFrame (payload) {
   return {
     type: PREVIOUS_FRAME,
     payload
   }
 }
 
-//Configuration Action Creators:
+// Configuration Action Creators:
 
-export function setDimensions(payload) {
+export function setDimensions (payload) {
   return {
     type: SET_DIMENSIONS,
     payload
   }
 }
 
-export function toggleTooltips() {
+export function toggleTooltips () {
   return {
     type: TOGGLE_TOOLTIPS,
     payload: {}
   }
 }
 
+// utils:
 
-//utils:
-
-function step(act, type) {
+function step (act, type) {
   return dispatch => {
     dispatch({type})
 
@@ -253,6 +258,9 @@ function step(act, type) {
     })
 
     debug['step' + act]((err, callstack) => {
+      if (err) {
+        return dispatch(error(err))
+      }
       if (!callstack || !callstack.length) {
         return receiveCallstack([])
       }

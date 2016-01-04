@@ -28,13 +28,13 @@ exports.toggleTooltips = toggleTooltips;
 
 var _ = require('../');
 
-//User Actions Types:
+// User Actions Types:
 
 var FOCUS_TAB = exports.FOCUS_TAB = 'FOCUS_TAB';
 var FOCUS_PANEL = exports.FOCUS_PANEL = 'FOCUS_PANEL';
 var SELECT_FILE = exports.SELECT_FILE = 'SELECT_FILE';
 
-//Operational Action Types:
+// Operational Action Types:
 
 var ERROR = exports.ERROR = 'ERROR';
 var RECEIVE_SOURCES = exports.RECEIVE_SOURCES = 'RECEIVE_SOURCES';
@@ -56,12 +56,12 @@ var NEXT_FRAME = exports.NEXT_FRAME = 'NEXT_FRAME';
 var PREVIOUS_FRAME = exports.PREVIOUS_FRAME = 'PREVIOUS_FRAME';
 var SELECT_FRAME = exports.SELECT_FRAME = 'SELECT_FRAME';
 
-//Configuration Action Types:
+// Configuration Action Types:
 
 var SET_DIMENSIONS = exports.SET_DIMENSIONS = 'SET_DIMENSIONS';
 var TOGGLE_TOOLTIPS = exports.TOGGLE_TOOLTIPS = 'TOGGLE_TOOLTIPS';
 
-//User Action Creators:
+// User Action Creators:
 
 function focusTab(payload) {
   return {
@@ -80,7 +80,6 @@ function selectFile(payload) {
     var _getState = getState();
 
     var sources = _getState.sources;
-    var file = _getState.file;
     var _getState$files = _getState.files;
     var files = _getState$files === undefined ? [] : _getState$files;
 
@@ -103,7 +102,7 @@ function selectFile(payload) {
       var _payload$lineNumber = payload.lineNumber;
       var lineNumber = _payload$lineNumber === undefined ? 0 : _payload$lineNumber;
 
-      lineNumber += 1; //accounts for added module function wrapper
+      lineNumber += 1; // accounts for added module function wrapper
       dispatch(setEditorLine(lineNumber));
     }
 
@@ -125,13 +124,9 @@ function toggleBreakpoint() {
     var _getState2 = getState();
 
     var editorLine = _getState2.editorLine;
-    var sources = _getState2.sources;
     var file = _getState2.file;
     var breaks = _getState2.breaks;
 
-    var script = sources.find(function (s) {
-      return s.name === file;
-    });
     dispatch({ type: TOGGLE_BREAKPOINT });
 
     var isSet = breaks.find(function (_ref) {
@@ -141,7 +136,6 @@ function toggleBreakpoint() {
     });
 
     if (isSet) {
-
       _.debug.clearBreakpoint(isSet.number, function (err, result) {
         if (err) {
           return error(err);
@@ -188,16 +182,22 @@ function selectFrame(payload) {
     dispatch(selectFile(location));
 
     _.debug.scopes(frame, function (err, scopes) {
+      if (err) {
+        return dispatch(error(err));
+      }
       var local = scopes.local;
 
       _.debug.scope(local, function (err, scope) {
+        if (err) {
+          return dispatch(error(err));
+        }
         dispatch(receiveScope({ area: 'local', scope: scope }));
       });
     });
   };
 }
 
-//Operational Action Creators:
+// Operational Action Creators:
 
 function error(payload) {
   return {
@@ -205,30 +205,35 @@ function error(payload) {
     payload: payload
   };
 }
+
 function receiveSources(payload) {
   return {
     type: RECEIVE_SOURCES,
     payload: payload
   };
 }
+
 function receiveCallstack(payload) {
   return {
     type: RECEIVE_CALLSTACK,
     payload: payload
   };
 }
+
 function receiveBreakpoints(payload) {
   return {
     type: RECEIVE_BREAKPOINTS,
     payload: payload
   };
 }
+
 function receiveScope(payload) {
   return {
     type: RECEIVE_SCOPE,
     payload: payload
   };
 }
+
 function receiveSource(payload) {
   return {
     type: RECEIVE_SOURCE,
@@ -242,6 +247,9 @@ function pause() {
   return function (dispatch) {
     dispatch({ type: PAUSE });
     _.debug.pause(function (err, callstack) {
+      if (err) {
+        return dispatch(error(err));
+      }
       if (!callstack || !callstack.length) {
         return receiveCallstack([]);
       }
@@ -285,7 +293,7 @@ function previousFrame(payload) {
   };
 }
 
-//Configuration Action Creators:
+// Configuration Action Creators:
 
 function setDimensions(payload) {
   return {
@@ -301,7 +309,7 @@ function toggleTooltips() {
   };
 }
 
-//utils:
+// utils:
 
 function step(act, type) {
   return function (dispatch) {
@@ -312,6 +320,9 @@ function step(act, type) {
     });
 
     _.debug['step' + act](function (err, callstack) {
+      if (err) {
+        return dispatch(error(err));
+      }
       if (!callstack || !callstack.length) {
         return receiveCallstack([]);
       }

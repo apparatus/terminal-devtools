@@ -2,26 +2,29 @@ import React from 'react'
 import * as style from '../../style'
 import functional from 'react-functional'
 
+/* eslint-disable react/no-unknown-property */
+
 const bg = {
   style: {
     fg: 'white',
-    bg: 'blue',
+    bg: 'blue'
   }
 }
 
-const settings =  {
+const settings = {
   border: null,
   padding: {left: 1, right: 1},
   ...bg
 }
 
+/* eslint-disable no-trailing-spaces */
 const help = `
 {underline}{bold}Keys{/bold}{/underline}
 
-    {bold}?{/bold} - Settings/help                    {bold}1{/bold} - Sources                          
-    {bold}tab{/bold} - next panel                     {bold}2{/bold} - Networking                       
-    {bold}shift+tab{/bold} - previous panel           {bold}3{/bold} - Profiling                          
-                                         {bold}4{/bold} - Console 
+    {bold}?{/bold} - Settings/help                    {bold}1{/bold} - Sources
+    {bold}tab{/bold} - next panel                     {bold}2{/bold} - Networking
+    {bold}shift+tab{/bold} - previous panel           {bold}3{/bold} - Profiling
+                                         {bold}4{/bold} - Console
 
     {bold}n{/bold} - step over ({bold}n{/bold}ext)                 {bold}ctrl+n{/bold} - {bold}n{/bold}avigator
     {bold}i{/bold} - step {bold}i{/bold}nto                        {bold}ctrl+t{/bold} - source {bold}t{/bold}ext
@@ -31,8 +34,10 @@ const help = `
     {bold}x{/bold} - break on e{bold}x{/bold}ception               {bold}ctrl+k{/bold} - console ({bold}k{/bold}onsole)
 
     {underline}Source Panel{/underline}
-    {bold}b{/bold} - toggle {bold}b{/bold}reakpoint                
+    {bold}b{/bold} - toggle {bold}b{/bold}reakpoint
 `
+/* eslint-enable no-trailing-spaces */
+
 const nav = cmp => (ch, {name}) => {
   if (name === 'left') {
     cmp.refs.form.focusPrevious()
@@ -43,12 +48,11 @@ const nav = cmp => (ch, {name}) => {
 }
 
 const Settings = ({layout, focused, top, left, width, height, align, tooltips, padding, toggleTooltips, changeLayout}, cmp) => {
-
   return (<box
-    keys={true}
-    mouse={true}
-    clickable={true}
-    draggable={true}
+    keys
+    mouse
+    clickable
+    draggable
     index={20}
     class={[style.panel, settings]}
     left={left}
@@ -59,84 +63,83 @@ const Settings = ({layout, focused, top, left, width, height, align, tooltips, p
     padding={padding}
   >
     <form
+      mouse
+      keys
+      inputOnFocused
       ref='form'
       focused={focused}
-      inputOnFocused={true}
-      mouse={true}
-      keys={true}
       class={{...bg}}
     >
-      <box tags={true} top={1} class={{...bg}}>
+      <box tags top={1} class={{...bg}}>
         {'{underline}{bold}Layout{/bold}{/underline}'}
       </box>
-      <radioset 
-        mouse={true} 
-        keys={true}  
-        height={9} 
-        top={3} 
+      <radioset
+        keys
+        mouse
+        height={9}
+        top={3}
         class={{...bg, padding: {left: 4}}}
       >
         <radiobutton
-          onKeypress={nav(cmp)} 
+          onKeypress={nav(cmp)}
           onCheck={changeLayout('normal')}
-          height={1} 
-          width={22} 
-          checked={layout.name === 'normal'} 
-          text='Normal'   
+          height={1}
+          width={22}
+          checked={layout.name === 'normal'}
+          text='Normal'
           class={{...bg}}
         />
         <radiobutton
-          onKeypress={nav(cmp)} 
+          onKeypress={nav(cmp)}
           onCheck={changeLayout('compact')}
-          left={22} 
-          height={1} 
-          width={22} 
-          checked={layout.name === 'compact'} 
-          text='Compact' 
+          left={22}
+          height={1}
+          width={22}
+          checked={layout.name === 'compact'}
+          text='Compact'
           class={{...bg}}
         />
         <radiobutton
-          onKeypress={nav(cmp)} 
+          onKeypress={nav(cmp)}
           onCheck={changeLayout('minimal')}
-          left={44} 
-          height={1} 
-          width={22} 
-          checked={layout.name === 'minimal'} 
-          text='Minimal' 
+          left={44}
+          height={1}
+          width={22}
+          checked={layout.name === 'minimal'}
+          text='Minimal'
           class={{...bg}}
         />
       </radioset>
-      <box top={5} height={1} tags={true}  class={{...bg}}>
-      {'{underline}{bold}General{/bold}{/underline}'}
+      <box tags top={5} height={1} class={{...bg}}>
+        {'{underline}{bold}General{/bold}{/underline}'}
       </box>
-      <checkbox 
+      <checkbox
+        mouse
         onKeypress={nav(cmp)}
         onCheck={toggleTooltips}
         onUncheck={toggleTooltips}
         top={7}
         height={1}
-        width={22} 
+        width={22}
         left={4}
-        checked={tooltips} 
-        mouse={true} 
+        checked={tooltips}
         text='Tooltips'
         class={{...bg}}
       />
     </form>
-    <box top={8} height={18} tags={true}  class={{...bg}}>
-    {help}
+    <box tags top={8} height={18} class={{...bg}}>
+      {help}
     </box>
   </box>)
 }
-
 
 export default functional(Settings, {
   componentDidMount: ({focusedInput = 'normal'}, refs) => {
     const {children: layout} = refs.form.children[1]
     const tooltips = refs.form.children[3]
 
-    const selected = layout.find(c => c.text.toLowerCase() === focusedInput) || 
-      tooltips.options.text.toLowerCase() === focusedInput && tooltips 
+    const selected = layout.find(c => c.text.toLowerCase() === focusedInput) ||
+      tooltips.options.text.toLowerCase() === focusedInput && tooltips
 
     if (!selected) { return }
     setTimeout(() => selected.focus())

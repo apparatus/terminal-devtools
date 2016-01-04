@@ -1,13 +1,13 @@
-import {focusTab, focusPanel, resume, pause, stepOver, stepInto, stepOut} from './actions'
+import {focusPanel, resume, pause, stepOver, stepInto, stepOut} from './actions'
 
-//note: keys.js is for global keys only, component level keys should be declared
-//on a per component basis
+// note: keys.js is for global keys only, component level keys should be declared
+// on a per component basis
 
 export default (store, screen) => {
   const {dispatch, getState} = store
 
-  screen.key(['escape', 'q', 'C-c'], function(ch, key) {
-    return process.exit(0);
+  screen.key(['escape', 'q', 'C-c'], function (ch, key) {
+    return process.exit(0)
   })
 
   screen.key(['C-n'], () => dispatch(focusPanel('navigator')))
@@ -27,7 +27,7 @@ export default (store, screen) => {
   screen.key(['F8', 'C-\\', 'c'], () => {
     const {paused} = getState()
     if (paused) {
-      return dispatch(resume())  
+      return dispatch(resume())
     }
     dispatch(pause())
   })
@@ -49,8 +49,7 @@ export default (store, screen) => {
     if (panel === 'settings') return
     const {ordering} = layout[tab]
     let ix = ordering.indexOf(panel) - 1
-    if (ix < 0) ix = ordering.length -1
+    if (ix < 0) ix = ordering.length - 1
     dispatch(focusPanel(ordering[ix]))
   })
-
 }

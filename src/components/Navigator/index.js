@@ -1,11 +1,17 @@
 import React from 'react'
 import * as style from '../../style'
 
+/* eslint-disable react/no-unknown-property */
+
 const Navigator = ({
   items, top, left, width, height, focused, index, tooltips,
   actions: {selectFile, setEditorLine, focusPanel}
 }) => (
-  <list 
+  <list
+    vi
+    keys
+    mouse
+    inputOnFocused
     label='Navigator'
     focused={focused}
     selected={index}
@@ -14,10 +20,6 @@ const Navigator = ({
     top={top}
     height={height}
     items={items}
-    mouse={true}
-    keys={true}
-    vi={true}
-    inputOnFocused={true}
     onSelectItem={
       ({content: item}) => {
         selectFile(item)

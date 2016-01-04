@@ -1,7 +1,7 @@
 import * as sources from './sources'
 import * as console from './console'
 
-export const name ='compact'
+export const name = 'compact'
 
 export const cog = {
   top: 0,

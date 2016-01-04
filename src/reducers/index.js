@@ -14,31 +14,26 @@ import {
   SELECT_FRAME,
   PAUSE,
   RESUME,
-  STEP_OVER,
-  STEP_INTO,
-  STEP_OUT,
-  NEXT_FRAME,
-  PREVIOUS_FRAME,
   SET_DIMENSIONS,
   TOGGLE_TOOLTIPS
 } from '../actions'
 
-export function tab(state = 'sources', {type, payload}) {
+export function tab (state = 'sources', {type, payload}) {
   if (type !== FOCUS_TAB) return state
   return (payload + '').toLowerCase()
 }
 
-export function panel(state = 'console', {type, payload}) {
+export function panel (state = 'console', {type, payload}) {
   if (type !== FOCUS_PANEL) return state
   return payload
 }
 
-export function sources(state = [], {type, payload}) {
+export function sources (state = [], {type, payload}) {
   if (type !== RECEIVE_SOURCES) return state
   return payload
 }
 
-export function files(state = [], {type, payload}) {
+export function files (state = [], {type, payload}) {
   if (type !== RECEIVE_SOURCES) return state
   const sources = payload.map(s => s.name)
   const nonNative = sources.filter(s => s[0] === '/')
@@ -46,58 +41,57 @@ export function files(state = [], {type, payload}) {
   return [...nonNative, ...native]
 }
 
-export function file(state = '', {type, payload}) {
+export function file (state = '', {type, payload}) {
   if (type !== SELECT_FILE) return state
   return payload
 }
 
-export function fileIndex(state = 0, {type, payload}) {
+export function fileIndex (state = 0, {type, payload}) {
   if (type !== SET_FILE_INDEX) return state
   return payload
 }
 
-export function editorLine(state = 0, {type, payload}) {
+export function editorLine (state = 0, {type, payload}) {
   if (type !== SET_EDITOR_LINE) return state
   return payload
 }
 
-export function callstack(state = [], {type, payload = []}) {
+export function callstack (state = [], {type, payload = []}) {
   if (type !== RECEIVE_CALLSTACK) return state
   return payload.map(({
       functionName,
-      location: {lineNumber:l, columnNumber:c, url}
-    }) => ( 
+      location: {lineNumber: l, columnNumber: c, url}
+    }) => (
       (functionName || '(anonymous function)') + ' ' + basename(url) + ':' + l + ':' + c
-    )   
+    )
   )
 }
 
-export function frames(state = [], {type, payload = []}) {
+export function frames (state = [], {type, payload = []}) {
   if (type !== RECEIVE_CALLSTACK) return state
   return payload
 }
 
-export function frame(state = {}, {type, payload}) {
+export function frame (state = {}, {type, payload}) {
   if (type !== SELECT_FRAME) return state
   return payload
 }
 
-
-export function breaks(state = [], {type, payload}) {
+export function breaks (state = [], {type, payload}) {
   if (type !== RECEIVE_BREAKPOINTS) return state
   return payload
 }
 
-export function breakpoints(state = [], {type, payload}) {
+export function breakpoints (state = [], {type, payload}) {
   if (type !== RECEIVE_BREAKPOINTS) return state
-  return payload.map(({script_name:name, line}) => basename(name) + ':' + line)
+  return payload.map(({script_name: name, line}) => basename(name) + ':' + line)
 }
 
-export function scope(state = [], {type, payload:{area, scope} = {}}) {
+export function scope (state = [], {type, payload: {area, scope} = {}}) {
   if (type !== RECEIVE_SCOPE) return state
-  //TODO: this will be changed when we integrate the tree component,
-  //so instead of returning strings it returns objects to populate the
-  //tree
+  // TODO: this will be changed when we integrate the tree component,
+  // so instead of returning strings it returns objects to populate the
+  // tree
   return scope.map(
     ({name, type, value, text, source, className, properties}) => {
       if (type === 'object') { value = className }
@@ -113,22 +107,22 @@ export function scope(state = [], {type, payload:{area, scope} = {}}) {
   )
 }
 
-export function source(state = {}, {type, payload}) {
+export function source (state = {}, {type, payload}) {
   if (type !== RECEIVE_SOURCE) return state
   return payload
 }
 
-export function paused(state = false, {type}) {
+export function paused (state = false, {type}) {
   if (type !== RESUME && type !== PAUSE) return state
   return type === PAUSE
 }
 
-export function layout(state = {}, {type, payload}) {
+export function layout (state = {}, {type, payload}) {
   if (type !== SET_DIMENSIONS) return state
   return payload
 }
 
-export function tooltips(state = true, {type}) {
+export function tooltips (state = true, {type}) {
   if (type !== TOGGLE_TOOLTIPS) return state
   return !state
 }

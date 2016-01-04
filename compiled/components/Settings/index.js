@@ -22,6 +22,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* eslint-disable react/no-unknown-property */
+
 var bg = {
   style: {
     fg: 'white',
@@ -34,7 +36,10 @@ var settings = _extends({
   padding: { left: 1, right: 1 }
 }, bg);
 
-var help = '\n{underline}{bold}Keys{/bold}{/underline}\n\n    {bold}?{/bold} - Settings/help                    {bold}1{/bold} - Sources                          \n    {bold}tab{/bold} - next panel                     {bold}2{/bold} - Networking                       \n    {bold}shift+tab{/bold} - previous panel           {bold}3{/bold} - Profiling                          \n                                         {bold}4{/bold} - Console \n\n    {bold}n{/bold} - step over ({bold}n{/bold}ext)                 {bold}ctrl+n{/bold} - {bold}n{/bold}avigator\n    {bold}i{/bold} - step {bold}i{/bold}nto                        {bold}ctrl+t{/bold} - source {bold}t{/bold}ext\n    {bold}o{/bold} - step {bold}o{/bold}ut                         {bold}ctrl+s{/bold} - call{bold}s{/bold}tack\n    {bold}c{/bold} - pause/resume ([dis]{bold}c{/bold}ontinue)     {bold}ctrl+p{/bold} - break{bold}p{/bold}oints\n    {bold}p{/bold} - [de]activiate break{bold}p{/bold}oints        {bold}ctrl+o{/bold} - sc{bold}o{/bold}pe\n    {bold}x{/bold} - break on e{bold}x{/bold}ception               {bold}ctrl+k{/bold} - console ({bold}k{/bold}onsole)\n\n    {underline}Source Panel{/underline}\n    {bold}b{/bold} - toggle {bold}b{/bold}reakpoint                \n';
+/* eslint-disable no-trailing-spaces */
+var help = '\n{underline}{bold}Keys{/bold}{/underline}\n\n    {bold}?{/bold} - Settings/help                    {bold}1{/bold} - Sources\n    {bold}tab{/bold} - next panel                     {bold}2{/bold} - Networking\n    {bold}shift+tab{/bold} - previous panel           {bold}3{/bold} - Profiling\n                                         {bold}4{/bold} - Console\n\n    {bold}n{/bold} - step over ({bold}n{/bold}ext)                 {bold}ctrl+n{/bold} - {bold}n{/bold}avigator\n    {bold}i{/bold} - step {bold}i{/bold}nto                        {bold}ctrl+t{/bold} - source {bold}t{/bold}ext\n    {bold}o{/bold} - step {bold}o{/bold}ut                         {bold}ctrl+s{/bold} - call{bold}s{/bold}tack\n    {bold}c{/bold} - pause/resume ([dis]{bold}c{/bold}ontinue)     {bold}ctrl+p{/bold} - break{bold}p{/bold}oints\n    {bold}p{/bold} - [de]activiate break{bold}p{/bold}oints        {bold}ctrl+o{/bold} - sc{bold}o{/bold}pe\n    {bold}x{/bold} - break on e{bold}x{/bold}ception               {bold}ctrl+k{/bold} - console ({bold}k{/bold}onsole)\n\n    {underline}Source Panel{/underline}\n    {bold}b{/bold} - toggle {bold}b{/bold}reakpoint\n';
+/* eslint-enable no-trailing-spaces */
+
 var nav = function nav(cmp) {
   return function (ch, _ref) {
     var name = _ref.name;
@@ -80,11 +85,11 @@ var Settings = function Settings(_ref2, cmp) {
     _react2.default.createElement(
       'form',
       {
-        ref: 'form',
-        focused: focused,
-        inputOnFocused: true,
         mouse: true,
         keys: true,
+        inputOnFocused: true,
+        ref: 'form',
+        focused: focused,
         'class': _extends({}, bg)
       },
       _react2.default.createElement(
@@ -95,8 +100,8 @@ var Settings = function Settings(_ref2, cmp) {
       _react2.default.createElement(
         'radioset',
         {
-          mouse: true,
           keys: true,
+          mouse: true,
           height: 9,
           top: 3,
           'class': _extends({}, bg, { padding: { left: 4 } })
@@ -133,10 +138,11 @@ var Settings = function Settings(_ref2, cmp) {
       ),
       _react2.default.createElement(
         'box',
-        { top: 5, height: 1, tags: true, 'class': _extends({}, bg) },
+        { tags: true, top: 5, height: 1, 'class': _extends({}, bg) },
         '{underline}{bold}General{/bold}{/underline}'
       ),
       _react2.default.createElement('checkbox', {
+        mouse: true,
         onKeypress: nav(cmp),
         onCheck: toggleTooltips,
         onUncheck: toggleTooltips,
@@ -145,14 +151,13 @@ var Settings = function Settings(_ref2, cmp) {
         width: 22,
         left: 4,
         checked: tooltips,
-        mouse: true,
         text: 'Tooltips',
         'class': _extends({}, bg)
       })
     ),
     _react2.default.createElement(
       'box',
-      { top: 8, height: 18, tags: true, 'class': _extends({}, bg) },
+      { tags: true, top: 8, height: 18, 'class': _extends({}, bg) },
       help
     )
   );

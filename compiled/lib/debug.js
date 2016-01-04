@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _yadc = require('yadc');
 
-//important: preserve order
+// important: preserve order
 var SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch']; /*
                                                                     * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
                                                                     * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -212,7 +212,7 @@ exports.default = function () {
       type: 'request',
       command: 'scopes',
       arguments: {
-        number: 0, //<-- TODO what is? seen: 0, 1, 2
+        number: 0, // <-- TODO what is? seen: 0, 1, 2
         frameNumber: frameNumber
       }
     }, function (err, out) {
@@ -242,11 +242,14 @@ exports.default = function () {
   };
 
   var scope = function scope(_scope, cb) {
-    //TODO:
-    //prototype, __proto__, this, getter/setter functions
+    // TODO:
+    // prototype, __proto__, this, getter/setter functions
     var ref = _scope.object.ref;
 
     lookup({ handles: [ref] }, function (err, out) {
+      if (err) {
+        return cb(err);
+      }
       var properties = out.body[ref].properties;
       var refs = out.refs;
 
@@ -254,7 +257,7 @@ exports.default = function () {
         var name = _ref6.name;
         var ref = _ref6.ref;
 
-        var _refs$find = //functions
+        var _refs$find = // functions
         // only on non-primitives (objects, functions, arrays)
         refs.find(function (_ref7) {
           var handle = _ref7.handle;
@@ -262,13 +265,13 @@ exports.default = function () {
         });
 
         var type = _refs$find.type;
-        var //typeof string
+        var // typeof string
         className = _refs$find.className;
         var // [[Class]] constructor, only non-primitives
         value = _refs$find.value;
-        var //only on primitives
+        var // only on primitives
         text = _refs$find.text;
-        var //fallback for null/undefined
+        var // fallback for null/undefined
         source = _refs$find.source;
         var properties = _refs$find.properties;
 
@@ -294,7 +297,7 @@ exports.default = function () {
         return fetch();
       }
 
-      //populate scripts cache
+      // populate scripts cache
       scripts(fetch);
 
       function fetch() {
@@ -331,40 +334,6 @@ exports.default = function () {
     return debug;
   };
 
-  // const evaluate = (expression, cb) => {
-  //   let value
-  //   let type = 'object'
-  //   const opts = {
-  //     expression,
-  //     callFrameId: currentContext.bp.callFrames[0].callFrameId
-  //   }
-
-  //   dbg.evaluateOnCallFrame(opts, (err, result) => {
-  //     if (err) { return cb(err) }
-
-  //     if (result.result.type === 'object') {
-  //       const opts = {
-  //         expression: 'JSON.stringify(' + expression + ')',
-  //         callFrameId: currentContext.bp.callFrames[0].callFrameId
-  //       }
-  //       dbg.evaluateOnCallFrame(opts, (err, {result:{result}}) => {
-  //         if (err) { return cb(err) }
-  //         try {
-  //           value = JSON.parse(result.description)
-  //         }
-  //         catch (e) {
-  //           value = result.description
-  //           type = 'string'
-  //         }
-  //         cb(null, {type: type, value: value})
-  //       });
-  //     }
-  //     else {
-  //       cb(null, {type: result.type, value: result.description})
-  //     }
-  //   })
-  // }
-
   return {
     get instance() {
       return debug;
@@ -378,7 +347,6 @@ exports.default = function () {
     scopes: scopes,
     scope: scope,
     lookup: lookup,
-    // evaluate,
     setBreakpoint: setBreakpoint,
     clearBreakpoint: clearBreakpoint,
     stepOver: stepOver,

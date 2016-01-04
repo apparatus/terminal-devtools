@@ -2,6 +2,8 @@ import React from 'react'
 import functional from 'react-functional'
 import * as style from '../../style'
 
+/* eslint-disable react/no-unknown-property */
+
 const ed = {
   style: {
     selected: {
@@ -13,26 +15,23 @@ const ed = {
     },
     scrollbar: {
       bg: 'white'
-    },
+    }
   }
 }
 
-const Editor = ({
-  items, selected, top, left, width, height, focused, tooltips,
-  actions: {setEditorLine, focusPanel, toggleBreakpoint}
-}) => (
+const Editor = ({items, selected, top, left, width, height, focused, tooltips, actions: {setEditorLine, focusPanel, toggleBreakpoint}}) => (
   <list
+    vi
+    keys
+    mouse
+    scrollbar
+    inputOnFocused
     class={[style.panel, ed, focused && style.selected]}
     selected={selected}
     left={left}
     width={width}
     top={top}
     height={height}
-    scrollbar={true}
-    mouse={true}
-    keys={true}
-    vi={true}
-    inputOnFocused={true}
     focused={focused}
     items={items}
     onSelectItem={item => {

@@ -11,6 +11,6 @@ import Cog from './Cog'
 import Controls from './Controls'
 
 export {
-  BreakPoints, CallStack, Console, Editor, 
+  BreakPoints, CallStack, Console, Editor,
   EditorStatus, Navigator, Scope, Tabs, Settings, Cog, Controls
 }

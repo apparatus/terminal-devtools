@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-//element is outer wrapper for the tab
+// element is outer wrapper for the tab
 var element = exports.element = {
   top: 1,
   left: 0,

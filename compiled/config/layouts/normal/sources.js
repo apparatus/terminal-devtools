@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-//element is outer wrapper for the tab
+// element is outer wrapper for the tab
 var element = exports.element = {
   top: 1,
   left: 0,
@@ -11,7 +11,7 @@ var element = exports.element = {
   height: '100%-1'
 };
 
-//ordering specifies order of panels
+// ordering specifies order of panels
 var ordering = exports.ordering = ['navigator', 'editor', 'callstack', 'breakpoints', 'scope', 'console'];
 
 var navigator = exports.navigator = {
@@ -30,7 +30,7 @@ var editor = exports.editor = {
 
 var editorstatus = exports.editorstatus = {
   top: '72.5%',
-  rightEdgeLeft: '76%', //<-- the dynamic width is subtracted from rightEdgeLeft
+  rightEdgeLeft: '76%', // <-- the dynamic width is subtracted from rightEdgeLeft
   // width - width calculated in component
   height: 1
 };

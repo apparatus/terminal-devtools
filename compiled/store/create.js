@@ -35,6 +35,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+/* eslint-disable */
+
+/* eslint-enable */
 
 var persist = (0, _persistance2.default)(_path2.default.join(__dirname, '..', 'config', 'user-settings.json'));
 
@@ -47,6 +50,7 @@ var persistanceMap = (_persistanceMap = {}, _defineProperty(_persistanceMap, _ac
 }), _persistanceMap);
 
 var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2.default, persist(persistanceMap)
+/* eslint-disable */
 // , logger({
 //   logger: console,
 //   // actionTransformer: action => {
@@ -73,6 +77,7 @@ var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2.default
 //     error: false,
 //   }
 // })
+/* eslint-enable */
 )(_redux.createStore);
 
 var reducer = (0, _redux.combineReducers)(reducers);

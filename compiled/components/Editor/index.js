@@ -20,6 +20,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* eslint-disable react/no-unknown-property */
+
 var ed = {
   style: {
     selected: {
@@ -49,17 +51,17 @@ var Editor = function Editor(_ref) {
   var focusPanel = _ref$actions.focusPanel;
   var toggleBreakpoint = _ref$actions.toggleBreakpoint;
   return _react2.default.createElement('list', {
+    vi: true,
+    keys: true,
+    mouse: true,
+    scrollbar: true,
+    inputOnFocused: true,
     'class': [style.panel, ed, focused && style.selected],
     selected: selected,
     left: left,
     width: width,
     top: top,
     height: height,
-    scrollbar: true,
-    mouse: true,
-    keys: true,
-    vi: true,
-    inputOnFocused: true,
     focused: focused,
     items: items,
     onSelectItem: function onSelectItem(item) {

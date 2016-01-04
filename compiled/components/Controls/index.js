@@ -10,22 +10,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _style = require('../../style');
-
-var style = _interopRequireWildcard(_style);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var btn = {
-  input: true,
-  keyable: true,
-  clickable: true,
-  mouse: true,
-  keys: true,
-  vi: true
-};
+/* eslint-disable react/no-unknown-property */
 
 var enable = {
   class: {
@@ -163,11 +150,7 @@ function renderer(_ref8) {
 
   var xl = _ref8.xl;
   var xi = _ref8.xi;
-  var yl = _ref8.yl;
-  var yi = _ref8.yi;
 
-  var width = xl - xi;
-  var height = yl - yi;
   return function (el, i) {
     el.shrink = true;
     var last = _this.getLastCoords(i);

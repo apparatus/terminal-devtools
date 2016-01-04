@@ -23,17 +23,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _blessed = require('blessed');
-
-var _blessed2 = _interopRequireDefault(_blessed);
-
 var _reactRedux = require('react-redux');
 
 var _reactBlessed = require('react-blessed');
-
-var _reactFunctional = require('react-functional');
-
-var _reactFunctional2 = _interopRequireDefault(_reactFunctional);
 
 var _portly = require('portly');
 
@@ -105,11 +97,16 @@ exports.default = (function () {
             dispatch((0, _actions.receiveSource)('Waiting for port debug port ' + debugPort));
 
             (0, _portly2.default)(debugPort).then(function (portPid) {
-
               var dbg = debug.start(debugPort, function (err, callstack) {
+                if (err) {
+                  return dispatch((0, _actions.error)(err));
+                }
                 dispatch((0, _actions.receiveCallstack)(callstack));
 
                 debug.scripts(function (err, scripts) {
+                  if (err) {
+                    return dispatch((0, _actions.error)(err));
+                  }
                   dispatch((0, _actions.receiveSources)(scripts));
                   if (callstack) {
                     dispatch((0, _actions.pause)());
@@ -148,6 +145,9 @@ exports.default = (function () {
 
                 dispatch((0, _actions.selectFile)({ scriptId: scriptId, lineNumber: lineNumber }));
                 debug.callstack(function (err, callstack) {
+                  if (err) {
+                    return dispatch((0, _actions.error)(err));
+                  }
                   if (!callstack) {
                     return;
                   }

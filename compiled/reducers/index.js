@@ -179,9 +179,9 @@ function scope() {
   var scope = _ref15$payload.scope;
 
   if (type !== _actions.RECEIVE_SCOPE) return state;
-  //TODO: this will be changed when we integrate the tree component,
-  //so instead of returning strings it returns objects to populate the
-  //tree
+  // TODO: this will be changed when we integrate the tree component,
+  // so instead of returning strings it returns objects to populate the
+  // tree
   return scope.map(function (_ref16) {
     var name = _ref16.name;
     var type = _ref16.type;

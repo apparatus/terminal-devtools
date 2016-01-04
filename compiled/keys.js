@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _actions = require('./actions');
 
-//note: keys.js is for global keys only, component level keys should be declared
-//on a per component basis
+// note: keys.js is for global keys only, component level keys should be declared
+// on a per component basis
 
 exports.default = function (store, screen) {
   var dispatch = store.dispatch;

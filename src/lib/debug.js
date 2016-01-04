@@ -14,14 +14,13 @@
 
 import {Debugger} from 'yadc'
 
-//important: preserve order
+// important: preserve order
 const SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch']
 
 export default () => {
   let debug
   let seq = 0
-  const scriptIdToUrl = new Map
-
+  const scriptIdToUrl = new Map()
 
   const scripts = cb => {
     debug.send({
@@ -31,7 +30,7 @@ export default () => {
       arguments: {
         types: 4,
         includeSource: true
-      } 
+      }
     }, (err, out) => {
       if (err) return cb(err)
       if (!out.res) return cb(Error('no response'))
@@ -59,7 +58,7 @@ export default () => {
       const {res} = out
       if (res.running) {
         debug.emit('unpaused')
-      } 
+      }
 
       if (!res.body) return cb(Error('no backtrace'))
       cb(null, res.body)
@@ -81,7 +80,7 @@ export default () => {
     })
   }
 
-  const setBreakpoint = ({line, file:target}, cb) => {
+  const setBreakpoint = ({line, file: target}, cb) => {
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -116,7 +115,7 @@ export default () => {
     })
   }
 
-  const step = (act, cb=()=>{}) => {
+  const step = (act, cb = () => {}) => {
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -134,28 +133,27 @@ export default () => {
   const stepInto = cb => step('in', cb)
   const stepOut = cb => step('out', cb)
 
-  const resume = (cb=()=>{}) => {
+  const resume = (cb = () => {}) => {
     debug.send({
       seq: ++seq,
       type: 'request',
-      command: 'continue',
+      command: 'continue'
     }, (err) => {
       if (err) return cb(err)
       cb()
     })
   }
 
-  const pause = (cb=()=>{}) => {
+  const pause = (cb = () => {}) => {
     debug.send({
       seq: ++seq,
       type: 'request',
-      command: 'suspend',
+      command: 'suspend'
     }, (err) => {
       if (err) return cb(err)
       callstack(cb)
     })
   }
-
 
   const lookup = ({handles}, cb) => {
     debug.send({
@@ -179,7 +177,7 @@ export default () => {
       type: 'request',
       command: 'scopes',
       arguments: {
-        number: 0, //<-- TODO what is? seen: 0, 1, 2 
+        number: 0, // <-- TODO what is? seen: 0, 1, 2
         frameNumber
       }
     }, (err, out) => {
@@ -189,7 +187,7 @@ export default () => {
       if (!res.body) return cb(Error('unable to get scopes'))
 
       const scopes = res.body.scopes.reduce((o, scope) => {
-        const {type, object:{ref}} = scope
+        const {type, object: {ref}} = scope
         if (type > 4) { return o }
         o[SCOPE_TYPES[type]] = scope
         scope.context = res.refs.find(({handle}) => handle === ref)
@@ -201,20 +199,23 @@ export default () => {
   }
 
   const scope = (scope, cb) => {
-    //TODO: 
-    //prototype, __proto__, this, getter/setter functions
-    const {object:{ref}} = scope
+    // TODO:
+    // prototype, __proto__, this, getter/setter functions
+    const {object: {ref}} = scope
 
-    lookup({handles:[ref]}, (err, out) => {
+    lookup({handles: [ref]}, (err, out) => {
+      if (err) {
+        return cb(err)
+      }
       const {properties} = out.body[ref]
       const {refs} = out
       const props = properties.reduce((a, {name, ref}) => {
         const {
-          type, //typeof string
+          type, // typeof string
           className, // [[Class]] constructor, only non-primitives
-          value,  //only on primitives
-          text, //fallback for null/undefined
-          source, //functions
+          value,  // only on primitives
+          text, // fallback for null/undefined
+          source, // functions
           properties // only on non-primitives (objects, functions, arrays)
         } = refs.find(({handle}) => handle === ref)
 
@@ -227,16 +228,13 @@ export default () => {
     })
   }
 
-
   const callstack = cb => backtrace((err, {frames, totalFrames}) => {
     if (err) return cb(err)
     if (totalFrames === 0) { return cb() }
     if (scriptIdToUrl.size) { return fetch() }
 
-    //populate scripts cache
+    // populate scripts cache
     scripts(fetch)
-
-
 
     function fetch () {
       cb(null, frames.map(({index, func, line, column}) => ({
@@ -251,54 +249,17 @@ export default () => {
       })))
     }
   })
-  
-  const start = (debugPort = 5858, cb) => {
 
+  const start = (debugPort = 5858, cb) => {
     debug = new Debugger({port: debugPort, host: 'localhost'})
 
     debug.connect(() => callstack(cb))
 
     return debug
-
   }
 
-  // const evaluate = (expression, cb) => {
-  //   let value
-  //   let type = 'object'
-  //   const opts = {
-  //     expression, 
-  //     callFrameId: currentContext.bp.callFrames[0].callFrameId
-  //   }
-
-  //   dbg.evaluateOnCallFrame(opts, (err, result) => {
-  //     if (err) { return cb(err) }
-
-  //     if (result.result.type === 'object') {
-  //       const opts = {
-  //         expression: 'JSON.stringify(' + expression + ')', 
-  //         callFrameId: currentContext.bp.callFrames[0].callFrameId
-  //       }
-  //       dbg.evaluateOnCallFrame(opts, (err, {result:{result}}) => {
-  //         if (err) { return cb(err) }
-  //         try {
-  //           value = JSON.parse(result.description)
-  //         }
-  //         catch (e) {
-  //           value = result.description
-  //           type = 'string'
-  //         }
-  //         cb(null, {type: type, value: value})
-  //       });
-  //     }
-  //     else {
-  //       cb(null, {type: result.type, value: result.description})
-  //     }
-  //   })
-  // }
-
-
   return {
-    get instance() { return debug },
+    get instance () { return debug },
     scripts,
     start,
     breakpoints,
@@ -308,11 +269,10 @@ export default () => {
     scopes,
     scope,
     lookup,
-    // evaluate,
     setBreakpoint,
     clearBreakpoint,
     stepOver,
     stepOut,
-    stepInto,
+    stepInto
   }
-} 
+}

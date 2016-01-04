@@ -16,6 +16,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/* eslint-disable react/no-unknown-property */
+
 var BreakPoints = function BreakPoints(_ref) {
   var items = _ref.items;
   var top = _ref.top;
@@ -26,6 +28,7 @@ var BreakPoints = function BreakPoints(_ref) {
   var tooltips = _ref.tooltips;
   var focusPanel = _ref.actions.focusPanel;
   return _react2.default.createElement('list', {
+    mouse: true,
     label: 'BreakPoints',
     focused: focused,
     'class': [style.panel, focused && style.selected],
@@ -34,7 +37,6 @@ var BreakPoints = function BreakPoints(_ref) {
     width: width,
     height: height,
     items: items,
-    mouse: true,
     onFocus: function onFocus() {
       return focused || focusPanel('breakpoints');
     },

@@ -16,7 +16,6 @@ function persistance(to) {
   if (!exists) {
     _fs2.default.writeFileSync(to, '{}');
   }
-
   var data = undefined;
 
   try {
@@ -58,7 +57,7 @@ function persistance(to) {
 }
 
 function save(data, to) {
-  //if necessary, make this function batch and throttle
+  // if necessary, make this function batch and throttle
   return _fs2.default.writeFileSync(to, JSON.stringify(data));
 }
 //# sourceMappingURL=persistance.js.map

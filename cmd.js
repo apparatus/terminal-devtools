@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#! /usr/bin/env node
 /*
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -13,13 +13,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-'use strict';
+'use strict'
 
-var pid = process.argv.slice(2)[0];
+var pid = process.argv.slice(2)[0]
 
-require('./')(pid).then(function(o) {
-  setTimeout(()=> {
-    o.render(o.wrap, o.screen);
-  }, 5000);
-});
-
+require('./')(pid).then(function (o) {
+  setTimeout(() => {
+    o.render(o.wrap, o.screen)
+  }, 5000)
+})

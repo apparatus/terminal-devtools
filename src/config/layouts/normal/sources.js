@@ -1,12 +1,12 @@
-//element is outer wrapper for the tab
+// element is outer wrapper for the tab
 export const element = {
   top: 1,
   left: 0,
   width: '100%',
-  height: '100%-1'  
+  height: '100%-1'
 }
 
-//ordering specifies order of panels
+// ordering specifies order of panels
 export const ordering = [
   'navigator',
   'editor',
@@ -32,7 +32,7 @@ export const editor = {
 
 export const editorstatus = {
   top: '72.5%',
-  rightEdgeLeft: '76%', //<-- the dynamic width is subtracted from rightEdgeLeft
+  rightEdgeLeft: '76%', // <-- the dynamic width is subtracted from rightEdgeLeft
   // width - width calculated in component
   height: 1
 }

@@ -1,12 +1,12 @@
-//element is outer wrapper for the tab
+// element is outer wrapper for the tab
 export const element = {
   top: 1,
   left: 0,
   width: '100%',
-  height: '100%-1'  
+  height: '100%-1'
 }
 
-//ordering specifies order of panels
+// ordering specifies order of panels
 export const ordering = [
   'editor',
   'callstack',
@@ -17,7 +17,7 @@ export const navigator = {
   top: 0,
   left: 0,
   width: 0,
-  height: 0,
+  height: 0
 }
 
 export const editor = {
@@ -29,7 +29,7 @@ export const editor = {
 
 export const editorstatus = {
   top: '72.5%-1',
-  rightEdgeLeft: '67.5%', //<-- the dynamic width is subtracted from rightEdgeLeft
+  rightEdgeLeft: '67.5%', // <-- the dynamic width is subtracted from rightEdgeLeft
   // width - width calculated in component
   height: 1
 }
