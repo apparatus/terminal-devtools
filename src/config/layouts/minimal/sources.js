@@ -28,7 +28,7 @@ export const editor = {
 }
 
 export const editorstatus = {
-  top: '72.5%-1',
+  top: '100%-2',
   rightEdgeLeft: '67.5%', // <-- the dynamic width is subtracted from rightEdgeLeft
   // width - width calculated in component
   height: 1
@@ -45,7 +45,7 @@ export const breakpoints = {
   top: '50%',
   left: '67.5%-1',
   width: '32.5%+1',
-  height: '50%'
+  height: '49%+1'
 }
 
 export const scope = {

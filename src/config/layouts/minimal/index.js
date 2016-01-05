@@ -18,10 +18,10 @@ export const tabs = {
 }
 
 export const settings = {
-  top: '12%',
-  left: '12.5%',
-  width: '75%',
-  height: '75%'
+  top: '47.5%-14',
+  left: '50%-46',
+  width: 90,
+  height: 28
 }
 
 export const controls = {
