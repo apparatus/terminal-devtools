@@ -250,10 +250,14 @@ export default () => {
     }
   })
 
-  const start = (debugPort = 5858, cb) => {
-    debug = new Debugger({port: debugPort, host: 'localhost'})
+  const start = ({port = 5858, host = '127.0.0.1'}, cb) => {
+    debug = new Debugger({port, host})
 
-    debug.connect(() => callstack(cb))
+    const attempt = () => debug.connect(() => callstack(cb))
+
+    debug.on('error', () => setTimeout(attempt, 1000))
+
+    attempt()
 
     return debug
   }

@@ -6,7 +6,6 @@ import path from 'path'
 import React from 'react'
 import {Provider, connect} from 'react-redux'
 import {render} from 'react-blessed'
-import portly from 'portly'
 import createStore from './store/create'
 import createScreen from './screen'
 import config from './config'
@@ -45,8 +44,7 @@ const {dispatch} = store
 
 export const debug = createDebugger()
 
-export default async (pid) => {
-  const debugPort = 5858
+export default async (pid, {host = '127.0.0.1', port: debugPort = 5858}) => {
 
   if (pid) {
     try {
@@ -60,48 +58,47 @@ export default async (pid) => {
 
   dispatch(receiveSource('Waiting for port debug port ' + debugPort))
 
-  portly(debugPort).then(portPid => {
-    const dbg = debug.start(debugPort, (err, callstack) => {
+  const dbg = debug.start({host, port: debugPort}, (err, callstack) => {
+    if (err) {
+      return dispatch(error(err))
+    }
+    dispatch(receiveCallstack(callstack))
+
+    debug.scripts((err, scripts) => {
       if (err) {
         return dispatch(error(err))
       }
-      dispatch(receiveCallstack(callstack))
-
-      debug.scripts((err, scripts) => {
-        if (err) {
-          return dispatch(error(err))
-        }
-        dispatch(receiveSources(scripts))
-        if (callstack) {
-          dispatch(pause())
-          dispatch(selectFrame(0))
-          return
-        }
-        const {name} = (scripts.find(s => s.name[0] === '/') || scripts[0])
-        dispatch(selectFile(name))
-      })
-
-      debug.breakpoints((err, {breakpoints}) => {
-        if (err) { return console.error(err) }
-        receiveBreakpoints(breakpoints)
-      })
-    })
-
-    dbg.on('event', ({event, body}) => {
-      if (event !== 'break') { return }
-      const {sourceLine: lineNumber, script: {id: scriptId}} = body
-      dispatch(selectFile({scriptId, lineNumber}))
-      debug.callstack((err, callstack) => {
-        if (err) {
-          return dispatch(error(err))
-        }
-        if (!callstack) { return }
-        dispatch(receiveCallstack(callstack))
+      dispatch(receiveSources(scripts))
+      if (callstack) {
         dispatch(pause())
         dispatch(selectFrame(0))
-      })
+        return
+      }
+      const {name} = (scripts.find(s => s.name[0] === '/') || scripts[0])
+      dispatch(selectFile(name))
+    })
+
+    debug.breakpoints((err, {breakpoints}) => {
+      if (err) { return console.error(err) }
+      receiveBreakpoints(breakpoints)
     })
   })
+
+  dbg.on('event', ({event, body}) => {
+    if (event !== 'break') { return }
+    const {sourceLine: lineNumber, script: {id: scriptId}} = body
+    dispatch(selectFile({scriptId, lineNumber}))
+    debug.callstack((err, callstack) => {
+      if (err) {
+        return dispatch(error(err))
+      }
+      if (!callstack) { return }
+      dispatch(receiveCallstack(callstack))
+      dispatch(pause())
+      dispatch(selectFrame(0))
+    })
+  })
+
 
   let Devtools = ({layout, tab, panel}) => {
     return (

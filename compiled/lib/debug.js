@@ -321,15 +321,25 @@ exports.default = function () {
     });
   };
 
-  var start = function start() {
-    var debugPort = arguments.length <= 0 || arguments[0] === undefined ? 5858 : arguments[0];
-    var cb = arguments[1];
+  var start = function start(_ref10, cb) {
+    var _ref10$port = _ref10.port;
+    var port = _ref10$port === undefined ? 5858 : _ref10$port;
+    var _ref10$host = _ref10.host;
+    var host = _ref10$host === undefined ? '127.0.0.1' : _ref10$host;
 
-    debug = new _yadc.Debugger({ port: debugPort, host: 'localhost' });
+    debug = new _yadc.Debugger({ port: port, host: host });
 
-    debug.connect(function () {
-      return callstack(cb);
+    var attempt = function attempt() {
+      return debug.connect(function () {
+        return callstack(cb);
+      });
+    };
+
+    debug.on('error', function () {
+      return setTimeout(attempt, 1000);
     });
+
+    attempt();
 
     return debug;
   };

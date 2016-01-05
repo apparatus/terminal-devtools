@@ -21,7 +21,7 @@ npm i -g terminal-devtools
 ## Usage
 
 ```sh
-devtools <pid>
+devtools <pid> [--port <port>] [--host <host>]
 ```
 
 ## Navigating
@@ -36,7 +36,6 @@ devtools <pid>
   * ctrl+o - sc**o**pe
 * keys 1-4 select sources, networking, profiling, console tabs
 * press n to step next
-* press r to resume
-* press p to pause
+* press c to pause/resume
 * in editor press `b` key to toggle break point on selected line
 * vi keys supported in editor (e.g. j/k for up/down)
