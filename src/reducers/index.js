@@ -1,15 +1,19 @@
-import {basename} from 'path'
+import {basename, sep} from 'path'
 
 import {
   FOCUS_TAB,
   FOCUS_PANEL,
   RECEIVE_CALLSTACK,
   RECEIVE_BREAKPOINTS,
+  CLEAR_SCOPE,
   RECEIVE_SCOPE,
+  EXTEND_SCOPE,
+  SET_SCOPE_ITEM,
+  ADD_ITEM_TO_SCOPE,
   RECEIVE_SOURCE,
   RECEIVE_SOURCES,
   SELECT_FILE,
-  SET_FILE_INDEX,
+  SET_FILE_ITEM,
   SET_EDITOR_LINE,
   SELECT_FRAME,
   PAUSE,
@@ -36,9 +40,38 @@ export function sources (state = [], {type, payload}) {
 export function files (state = [], {type, payload}) {
   if (type !== RECEIVE_SOURCES) return state
   const sources = payload.map(s => s.name)
-  const nonNative = sources.filter(s => s[0] === '/')
-  const native = sources.filter(s => s[0] !== '/')
-  return [...nonNative, ...native]
+
+  const nonNative = sources.filter(s => s[0] === sep)
+    .reduce((o, path) => {
+      let next = o
+      path.split(sep).filter(Boolean).forEach((segment, ix, arr) => {
+        next[segment] = {value: {}}
+
+        if (ix === arr.length - 1) {
+          next[segment].data = {path}
+          next[segment].options = {terminate: true}
+        }
+        next = next[segment].value
+      })
+      return o
+    }, {})
+
+  const native = {
+    '(core)': {
+      value: sources
+        .filter(s => s[0] !== sep)
+        .reduce((o, f) => {
+          o[f] = {
+            value: {},
+            options: {terminate: true},
+            data: {path: f}
+          }
+          return o
+        }, {})
+    }
+  }
+
+  return {...native, ...nonNative}
 }
 
 export function file (state = '', {type, payload}) {
@@ -46,8 +79,13 @@ export function file (state = '', {type, payload}) {
   return payload
 }
 
-export function fileIndex (state = 0, {type, payload}) {
-  if (type !== SET_FILE_INDEX) return state
+export function fileItem (state = null, {type, payload = state}) {
+  if (type !== SET_FILE_ITEM) return state
+  return payload
+}
+
+export function scopeItem (state = null, {type, payload = state}) {
+  if (type !== SET_SCOPE_ITEM) return state
   return payload
 }
 
@@ -87,24 +125,47 @@ export function breakpoints (state = [], {type, payload}) {
   return payload.map(({script_name: name, line}) => basename(name) + ':' + line)
 }
 
-export function scope (state = [], {type, payload: {area, scope} = {}}) {
-  if (type !== RECEIVE_SCOPE) return state
-  // TODO: this will be changed when we integrate the tree component,
-  // so instead of returning strings it returns objects to populate the
-  // tree
-  return scope.map(
-    ({name, type, value, text, source, className, properties}) => {
-      if (type === 'object') { value = className }
-      if (className === 'Array') {
-        value = 'Array(' + properties.filter(({name}) => !isNaN(name)).length + ')'
+export function scope (state = {}, {type, payload: {area, scope, branch, namespace} = {}}) {
+  if (type === CLEAR_SCOPE) return {}
+
+  if (type === RECEIVE_SCOPE) {
+    return {
+      ...state,
+      [area]: {
+        options: {labelling: false},
+        value: treeify(scope)
       }
-      if (type === 'string') {
-        value = '\'' + value + '\''
-      }
-      value = value || source || text
-      return name + ': ' + value
     }
-  )
+  }
+
+  if (type === EXTEND_SCOPE) {
+    // branch is still ref'd in state, altering the branch updates
+    // the state, but we want want to return a new state object to
+    // observe the rule of immutability. If this every breaks (due to branch
+    // being a copy instead of a direct ref, then we'd need to do a deep find
+    // on the state to locate the branch - along with that we'd need to add uids
+    // to every branch))
+    branch.value = treeify(scope)
+    return {...state}
+  }
+
+  if (type === ADD_ITEM_TO_SCOPE) {
+    state[area].value = {
+      [namespace]: Object(scope) === scope
+        ? {
+          label: 'Object',
+          value: !scope.length
+            ? {'« empty »': {options: {labelling: false}}}
+            : treeify(scope)
+        }
+        : {value: scope},
+      ...state[area].value
+    }
+
+    return {...state}
+  }
+
+  return state
 }
 
 export function source (state = {}, {type, payload}) {
@@ -127,3 +188,24 @@ export function tooltips (state = true, {type}) {
   return !state
 }
 
+// utils:
+
+function treeify (scope) {
+  return scope.reduce((o, {name, type, value, text, source, className, properties, handle}) => {
+    if (type === 'object') { value = className }
+    if (className === 'Array') {
+      value = 'Array(' + properties.filter(({name}) => !isNaN(name)).length + ')'
+    }
+    if (type === 'string') {
+      value = '\'' + value + '\''
+    }
+    value = value || source || text
+    o[name] = properties
+      ? properties.length
+        ? {label: value, value: {}, meta: {handle}}
+        : {label: value, value: {'« empty »': {options: {labelling: false}}}}
+      : {value}
+
+    return o
+  }, {})
+}

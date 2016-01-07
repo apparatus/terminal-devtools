@@ -6,8 +6,8 @@ console.log(process.pid)
 
 setInterval(function () {
   console.log('a')
-  debugger // eslint-disable-line 
+  debugger
   console.log('b')
-  debugger // eslint-disable-line 
+  debugger
   console.log('c')
 }, 100)

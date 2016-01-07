@@ -15,7 +15,20 @@
 import {Debugger} from 'yadc'
 
 // important: preserve order
-const SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch']
+const SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch', 'block', 'script']
+
+const PROPERTY_TYPES = {
+  NORMAL: 0,
+  FIELD: 1,
+  CONSTANT: 2,
+  CALLBACKS: 3,
+  HANDLER: 4,
+  INTERCEPTOR: 5,
+  TRANSITION: 6,
+  NONEXISTENT: 7
+}
+
+const DC_ERROR = Error('disconnected')
 
 export default () => {
   let debug
@@ -23,6 +36,7 @@ export default () => {
   const scriptIdToUrl = new Map()
 
   const scripts = cb => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -43,6 +57,7 @@ export default () => {
   }
 
   const backtrace = cb => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -66,6 +81,7 @@ export default () => {
   }
 
   const breakpoints = cb => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -81,6 +97,7 @@ export default () => {
   }
 
   const setBreakpoint = ({line, file: target}, cb) => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -98,6 +115,7 @@ export default () => {
   }
 
   const clearBreakpoint = (breakpoint, cb) => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -116,6 +134,7 @@ export default () => {
   }
 
   const step = (act, cb = () => {}) => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -134,6 +153,7 @@ export default () => {
   const stepOut = cb => step('out', cb)
 
   const resume = (cb = () => {}) => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -145,6 +165,7 @@ export default () => {
   }
 
   const pause = (cb = () => {}) => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -156,6 +177,7 @@ export default () => {
   }
 
   const lookup = ({handles}, cb) => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -172,12 +194,13 @@ export default () => {
   }
 
   const scopes = ({callFrameId: frameNumber}, cb) => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
       seq: ++seq,
       type: 'request',
       command: 'scopes',
       arguments: {
-        number: 0, // <-- TODO what is? seen: 0, 1, 2
+        number: 0,
         frameNumber
       }
     }, (err, out) => {
@@ -188,7 +211,7 @@ export default () => {
 
       const scopes = res.body.scopes.reduce((o, scope) => {
         const {type, object: {ref}} = scope
-        if (type > 4) { return o }
+        if (type > 5) { return o }
         o[SCOPE_TYPES[type]] = scope
         scope.context = res.refs.find(({handle}) => handle === ref)
         return o
@@ -198,33 +221,81 @@ export default () => {
     })
   }
 
-  const scope = (scope, cb) => {
+  const scope = (handles, cb) => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     // TODO:
-    // prototype, __proto__, this, getter/setter functions
-    const {object: {ref}} = scope
+    // __proto__, this, getter/setter functions
 
-    lookup({handles: [ref]}, (err, out) => {
+    if (!Array.isArray(handles)) handles = [handles]
+
+    handles = handles.map(({object: {ref}}) => ref)
+
+    lookup({handles}, (err, out) => {
       if (err) {
         return cb(err)
       }
-      const {properties} = out.body[ref]
+      if (!out.success) {
+        const e = Error('scope lookup error ' + out.message)
+        e.response = out
+        return cb(e)
+      }
+      if (!out.body) {
+        const e = Error('No body in lookup request')
+        e.response = out
+        return cb(e)
+      }
+
       const {refs} = out
-      const props = properties.reduce((a, {name, ref}) => {
-        const {
-          type, // typeof string
-          className, // [[Class]] constructor, only non-primitives
-          value,  // only on primitives
-          text, // fallback for null/undefined
-          source, // functions
-          properties // only on non-primitives (objects, functions, arrays)
-        } = refs.find(({handle}) => handle === ref)
 
-        a.push({name, type, className, value, text, source, properties})
+      const objList = handles.map(ref => {
+        const {properties} = out.body[ref]
 
-        return a
-      }, [])
+        if (!properties) { return }
 
-      cb(null, props)
+        const props = properties.reduce((a, {name, ref, attributes = 0, propertyType}, i, arr) => {
+          let {
+            type, // e.g. typeof
+            className, // [[Class]] constructor, only non-primitives
+            value,  // only primitives
+            text, // fallback for null/undefined
+            source, // functions
+            properties // only on non-primitives (objects, functions, arrays)
+          } = refs.find(({handle}) => handle === ref)
+
+          const descriptor = {
+            writable: !(attributes & 1 << 0),
+            enumerable: !(attributes & 1 << 1),
+            configurable: !(attributes & 1 << 2)
+          }
+
+          const isPropertyAccessor = attributes === 6 &&
+            propertyType === PROPERTY_TYPES.CALLBACKS &&
+            type === 'undefined'
+
+          // TODO - if getter/setter do an eval in frame to fetch the
+          // get/set function strings (and properties) - since node/v8
+          // doesn't supply the get/set methods via the api
+
+          if (isPropertyAccessor) {
+            type = 'getter/setter'
+            text = '[Getter/Setter]'
+          }
+
+          a.push({name, type, className, value, text, source, properties, descriptor,
+            handle: {
+              object: {ref}
+            }
+          })
+
+          return a
+        }, [])
+
+        return {
+          meta: out.body[ref], props
+        }
+      })
+
+      cb(null, objList.length > 1 ? objList : objList[0])
     })
   }
 
@@ -237,7 +308,7 @@ export default () => {
     scripts(fetch)
 
     function fetch () {
-      cb(null, frames.map(({index, func, line, column}) => ({
+      cb(null, frames.map(({index, func, line, column, receiver}) => ({
         callFrameId: index,
         functionName: func.inferredName || func.name,
         location: {
@@ -245,7 +316,8 @@ export default () => {
           lineNumber: line,
           columnNumber: column,
           url: scriptIdToUrl.get(func.scriptId)
-        }
+        },
+        contextHandle: {object: receiver}
       })))
     }
   })
@@ -253,9 +325,10 @@ export default () => {
   const start = ({port = 5858, host = '127.0.0.1'}, cb) => {
     debug = new Debugger({port, host})
 
-    const attempt = () => debug.connect(() => callstack(cb))
-
-    debug.on('error', () => setTimeout(attempt, 1000))
+    const attempt = () => {
+      debug.connect(() => callstack(cb))
+      debug.once('error', () => setTimeout(attempt, 1000))
+    }
 
     attempt()
 
@@ -263,7 +336,6 @@ export default () => {
   }
 
   return {
-    get instance () { return debug },
     scripts,
     start,
     breakpoints,

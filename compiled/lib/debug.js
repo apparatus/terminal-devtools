@@ -7,19 +7,32 @@ Object.defineProperty(exports, "__esModule", {
 var _yadc = require('yadc');
 
 // important: preserve order
-var SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch']; /*
-                                                                    * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
-                                                                    * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-                                                                    * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-                                                                    * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-                                                                    * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-                                                                    * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-                                                                    * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-                                                                    * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-                                                                    * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-                                                                    * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-                                                                    * POSSIBILITY OF SUCH DAMAGE.
-                                                                    */
+var SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch', 'block', 'script']; /*
+                                                                                       * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+                                                                                       * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+                                                                                       * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+                                                                                       * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+                                                                                       * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+                                                                                       * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+                                                                                       * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+                                                                                       * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+                                                                                       * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+                                                                                       * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+                                                                                       * POSSIBILITY OF SUCH DAMAGE.
+                                                                                       */
+
+var PROPERTY_TYPES = {
+  NORMAL: 0,
+  FIELD: 1,
+  CONSTANT: 2,
+  CALLBACKS: 3,
+  HANDLER: 4,
+  INTERCEPTOR: 5,
+  TRANSITION: 6,
+  NONEXISTENT: 7
+};
+
+var DC_ERROR = Error('disconnected');
 
 exports.default = function () {
   var debug = undefined;
@@ -27,6 +40,7 @@ exports.default = function () {
   var scriptIdToUrl = new Map();
 
   var scripts = function scripts(cb) {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -52,6 +66,7 @@ exports.default = function () {
   };
 
   var backtrace = function backtrace(cb) {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -76,6 +91,7 @@ exports.default = function () {
   };
 
   var breakpoints = function breakpoints(cb) {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -97,6 +113,7 @@ exports.default = function () {
     var line = _ref2.line;
     var target = _ref2.file;
 
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -115,6 +132,7 @@ exports.default = function () {
   };
 
   var clearBreakpoint = function clearBreakpoint(breakpoint, cb) {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -136,6 +154,7 @@ exports.default = function () {
   var step = function step(act) {
     var cb = arguments.length <= 1 || arguments[1] === undefined ? function () {} : arguments[1];
 
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -162,6 +181,7 @@ exports.default = function () {
   var resume = function resume() {
     var cb = arguments.length <= 0 || arguments[0] === undefined ? function () {} : arguments[0];
 
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -175,6 +195,7 @@ exports.default = function () {
   var pause = function pause() {
     var cb = arguments.length <= 0 || arguments[0] === undefined ? function () {} : arguments[0];
 
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -188,6 +209,7 @@ exports.default = function () {
   var lookup = function lookup(_ref3, cb) {
     var handles = _ref3.handles;
 
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -207,12 +229,13 @@ exports.default = function () {
   var scopes = function scopes(_ref4, cb) {
     var frameNumber = _ref4.callFrameId;
 
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
       seq: ++seq,
       type: 'request',
       command: 'scopes',
       arguments: {
-        number: 0, // <-- TODO what is? seen: 0, 1, 2
+        number: 0,
         frameNumber: frameNumber
       }
     }, function (err, out) {
@@ -226,7 +249,7 @@ exports.default = function () {
         var type = scope.type;
         var ref = scope.object.ref;
 
-        if (type > 4) {
+        if (type > 5) {
           return o;
         }
         o[SCOPE_TYPES[type]] = scope;
@@ -241,53 +264,106 @@ exports.default = function () {
     });
   };
 
-  var scope = function scope(_scope, cb) {
+  var scope = function scope(handles, cb) {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     // TODO:
-    // prototype, __proto__, this, getter/setter functions
-    var ref = _scope.object.ref;
+    // __proto__, this, getter/setter functions
 
-    lookup({ handles: [ref] }, function (err, out) {
+    if (!Array.isArray(handles)) handles = [handles];
+
+    handles = handles.map(function (_ref6) {
+      var ref = _ref6.object.ref;
+      return ref;
+    });
+
+    lookup({ handles: handles }, function (err, out) {
       if (err) {
         return cb(err);
       }
-      var properties = out.body[ref].properties;
+      if (!out.success) {
+        var e = Error('scope lookup error ' + out.message);
+        e.response = out;
+        return cb(e);
+      }
+      if (!out.body) {
+        var e = Error('No body in lookup request');
+        e.response = out;
+        return cb(e);
+      }
+
       var refs = out.refs;
 
-      var props = properties.reduce(function (a, _ref6) {
-        var name = _ref6.name;
-        var ref = _ref6.ref;
+      var objList = handles.map(function (ref) {
+        var properties = out.body[ref].properties;
 
-        var _refs$find = // functions
-        // only on non-primitives (objects, functions, arrays)
-        refs.find(function (_ref7) {
-          var handle = _ref7.handle;
-          return handle === ref;
-        });
+        if (!properties) {
+          return;
+        }
 
-        var type = _refs$find.type;
-        var // typeof string
-        className = _refs$find.className;
-        var // [[Class]] constructor, only non-primitives
-        value = _refs$find.value;
-        var // only on primitives
-        text = _refs$find.text;
-        var // fallback for null/undefined
-        source = _refs$find.source;
-        var properties = _refs$find.properties;
+        var props = properties.reduce(function (a, _ref7, i, arr) {
+          var name = _ref7.name;
+          var ref = _ref7.ref;
+          var _ref7$attributes = _ref7.attributes;
+          var attributes = _ref7$attributes === undefined ? 0 : _ref7$attributes;
+          var propertyType = _ref7.propertyType;
 
-        a.push({ name: name, type: type, className: className, value: value, text: text, source: source, properties: properties });
+          var _refs$find = // functions
+          // only on non-primitives (objects, functions, arrays)
+          refs.find(function (_ref8) {
+            var handle = _ref8.handle;
+            return handle === ref;
+          });
 
-        return a;
-      }, []);
+          var type = _refs$find.type;
+          var // e.g. typeof
+          className = _refs$find.className;
+          var // [[Class]] constructor, only non-primitives
+          value = _refs$find.value;
+          var // only primitives
+          text = _refs$find.text;
+          var // fallback for null/undefined
+          source = _refs$find.source;
+          var properties = _refs$find.properties;
 
-      cb(null, props);
+          var descriptor = {
+            writable: !(attributes & 1 << 0),
+            enumerable: !(attributes & 1 << 1),
+            configurable: !(attributes & 1 << 2)
+          };
+
+          var isPropertyAccessor = attributes === 6 && propertyType === PROPERTY_TYPES.CALLBACKS && type === 'undefined';
+
+          // TODO - if getter/setter do an eval in frame to fetch the
+          // get/set function strings (and properties) - since node/v8
+          // doesn't supply the get/set methods via the api
+
+          if (isPropertyAccessor) {
+            type = 'getter/setter';
+            text = '[Getter/Setter]';
+          }
+
+          a.push({ name: name, type: type, className: className, value: value, text: text, source: source, properties: properties, descriptor: descriptor,
+            handle: {
+              object: { ref: ref }
+            }
+          });
+
+          return a;
+        }, []);
+
+        return {
+          meta: out.body[ref], props: props
+        };
+      });
+
+      cb(null, objList.length > 1 ? objList : objList[0]);
     });
   };
 
   var callstack = function callstack(cb) {
-    return backtrace(function (err, _ref8) {
-      var frames = _ref8.frames;
-      var totalFrames = _ref8.totalFrames;
+    return backtrace(function (err, _ref9) {
+      var frames = _ref9.frames;
+      var totalFrames = _ref9.totalFrames;
 
       if (err) return cb(err);
       if (totalFrames === 0) {
@@ -301,11 +377,12 @@ exports.default = function () {
       scripts(fetch);
 
       function fetch() {
-        cb(null, frames.map(function (_ref9) {
-          var index = _ref9.index;
-          var func = _ref9.func;
-          var line = _ref9.line;
-          var column = _ref9.column;
+        cb(null, frames.map(function (_ref10) {
+          var index = _ref10.index;
+          var func = _ref10.func;
+          var line = _ref10.line;
+          var column = _ref10.column;
+          var receiver = _ref10.receiver;
           return {
             callFrameId: index,
             functionName: func.inferredName || func.name,
@@ -314,30 +391,30 @@ exports.default = function () {
               lineNumber: line,
               columnNumber: column,
               url: scriptIdToUrl.get(func.scriptId)
-            }
+            },
+            contextHandle: { object: receiver }
           };
         }));
       }
     });
   };
 
-  var start = function start(_ref10, cb) {
-    var _ref10$port = _ref10.port;
-    var port = _ref10$port === undefined ? 5858 : _ref10$port;
-    var _ref10$host = _ref10.host;
-    var host = _ref10$host === undefined ? '127.0.0.1' : _ref10$host;
+  var start = function start(_ref11, cb) {
+    var _ref11$port = _ref11.port;
+    var port = _ref11$port === undefined ? 5858 : _ref11$port;
+    var _ref11$host = _ref11.host;
+    var host = _ref11$host === undefined ? '127.0.0.1' : _ref11$host;
 
     debug = new _yadc.Debugger({ port: port, host: host });
 
     var attempt = function attempt() {
-      return debug.connect(function () {
+      debug.connect(function () {
         return callstack(cb);
       });
+      debug.once('error', function () {
+        return setTimeout(attempt, 1000);
+      });
     };
-
-    debug.on('error', function () {
-      return setTimeout(attempt, 1000);
-    });
 
     attempt();
 
@@ -345,9 +422,6 @@ exports.default = function () {
   };
 
   return {
-    get instance() {
-      return debug;
-    },
     scripts: scripts,
     start: start,
     breakpoints: breakpoints,

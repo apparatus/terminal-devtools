@@ -3,7 +3,8 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TOGGLE_TOOLTIPS = exports.SET_DIMENSIONS = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.TOGGLE_BREAKPOINT = exports.SET_EDITOR_LINE = exports.SET_FILE_INDEX = exports.RECEIVE_SOURCE = exports.RECEIVE_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
+exports.TOGGLE_TOOLTIPS = exports.SET_DIMENSIONS = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.TOGGLE_BREAKPOINT = exports.SET_EDITOR_LINE = exports.SET_FILE_ITEM = exports.RECEIVE_SOURCE = exports.ADD_ITEM_TO_SCOPE = exports.SET_SCOPE_ITEM = exports.EXTEND_SCOPE = exports.RECEIVE_SCOPE = exports.CLEAR_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.START_DEBUGGING = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
+exports.startDebugging = startDebugging;
 exports.focusTab = focusTab;
 exports.focusPanel = focusPanel;
 exports.selectFile = selectFile;
@@ -14,6 +15,8 @@ exports.error = error;
 exports.receiveSources = receiveSources;
 exports.receiveCallstack = receiveCallstack;
 exports.receiveBreakpoints = receiveBreakpoints;
+exports.extendScope = extendScope;
+exports.clearScope = clearScope;
 exports.receiveScope = receiveScope;
 exports.receiveSource = receiveSource;
 exports.pause = pause;
@@ -26,7 +29,14 @@ exports.previousFrame = previousFrame;
 exports.setDimensions = setDimensions;
 exports.toggleTooltips = toggleTooltips;
 
-var _ = require('../');
+var _debug = require('../lib/debug');
+
+var _debug2 = _interopRequireDefault(_debug);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var debug = (0, _debug2.default)();
+var dbg = undefined;
 
 // User Actions Types:
 
@@ -37,12 +47,17 @@ var SELECT_FILE = exports.SELECT_FILE = 'SELECT_FILE';
 // Operational Action Types:
 
 var ERROR = exports.ERROR = 'ERROR';
+var START_DEBUGGING = exports.START_DEBUGGING = 'START_DEBUGGING';
 var RECEIVE_SOURCES = exports.RECEIVE_SOURCES = 'RECEIVE_SOURCES';
 var RECEIVE_CALLSTACK = exports.RECEIVE_CALLSTACK = 'RECEIVE_CALLSTACK';
 var RECEIVE_BREAKPOINTS = exports.RECEIVE_BREAKPOINTS = 'RECEIVE_BREAKPOINTS';
+var CLEAR_SCOPE = exports.CLEAR_SCOPE = 'CLEAR_SCOPE';
 var RECEIVE_SCOPE = exports.RECEIVE_SCOPE = 'RECEIVE_SCOPE';
+var EXTEND_SCOPE = exports.EXTEND_SCOPE = 'EXTEND_SCOPE';
+var SET_SCOPE_ITEM = exports.SET_SCOPE_ITEM = 'SET_SCOPE_ITEM';
+var ADD_ITEM_TO_SCOPE = exports.ADD_ITEM_TO_SCOPE = 'ADD_ITEM_TO_SCOPE';
 var RECEIVE_SOURCE = exports.RECEIVE_SOURCE = 'RECEIVE_SOURCE';
-var SET_FILE_INDEX = exports.SET_FILE_INDEX = 'SET_FILE_INDEX';
+var SET_FILE_ITEM = exports.SET_FILE_ITEM = 'SET_FILE_ITEM';
 var SET_EDITOR_LINE = exports.SET_EDITOR_LINE = 'SET_EDITOR_LINE';
 var TOGGLE_BREAKPOINT = exports.TOGGLE_BREAKPOINT = 'TOGGLE_BREAKPOINT';
 
@@ -63,6 +78,49 @@ var TOGGLE_TOOLTIPS = exports.TOGGLE_TOOLTIPS = 'TOGGLE_TOOLTIPS';
 
 // User Action Creators:
 
+function startDebugging(_ref) {
+  var host = _ref.host;
+  var port = _ref.port;
+
+  return function (dispatch) {
+    dbg = debug.start({ host: host, port: port }, function (err, callstack) {
+      if (err) {
+        return dispatch(error(err));
+      }
+      dispatch(receiveCallstack(callstack));
+
+      debug.scripts(function (err, scripts) {
+        if (err) {
+          return dispatch(error(err));
+        }
+        dispatch(receiveSources(scripts));
+        if (callstack) {
+          dispatch(pause());
+          dispatch(selectFrame(0));
+          return;
+        }
+
+        var _ref2 = scripts.find(function (s) {
+          return s.name[0] === '/';
+        }) || scripts[0];
+
+        var name = _ref2.name;
+
+        dispatch(selectFile(name));
+      });
+
+      debug.breakpoints(function (err, _ref3) {
+        var breakpoints = _ref3.breakpoints;
+
+        if (err) {
+          return console.error(err);
+        }
+        dispatch(receiveBreakpoints(breakpoints));
+      });
+    });
+  };
+}
+
 function focusTab(payload) {
   return {
     type: FOCUS_TAB,
@@ -81,7 +139,7 @@ function selectFile(payload) {
 
     var sources = _getState.sources;
     var _getState$files = _getState.files;
-    var files = _getState$files === undefined ? [] : _getState$files;
+    var files = _getState$files === undefined ? {} : _getState$files;
 
     if (!sources.length) return;
     var payloadIsObject = Object(payload) === payload;
@@ -92,11 +150,48 @@ function selectFile(payload) {
       return s.name === payload;
     });
 
+    if (!script) {
+      console.trace('no script', payload);
+      return;
+    }
+
     var source = script.source;
     var name = script.name;
 
     dispatch({ type: SELECT_FILE, payload: name });
-    dispatch({ type: SET_FILE_INDEX, payload: files.indexOf(name) });
+
+    function locate(f) {
+      var found = undefined;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = f[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var o = _step.value;
+
+          found = o.data && o.data.path && o.data.path === name ? o : locate(Object.values(o.value));
+          if (found) break;
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return found;
+    }
+
+    dispatch({ type: SET_FILE_ITEM, payload: locate(Object.values(files)) });
 
     if (payloadIsObject) {
       var _payload$lineNumber = payload.lineNumber;
@@ -129,19 +224,19 @@ function toggleBreakpoint() {
 
     dispatch({ type: TOGGLE_BREAKPOINT });
 
-    var isSet = breaks.find(function (_ref) {
-      var line = _ref.line;
-      var name = _ref.script_name;
+    var isSet = breaks.find(function (_ref4) {
+      var line = _ref4.line;
+      var name = _ref4.script_name;
       return name === file && line === editorLine;
     });
 
     if (isSet) {
-      _.debug.clearBreakpoint(isSet.number, function (err, result) {
+      debug.clearBreakpoint(isSet.number, function (err, result) {
         if (err) {
           return error(err);
         }
-        _.debug.breakpoints(function (err, _ref2) {
-          var breakpoints = _ref2.breakpoints;
+        debug.breakpoints(function (err, _ref5) {
+          var breakpoints = _ref5.breakpoints;
 
           if (err) {
             return error(err);
@@ -152,12 +247,12 @@ function toggleBreakpoint() {
       return;
     }
 
-    _.debug.setBreakpoint({ line: editorLine, file: file }, function (err, result) {
+    debug.setBreakpoint({ line: editorLine, file: file }, function (err, result) {
       if (err) {
         return error(err);
       }
-      _.debug.breakpoints(function (err, _ref3) {
-        var breakpoints = _ref3.breakpoints;
+      debug.breakpoints(function (err, _ref6) {
+        var breakpoints = _ref6.breakpoints;
 
         if (err) {
           return error(err);
@@ -181,17 +276,49 @@ function selectFrame(payload) {
     dispatch({ type: SELECT_FRAME, payload: frame });
     dispatch(selectFile(location));
 
-    _.debug.scopes(frame, function (err, scopes) {
+    debug.scopes(frame, function (err, scopes) {
       if (err) {
+        console.error(err);
         return dispatch(error(err));
       }
-      var local = scopes.local;
 
-      _.debug.scope(local, function (err, scope) {
+      var keys = Object.keys(scopes);
+      var handles = keys.map(function (area) {
+        return scopes[area];
+      });
+
+      debug.scope(handles, function (err, scopes) {
         if (err) {
-          return dispatch(error(err));
+          dispatch(error(err));
         }
-        dispatch(receiveScope({ area: 'local', scope: scope }));
+        dispatch(clearScope());
+        scopes.forEach(function (scope, ix) {
+          var area = keys[ix];
+          dispatch(receiveScope({ area: area, scope: scope.props }));
+        });
+
+        // get this object:
+        debug.scope(frame.contextHandle, function (err, thisScope) {
+          if (err) {
+            return dispatch(error(err));
+          }
+          if (!thisScope) {
+            return;
+          }
+          // handle edge case - sometimes v8 proto returns context
+          // as a function, in these cases the scope should be global
+          // (or undefined if strict mode).
+          var scope = thisScope.meta.type === 'function' ? getState().scope.global : thisScope.props;
+
+          dispatch({
+            type: ADD_ITEM_TO_SCOPE,
+            payload: {
+              area: 'local',
+              scope: scope,
+              namespace: 'this'
+            }
+          });
+        });
       });
     });
   };
@@ -227,6 +354,37 @@ function receiveBreakpoints(payload) {
   };
 }
 
+function extendScope(_ref7) {
+  var handle = _ref7.handle;
+  var branch = _ref7.branch;
+
+  return function (dispatch) {
+    debug.scope(handle, function (err, scope) {
+      if (err) {
+        console.error(err);
+        return dispatch(error(err));
+      }
+
+      dispatch({
+        type: EXTEND_SCOPE,
+        payload: { scope: scope.props, branch: branch }
+      });
+
+      dispatch({
+        type: SET_SCOPE_ITEM,
+        payload: branch
+      });
+    });
+  };
+}
+
+function clearScope(payload) {
+  return {
+    type: CLEAR_SCOPE,
+    payload: payload
+  };
+}
+
 function receiveScope(payload) {
   return {
     type: RECEIVE_SCOPE,
@@ -246,7 +404,7 @@ function receiveSource(payload) {
 function pause() {
   return function (dispatch) {
     dispatch({ type: PAUSE });
-    _.debug.pause(function (err, callstack) {
+    debug.pause(function (err, callstack) {
       if (err) {
         return dispatch(error(err));
       }
@@ -263,7 +421,32 @@ function resume() {
   return function (dispatch) {
     dispatch({ type: RESUME });
     dispatch(receiveCallstack([]));
-    _.debug.resume(function () {});
+    debug.resume(function () {
+      var catchBreak = function catchBreak(_ref8) {
+        var event = _ref8.event;
+        var body = _ref8.body;
+
+        if (event !== 'break') {
+          return;
+        }
+        var lineNumber = body.sourceLine;
+        var scriptId = body.script.id;
+
+        dispatch(selectFile({ scriptId: scriptId, lineNumber: lineNumber }));
+        debug.callstack(function (err, callstack) {
+          if (err) {
+            return dispatch(error(err));
+          }
+          if (!callstack) {
+            return;
+          }
+          dispatch(receiveCallstack(callstack));
+          dispatch(pause());
+          dispatch(selectFrame(0));
+        });
+      };
+      dbg.once('event', catchBreak);
+    });
   };
 }
 
@@ -314,20 +497,21 @@ function toggleTooltips() {
 function step(act, type) {
   return function (dispatch) {
     dispatch({ type: type });
-
-    _.debug.instance.once('unpaused', function () {
+    var update = function update() {
       dispatch({ type: RESUME });
-    });
+    };
 
-    _.debug['step' + act](function (err, callstack) {
+    debug['step' + act](function (err, callstack) {
       if (err) {
+        console.error(err);
         return dispatch(error(err));
       }
       if (!callstack || !callstack.length) {
+        update();
         return receiveCallstack([]);
       }
       dispatch(receiveCallstack(callstack));
-      dispatch(selectFile(callstack[0].location));
+      dispatch(selectFrame(0));
     });
   };
 }

@@ -13,7 +13,8 @@
   "standard": {
     "parser": "babel-eslint",
     "ignore": [
-      "compiled/**"
+      "compiled/**",
+      "examples/**"
     ]
   },
   "watch": {

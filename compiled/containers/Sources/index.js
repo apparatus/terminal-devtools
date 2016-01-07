@@ -31,7 +31,8 @@ var Sources = function Sources(_ref) {
   var source = _ref.source;
   var filename = _ref.filename;
   var files = _ref.files;
-  var fileIndex = _ref.fileIndex;
+  var fileItem = _ref.fileItem;
+  var scopeItem = _ref.scopeItem;
   var editorLine = _ref.editorLine;
   var callstack = _ref.callstack;
   var breakpoints = _ref.breakpoints;
@@ -42,12 +43,12 @@ var Sources = function Sources(_ref) {
   return _React2.default.createElement(
     'element',
     layout.element,
-    _React2.default.createElement(_components.Navigator, _extends({ tooltips: tooltips, items: files, index: fileIndex, focused: panel === 'navigator', actions: actions }, layout.navigator)),
+    _React2.default.createElement(_components.Navigator, _extends({ tooltips: tooltips, items: files, item: fileItem, focused: panel === 'navigator', actions: actions }, layout.navigator)),
     _React2.default.createElement(_components.Editor, _extends({ tooltips: tooltips, items: source, selected: editorLine, focused: panel === 'editor', actions: actions }, layout.editor)),
     _React2.default.createElement(_components.EditorStatus, _extends({ tooltips: tooltips, line: editorLine, file: filename }, layout.editorstatus)),
     _React2.default.createElement(_components.CallStack, _extends({ tooltips: tooltips, items: callstack, focused: panel === 'callstack', actions: actions }, layout.callstack)),
     _React2.default.createElement(_components.BreakPoints, _extends({ tooltips: tooltips, items: breakpoints, focused: panel === 'breakpoints', actions: actions }, layout.breakpoints)),
-    _React2.default.createElement(_components.Scope, _extends({ tooltips: tooltips, items: scope, focused: panel === 'scope', actions: actions }, layout.scope)),
+    _React2.default.createElement(_components.Scope, _extends({ tooltips: tooltips, items: scope, item: scopeItem, focused: panel === 'scope', actions: actions }, layout.scope)),
     _React2.default.createElement(_components.Console, _extends({ tooltips: tooltips, focused: panel === 'console', actions: actions }, layout.console))
   );
 };
@@ -55,7 +56,8 @@ var Sources = function Sources(_ref) {
 var mapState = function mapState(_ref2) {
   var layout = _ref2.layout;
   var file = _ref2.file;
-  var fileIndex = _ref2.fileIndex;
+  var fileItem = _ref2.fileItem;
+  var scopeItem = _ref2.scopeItem;
   var editorLine = _ref2.editorLine;
   var source = _ref2.source;
   var files = _ref2.files;
@@ -69,7 +71,8 @@ var mapState = function mapState(_ref2) {
     source: source,
     filename: file[0] === '/' ? (0, _path.basename)(file) : file,
     files: files,
-    fileIndex: fileIndex,
+    fileItem: fileItem,
+    scopeItem: scopeItem,
     editorLine: editorLine,
     callstack: callstack,
     breakpoints: breakpoints,

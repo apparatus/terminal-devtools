@@ -8,6 +8,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _Tree = require('../Tree');
+
+var _Tree2 = _interopRequireDefault(_Tree);
+
 var _style = require('../../style');
 
 var style = _interopRequireWildcard(_style);
@@ -25,29 +29,30 @@ var Navigator = function Navigator(_ref) {
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
-  var index = _ref.index;
+  var item = _ref.item;
   var tooltips = _ref.tooltips;
   var _ref$actions = _ref.actions;
   var selectFile = _ref$actions.selectFile;
   var setEditorLine = _ref$actions.setEditorLine;
   var focusPanel = _ref$actions.focusPanel;
-  return _react2.default.createElement('list', {
+  return _react2.default.createElement(_Tree2.default, {
     vi: true,
     keys: true,
     mouse: true,
     inputOnFocused: true,
+    indentation: 1,
     label: 'Navigator',
     focused: focused,
-    selected: index,
     'class': [style.panel, style.list, focused && style.selected],
     width: width,
     top: top,
     height: height,
+    item: item,
     items: items,
     onSelectItem: function onSelectItem(_ref2) {
-      var item = _ref2.content;
+      var path = _ref2.data.path;
 
-      selectFile(item);
+      selectFile(path);
       setEditorLine(0);
     },
     onFocus: function onFocus() {

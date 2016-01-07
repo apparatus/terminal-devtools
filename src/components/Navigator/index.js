@@ -1,28 +1,30 @@
 import React from 'react'
+import Tree from '../Tree'
 import * as style from '../../style'
 
 /* eslint-disable react/no-unknown-property */
 
 const Navigator = ({
-  items, top, left, width, height, focused, index, tooltips,
+  items, top, left, width, height, focused, item, tooltips,
   actions: {selectFile, setEditorLine, focusPanel}
 }) => (
-  <list
+  <Tree
     vi
     keys
     mouse
     inputOnFocused
+    indentation={1}
     label='Navigator'
     focused={focused}
-    selected={index}
     class={[style.panel, style.list, focused && style.selected]}
     width={width}
     top={top}
     height={height}
+    item={item}
     items={items}
-    onSelectItem={
-      ({content: item}) => {
-        selectFile(item)
+    onSelectItem = {
+      ({data: {path}}) => {
+        selectFile(path)
         setEditorLine(0)
       }
     }

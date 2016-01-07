@@ -12,7 +12,8 @@ const Sources = ({
   source,
   filename,
   files,
-  fileIndex,
+  fileItem,
+  scopeItem,
   editorLine,
   callstack,
   breakpoints,
@@ -22,12 +23,12 @@ const Sources = ({
   tooltips
 }) => (
   <element {...layout.element}>
-    <Navigator tooltips={tooltips} items={files} index={fileIndex} focused={panel === 'navigator'} actions={actions} {...layout.navigator}/>
+    <Navigator tooltips={tooltips} items={files} item={fileItem} focused={panel === 'navigator'} actions={actions} {...layout.navigator}/>
     <Editor tooltips={tooltips} items={source} selected={editorLine} focused={panel === 'editor'} actions={actions} {...layout.editor}/>
     <EditorStatus tooltips={tooltips} line={editorLine} file={filename} {...layout.editorstatus}/>
     <CallStack tooltips={tooltips} items={callstack} focused={panel === 'callstack'} actions={actions} {...layout.callstack}/>
     <BreakPoints tooltips={tooltips} items={breakpoints} focused={panel === 'breakpoints'} actions={actions} {...layout.breakpoints}/>
-    <Scope tooltips={tooltips} items={scope} focused={panel === 'scope'} actions={actions} {...layout.scope}/>
+    <Scope tooltips={tooltips} items={scope} item={scopeItem} focused={panel === 'scope'} actions={actions} {...layout.scope}/>
     <Console tooltips={tooltips} focused={panel === 'console'} actions={actions} {...layout.console}/>
   </element>
 )
@@ -35,7 +36,8 @@ const Sources = ({
 const mapState = ({
   layout,
   file,
-  fileIndex,
+  fileItem,
+  scopeItem,
   editorLine,
   source,
   files,
@@ -49,7 +51,8 @@ const mapState = ({
   source,
   filename: file[0] === '/' ? basename(file) : file,
   files,
-  fileIndex,
+  fileItem,
+  scopeItem,
   editorLine,
   callstack,
   breakpoints,

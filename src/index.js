@@ -12,20 +12,13 @@ import config from './config'
 import {
   Console, Sources, Controls, Cog, Settings, Tabs
 } from './containers'
-import createDebugger from './lib/debug'
 import {
-  error,
-  receiveCallstack,
-  receiveBreakpoints,
-  receiveSource,
-  receiveSources,
-  selectFile,
-  selectFrame,
-  pause
+  startDebugging,
+  receiveSource
 } from './actions'
 
 const userSettings = path.join(__dirname, 'config', 'user-settings.json')
-console.log(userSettings)
+
 const defaultCfg = {tooltips: true, layout: 'normal'}
 
 const userCfg = (fs.existsSync(userSettings))
@@ -42,10 +35,7 @@ const store = createStore({
 
 const {dispatch} = store
 
-export const debug = createDebugger()
-
-export default async (pid, {host = '127.0.0.1', port: debugPort = 5858}) => {
-
+export default async (pid, {host: host = '127.0.0.1', port: port = 5858}) => {
   if (pid) {
     try {
       process.kill(pid, 'SIGUSR1')
@@ -56,49 +46,8 @@ export default async (pid, {host = '127.0.0.1', port: debugPort = 5858}) => {
 
   let screen = createScreen(store)
 
-  dispatch(receiveSource('Waiting for port debug port ' + debugPort))
-
-  const dbg = debug.start({host, port: debugPort}, (err, callstack) => {
-    if (err) {
-      return dispatch(error(err))
-    }
-    dispatch(receiveCallstack(callstack))
-
-    debug.scripts((err, scripts) => {
-      if (err) {
-        return dispatch(error(err))
-      }
-      dispatch(receiveSources(scripts))
-      if (callstack) {
-        dispatch(pause())
-        dispatch(selectFrame(0))
-        return
-      }
-      const {name} = (scripts.find(s => s.name[0] === '/') || scripts[0])
-      dispatch(selectFile(name))
-    })
-
-    debug.breakpoints((err, {breakpoints}) => {
-      if (err) { return console.error(err) }
-      receiveBreakpoints(breakpoints)
-    })
-  })
-
-  dbg.on('event', ({event, body}) => {
-    if (event !== 'break') { return }
-    const {sourceLine: lineNumber, script: {id: scriptId}} = body
-    dispatch(selectFile({scriptId, lineNumber}))
-    debug.callstack((err, callstack) => {
-      if (err) {
-        return dispatch(error(err))
-      }
-      if (!callstack) { return }
-      dispatch(receiveCallstack(callstack))
-      dispatch(pause())
-      dispatch(selectFrame(0))
-    })
-  })
-
+  dispatch(receiveSource('Waiting for debug port ' + port))
+  dispatch(startDebugging({host, port}))
 
   let Devtools = ({layout, tab, panel}) => {
     return (

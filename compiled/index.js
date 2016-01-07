@@ -5,7 +5,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.debug = undefined;
 
 require('babel-polyfill');
 
@@ -41,10 +40,6 @@ var _config2 = _interopRequireDefault(_config);
 
 var _containers = require('./containers');
 
-var _debug = require('./lib/debug');
-
-var _debug2 = _interopRequireDefault(_debug);
-
 var _actions = require('./actions');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -54,7 +49,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 Error.stackTraceLimit = Infinity;
 
 var userSettings = _path2.default.join(__dirname, 'config', 'user-settings.json');
-console.log(userSettings);
+
 var defaultCfg = { tooltips: true, layout: 'normal' };
 
 var userCfg = _fs2.default.existsSync(userSettings) ? _extends({}, defaultCfg, require(userSettings)) : _extends({}, defaultCfg);
@@ -67,7 +62,6 @@ var store = (0, _create2.default)(_extends({
 }, userCfg));
 
 var dispatch = store.dispatch;
-var debug = exports.debug = (0, _debug2.default)();
 
 exports.default = (function () {
   var _this = this;
@@ -76,13 +70,12 @@ exports.default = (function () {
     var _ref$host = _ref.host;
     var host = _ref$host === undefined ? '127.0.0.1' : _ref$host;
     var _ref$port = _ref.port;
-    var debugPort = _ref$port === undefined ? 5858 : _ref$port;
-    var screen, dbg, Devtools;
+    var port = _ref$port === undefined ? 5858 : _ref$port;
+    var screen, Devtools;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-
             if (pid) {
               try {
                 process.kill(pid, 'SIGUSR1');
@@ -93,72 +86,13 @@ exports.default = (function () {
 
             screen = (0, _screen2.default)(store);
 
-            dispatch((0, _actions.receiveSource)('Waiting for port debug port ' + debugPort));
+            dispatch((0, _actions.receiveSource)('Waiting for debug port ' + port));
+            dispatch((0, _actions.startDebugging)({ host: host, port: port }));
 
-            dbg = debug.start({ host: host, port: debugPort }, function (err, callstack) {
-              if (err) {
-                return dispatch((0, _actions.error)(err));
-              }
-              dispatch((0, _actions.receiveCallstack)(callstack));
-
-              debug.scripts(function (err, scripts) {
-                if (err) {
-                  return dispatch((0, _actions.error)(err));
-                }
-                dispatch((0, _actions.receiveSources)(scripts));
-                if (callstack) {
-                  dispatch((0, _actions.pause)());
-                  dispatch((0, _actions.selectFrame)(0));
-                  return;
-                }
-
-                var _ref2 = scripts.find(function (s) {
-                  return s.name[0] === '/';
-                }) || scripts[0];
-
-                var name = _ref2.name;
-
-                dispatch((0, _actions.selectFile)(name));
-              });
-
-              debug.breakpoints(function (err, _ref3) {
-                var breakpoints = _ref3.breakpoints;
-
-                if (err) {
-                  return console.error(err);
-                }
-                (0, _actions.receiveBreakpoints)(breakpoints);
-              });
-            });
-
-            dbg.on('event', function (_ref4) {
-              var event = _ref4.event;
-              var body = _ref4.body;
-
-              if (event !== 'break') {
-                return;
-              }
-              var lineNumber = body.sourceLine;
-              var scriptId = body.script.id;
-
-              dispatch((0, _actions.selectFile)({ scriptId: scriptId, lineNumber: lineNumber }));
-              debug.callstack(function (err, callstack) {
-                if (err) {
-                  return dispatch((0, _actions.error)(err));
-                }
-                if (!callstack) {
-                  return;
-                }
-                dispatch((0, _actions.receiveCallstack)(callstack));
-                dispatch((0, _actions.pause)());
-                dispatch((0, _actions.selectFrame)(0));
-              });
-            });
-
-            Devtools = function Devtools(_ref5) {
-              var layout = _ref5.layout;
-              var tab = _ref5.tab;
-              var panel = _ref5.panel;
+            Devtools = function Devtools(_ref2) {
+              var layout = _ref2.layout;
+              var tab = _ref2.tab;
+              var panel = _ref2.panel;
 
               return _react2.default.createElement(
                 'element',
@@ -172,10 +106,10 @@ exports.default = (function () {
               );
             };
 
-            Devtools = (0, _reactRedux.connect)(function (_ref6) {
-              var layout = _ref6.layout;
-              var tab = _ref6.tab;
-              var panel = _ref6.panel;
+            Devtools = (0, _reactRedux.connect)(function (_ref3) {
+              var layout = _ref3.layout;
+              var tab = _ref3.tab;
+              var panel = _ref3.panel;
               return { layout: layout, tab: tab, panel: panel };
             })(Devtools);
 
@@ -185,7 +119,7 @@ exports.default = (function () {
               _react2.default.createElement(Devtools, null)
             ), screen));
 
-          case 8:
+          case 7:
           case 'end':
             return _context.stop();
         }

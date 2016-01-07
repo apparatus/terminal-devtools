@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -7,6 +9,10 @@ Object.defineProperty(exports, "__esModule", {
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _Tree = require('../Tree');
+
+var _Tree2 = _interopRequireDefault(_Tree);
 
 var _style = require('../../style');
 
@@ -20,30 +26,41 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var Scope = function Scope(_ref) {
   var items = _ref.items;
+  var item = _ref.item;
   var top = _ref.top;
   var left = _ref.left;
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
   var tooltips = _ref.tooltips;
-  var focusPanel = _ref.actions.focusPanel;
-  return _react2.default.createElement('list', {
+  var _ref$actions = _ref.actions;
+  var focusPanel = _ref$actions.focusPanel;
+  var extendScope = _ref$actions.extendScope;
+  return _react2.default.createElement(_Tree2.default, {
     keys: true,
     mouse: true,
     scrollbar: true,
     inputOnFocused: true,
+    labelling: true,
     label: 'Scope',
     focused: focused,
-    'class': [style.panel, focused && style.selected],
+    'class': [style.panel, style.list, focused && style.selected],
     top: top,
     left: left,
     width: width,
     height: height,
     items: items,
+    item: item,
+    hoverText: tooltips && 'ctrl+o',
     onFocus: function onFocus() {
       return focused || focusPanel('scope');
     },
-    hoverText: tooltips && 'ctrl+o'
+    onExpand: function onExpand(item) {
+      var meta = item.meta;
+
+      if (!meta) return;
+      extendScope(_extends({}, meta, { branch: item }));
+    }
   });
 };
 

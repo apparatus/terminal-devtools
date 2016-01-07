@@ -1,4 +1,6 @@
-import { debug } from '../'
+import createDebugger from '../lib/debug'
+const debug = createDebugger()
+let dbg
 
 // User Actions Types:
 
@@ -9,12 +11,17 @@ export const SELECT_FILE = 'SELECT_FILE'
 // Operational Action Types:
 
 export const ERROR = 'ERROR'
+export const START_DEBUGGING = 'START_DEBUGGING'
 export const RECEIVE_SOURCES = 'RECEIVE_SOURCES'
 export const RECEIVE_CALLSTACK = 'RECEIVE_CALLSTACK'
 export const RECEIVE_BREAKPOINTS = 'RECEIVE_BREAKPOINTS'
+export const CLEAR_SCOPE = 'CLEAR_SCOPE'
 export const RECEIVE_SCOPE = 'RECEIVE_SCOPE'
+export const EXTEND_SCOPE = 'EXTEND_SCOPE'
+export const SET_SCOPE_ITEM = 'SET_SCOPE_ITEM'
+export const ADD_ITEM_TO_SCOPE = 'ADD_ITEM_TO_SCOPE'
 export const RECEIVE_SOURCE = 'RECEIVE_SOURCE'
-export const SET_FILE_INDEX = 'SET_FILE_INDEX'
+export const SET_FILE_ITEM = 'SET_FILE_ITEM'
 export const SET_EDITOR_LINE = 'SET_EDITOR_LINE'
 export const TOGGLE_BREAKPOINT = 'TOGGLE_BREAKPOINT'
 
@@ -35,6 +42,36 @@ export const TOGGLE_TOOLTIPS = 'TOGGLE_TOOLTIPS'
 
 // User Action Creators:
 
+export function startDebugging ({host, port}) {
+  return dispatch => {
+    dbg = debug.start({host, port}, (err, callstack) => {
+      if (err) {
+        return dispatch(error(err))
+      }
+      dispatch(receiveCallstack(callstack))
+
+      debug.scripts((err, scripts) => {
+        if (err) {
+          return dispatch(error(err))
+        }
+        dispatch(receiveSources(scripts))
+        if (callstack) {
+          dispatch(pause())
+          dispatch(selectFrame(0))
+          return
+        }
+        const {name} = (scripts.find(s => s.name[0] === '/') || scripts[0])
+        dispatch(selectFile(name))
+      })
+
+      debug.breakpoints((err, {breakpoints}) => {
+        if (err) { return console.error(err) }
+        dispatch(receiveBreakpoints(breakpoints))
+      })
+    })
+  }
+}
+
 export function focusTab (payload) {
   return {
     type: FOCUS_TAB,
@@ -49,7 +86,7 @@ export function focusPanel (payload) {
 }
 export function selectFile (payload) {
   return (dispatch, getState) => {
-    const {sources, files = []} = getState()
+    const {sources, files = {}} = getState()
     if (!sources.length) return
     const payloadIsObject = Object(payload) === payload
 
@@ -57,10 +94,27 @@ export function selectFile (payload) {
       ? sources.find(s => +s.id === +payload.scriptId)
       : sources.find(s => s.name === payload)
 
+    if (!script) {
+      console.trace('no script', payload)
+      return
+    }
+
     const {source, name} = script
 
     dispatch({type: SELECT_FILE, payload: name})
-    dispatch({type: SET_FILE_INDEX, payload: files.indexOf(name)})
+
+    function locate (f) {
+      let found
+      for (let o of f) {
+        found = (o.data && o.data.path && o.data.path === name)
+          ? o
+          : locate(Object.values(o.value))
+        if (found) break
+      }
+      return found
+    }
+
+    dispatch({type: SET_FILE_ITEM, payload: locate(Object.values(files))})
 
     if (payloadIsObject) {
       let { lineNumber = 0 } = payload
@@ -120,15 +174,41 @@ export function selectFrame (payload) {
 
     debug.scopes(frame, (err, scopes) => {
       if (err) {
+        console.error(err)
         return dispatch(error(err))
       }
-      const {local} = scopes
 
-      debug.scope(local, (err, scope) => {
-        if (err) {
-          return dispatch(error(err))
-        }
-        dispatch(receiveScope({area: 'local', scope}))
+      const keys = Object.keys(scopes)
+      const handles = keys.map(area => scopes[area])
+
+      debug.scope(handles, (err, scopes) => {
+        if (err) { dispatch(error(err)) }
+        dispatch(clearScope())
+        scopes.forEach((scope, ix) => {
+          const area = keys[ix]
+          dispatch(receiveScope({area, scope: scope.props}))
+        })
+
+        // get this object:
+        debug.scope(frame.contextHandle, (err, thisScope) => {
+          if (err) { return dispatch(error(err)) }
+          if (!thisScope) { return }
+          // handle edge case - sometimes v8 proto returns context
+          // as a function, in these cases the scope should be global
+          // (or undefined if strict mode).
+          const scope = (thisScope.meta.type === 'function')
+            ? getState().scope.global
+            : thisScope.props
+
+          dispatch({
+            type: ADD_ITEM_TO_SCOPE,
+            payload: {
+              area: 'local',
+              scope,
+              namespace: 'this'
+            }
+          })
+        })
       })
     })
   }
@@ -160,6 +240,34 @@ export function receiveCallstack (payload) {
 export function receiveBreakpoints (payload) {
   return {
     type: RECEIVE_BREAKPOINTS,
+    payload
+  }
+}
+
+export function extendScope ({handle, branch}) {
+  return dispatch => {
+    debug.scope(handle, (err, scope) => {
+      if (err) {
+        console.error(err)
+        return dispatch(error(err))
+      }
+
+      dispatch({
+        type: EXTEND_SCOPE,
+        payload: {scope: scope.props, branch}
+      })
+
+      dispatch({
+        type: SET_SCOPE_ITEM,
+        payload: branch
+      })
+    })
+  }
+}
+
+export function clearScope (payload) {
+  return {
+    type: CLEAR_SCOPE,
     payload
   }
 }
@@ -201,6 +309,21 @@ export function resume () {
     dispatch({type: RESUME})
     dispatch(receiveCallstack([]))
     debug.resume(() => {
+      const catchBreak = ({event, body}) => {
+        if (event !== 'break') { return }
+        const {sourceLine: lineNumber, script: {id: scriptId}} = body
+        dispatch(selectFile({scriptId, lineNumber}))
+        debug.callstack((err, callstack) => {
+          if (err) {
+            return dispatch(error(err))
+          }
+          if (!callstack) { return }
+          dispatch(receiveCallstack(callstack))
+          dispatch(pause())
+          dispatch(selectFrame(0))
+        })
+      }
+      dbg.once('event', catchBreak)
     })
   }
 }
@@ -252,20 +375,19 @@ export function toggleTooltips () {
 function step (act, type) {
   return dispatch => {
     dispatch({type})
-
-    debug.instance.once('unpaused', () => {
-      dispatch({type: RESUME})
-    })
+    const update = () => { dispatch({type: RESUME}) }
 
     debug['step' + act]((err, callstack) => {
       if (err) {
+        console.error(err)
         return dispatch(error(err))
       }
       if (!callstack || !callstack.length) {
+        update()
         return receiveCallstack([])
       }
       dispatch(receiveCallstack(callstack))
-      dispatch(selectFile(callstack[0].location))
+      dispatch(selectFrame(0))
     })
   }
 }
