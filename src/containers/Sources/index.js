@@ -20,7 +20,8 @@ const Sources = ({
   scope,
   panel,
   actions,
-  tooltips
+  tooltips,
+  output
 }) => (
   <element {...layout.element}>
     <Navigator tooltips={tooltips} items={files} item={fileItem} focused={panel === 'navigator'} actions={actions} {...layout.navigator}/>
@@ -29,7 +30,7 @@ const Sources = ({
     <CallStack tooltips={tooltips} items={callstack} focused={panel === 'callstack'} actions={actions} {...layout.callstack}/>
     <BreakPoints tooltips={tooltips} items={breakpoints} focused={panel === 'breakpoints'} actions={actions} {...layout.breakpoints}/>
     <Scope tooltips={tooltips} items={scope} item={scopeItem} focused={panel === 'scope'} actions={actions} {...layout.scope}/>
-    <Console tooltips={tooltips} focused={panel === 'console'} actions={actions} {...layout.console}/>
+    <Console tooltips={tooltips} output={output} focused={panel === 'console'} actions={actions} {...layout.console}/>
   </element>
 )
 
@@ -45,7 +46,8 @@ const mapState = ({
   breakpoints,
   scope,
   panel,
-  tooltips
+  tooltips,
+  output
 }) => ({
   layout: layout.sources,
   source,
@@ -58,7 +60,8 @@ const mapState = ({
   breakpoints,
   scope,
   panel,
-  tooltips
+  tooltips,
+  output
 })
 
 const mapDispatch = dispatch => ({

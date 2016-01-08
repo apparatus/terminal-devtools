@@ -2,6 +2,8 @@
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _CONSOLE_PREFIXES;
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -23,12 +25,15 @@ exports.source = source;
 exports.paused = paused;
 exports.layout = layout;
 exports.tooltips = tooltips;
+exports.output = output;
 
 var _path = require('path');
 
 var _actions = require('../actions');
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var CONSOLE_PREFIXES = (_CONSOLE_PREFIXES = {}, _defineProperty(_CONSOLE_PREFIXES, _actions.CONSOLE_INPUT, '> '), _defineProperty(_CONSOLE_PREFIXES, _actions.RECEIVE_EVAL_RESULT, '⦑ '), _defineProperty(_CONSOLE_PREFIXES, _actions.RECEIVE_EVAL_ERROR, '⨂ '), _defineProperty(_CONSOLE_PREFIXES, _actions.RECEIVE_STDERR, '⨂ '), _defineProperty(_CONSOLE_PREFIXES, _actions.RECEIVE_STDOUT, '  '), _CONSOLE_PREFIXES);
 
 function tab() {
   var state = arguments.length <= 0 || arguments[0] === undefined ? 'sources' : arguments[0];
@@ -72,7 +77,7 @@ function files() {
   });
 
   var nonNative = sources.filter(function (s) {
-    return s[0] === _path.sep;
+    return s && s[0] === _path.sep;
   }).reduce(function (o, path) {
     var next = o;
     path.split(_path.sep).filter(Boolean).forEach(function (segment, ix, arr) {
@@ -90,7 +95,7 @@ function files() {
   var native = {
     '(core)': {
       value: sources.filter(function (s) {
-        return s[0] !== _path.sep;
+        return s && s[0] !== _path.sep;
       }).reduce(function (o, f) {
         o[f] = {
           value: {},
@@ -291,25 +296,53 @@ function tooltips() {
   return !state;
 }
 
+function output() {
+  var state = arguments.length <= 0 || arguments[0] === undefined ? { out: '', err: '', all: '' } : arguments[0];
+  var _ref21 = arguments[1];
+  var type = _ref21.type;
+  var payload = _ref21.payload;
+
+  if (type !== _actions.RECEIVE_STDOUT && type !== _actions.RECEIVE_STDERR && type !== _actions.CONSOLE_INPUT && type !== _actions.RECEIVE_EVAL_RESULT && type !== _actions.RECEIVE_EVAL_ERROR) return state;
+
+  var out = state.out;
+  var err = state.err;
+  var all = state.all;
+  var _state$history = state.history;
+  var history = _state$history === undefined ? [] : _state$history;
+
+  var line = type === _actions.RECEIVE_EVAL_RESULT ? CONSOLE_PREFIXES[type] + payload + '\n' : type === _actions.RECEIVE_EVAL_ERROR ? '\n' + CONSOLE_PREFIXES[type] + payload + '\n' : CONSOLE_PREFIXES[type] + payload;
+
+  if (type === _actions.CONSOLE_INPUT) {
+    history.push(payload);
+  }
+
+  return {
+    history: history,
+    out: type === _actions.RECEIVE_STDOUT ? CONSOLE_PREFIXES[type] + out + payload : out,
+    err: type === _actions.RECEIVE_STDERR ? CONSOLE_PREFIXES[type] + err + payload : err,
+    all: all + line
+  };
+}
+
 // utils:
 
 function treeify(scope) {
-  return scope.reduce(function (o, _ref21) {
-    var name = _ref21.name;
-    var type = _ref21.type;
-    var value = _ref21.value;
-    var text = _ref21.text;
-    var source = _ref21.source;
-    var className = _ref21.className;
-    var properties = _ref21.properties;
-    var handle = _ref21.handle;
+  return scope.reduce(function (o, _ref22) {
+    var name = _ref22.name;
+    var type = _ref22.type;
+    var value = _ref22.value;
+    var text = _ref22.text;
+    var source = _ref22.source;
+    var className = _ref22.className;
+    var properties = _ref22.properties;
+    var handle = _ref22.handle;
 
     if (type === 'object') {
       value = className;
     }
     if (className === 'Array') {
-      value = 'Array(' + properties.filter(function (_ref22) {
-        var name = _ref22.name;
+      value = 'Array(' + properties.filter(function (_ref23) {
+        var name = _ref23.name;
         return !isNaN(name);
       }).length + ')';
     }

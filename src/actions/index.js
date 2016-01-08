@@ -2,7 +2,7 @@ import createDebugger from '../lib/debug'
 const debug = createDebugger()
 let dbg
 
-// User Actions Types:
+// UI Actions Types:
 
 export const FOCUS_TAB = 'FOCUS_TAB'
 export const FOCUS_PANEL = 'FOCUS_PANEL'
@@ -23,7 +23,11 @@ export const ADD_ITEM_TO_SCOPE = 'ADD_ITEM_TO_SCOPE'
 export const RECEIVE_SOURCE = 'RECEIVE_SOURCE'
 export const SET_FILE_ITEM = 'SET_FILE_ITEM'
 export const SET_EDITOR_LINE = 'SET_EDITOR_LINE'
-export const TOGGLE_BREAKPOINT = 'TOGGLE_BREAKPOINT'
+export const RECEIVE_STDOUT = 'RECEIVE_STDOUT'
+export const RECEIVE_STDERR = 'RECEIVE_STDERR'
+export const CONSOLE_INPUT = 'CONSOLE_INPUT'
+export const RECEIVE_EVAL_RESULT = 'RECEIVE_EVAL_RESULT'
+export const RECEIVE_EVAL_ERROR = 'RECEIVE_EVAL_ERROR'
 
 // Debugger Action Types
 export const PAUSE = 'PAUSE'
@@ -34,11 +38,15 @@ export const STEP_OUT = 'STEP_OUT'
 export const NEXT_FRAME = 'NEXT_FRAME'
 export const PREVIOUS_FRAME = 'PREVIOUS_FRAME'
 export const SELECT_FRAME = 'SELECT_FRAME'
+export const TOGGLE_BREAKPOINT = 'TOGGLE_BREAKPOINT'
 
 // Configuration Action Types:
 
 export const SET_DIMENSIONS = 'SET_DIMENSIONS'
 export const TOGGLE_TOOLTIPS = 'TOGGLE_TOOLTIPS'
+
+const stdoutQueue = []
+let lockStdout = false
 
 // User Action Creators:
 
@@ -69,6 +77,12 @@ export function startDebugging ({host, port}) {
         dispatch(receiveBreakpoints(breakpoints))
       })
     })
+
+    dbg.on('stdout', line => lockStdout
+      ? stdoutQueue.push(line)
+      : dispatch({type: RECEIVE_STDOUT, payload: line})
+    )
+    dbg.on('stderr', line => dispatch({type: RECEIVE_STDERR, payload: line}))
   }
 }
 
@@ -159,6 +173,60 @@ export function toggleBreakpoint () {
         if (err) { return error(err) }
         dispatch(receiveBreakpoints(breakpoints))
       })
+    })
+  }
+}
+
+export function consoleInput (payload) {
+  return (dispatch, getState) => {
+    const {frames, frame} = getState()
+    const expression = payload
+    const args = {expression}
+
+    const frameIndex = frame ? frames.findIndex(
+      ({callFrameId}) => callFrameId === frame.callFrameId
+    ) : -1
+
+    args[(!~frameIndex) ? 'global' : 'frame'] = (!~frameIndex)
+      ? true
+      : frameIndex
+
+    lockStdout = true
+
+    debug.evaluate(args, (err, out) => {
+      if (err) return dispatch(error(err))
+      const {res} = out
+      if (!res.success) {
+        lockStdout = false
+        dispatch({type: CONSOLE_INPUT, payload: expression})
+        dispatch({type: RECEIVE_EVAL_ERROR, payload: res.message})
+        return
+      }
+
+      const {className, type, value, text} = res.body
+
+      let output = className
+        ? type === 'function'
+          ? text
+          : className
+        : type === 'string'
+          ? `'${value}'`
+          : value
+
+      if (output === className) {
+        // todo - do a lookup to get the object props
+        // todo after: present them in a tree like scope?
+      }
+
+      let stdout = stdoutQueue.length ? stdoutQueue.join('  ') : ''
+      dispatch({type: CONSOLE_INPUT, payload: expression + (stdout ? '' : '\n')})
+      if (stdout) {
+        dispatch({type: RECEIVE_STDOUT, payload: '\n  ' + stdout})
+      }
+      dispatch({type: RECEIVE_EVAL_RESULT, payload: output})
+
+      stdoutQueue.length = 0
+      lockStdout = false
     })
   }
 }

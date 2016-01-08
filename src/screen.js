@@ -10,6 +10,7 @@ export default store => {
     dockBorders: true,
     log: './log',
     // log: '/dev/ttys001',
+    terminal: 'xterm-256color',
     ignoreLocked: ['C-c']
   })
 

@@ -11,7 +11,7 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
+import net from 'net'
 import {Debugger} from 'yadc'
 
 // important: preserve order
@@ -193,6 +193,28 @@ export default () => {
     })
   }
 
+  const evaluate = ({expression, global, frame, context}, cb) => {
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
+    const args = {expression, disable_break: true}
+    if (typeof global !== 'undefined') { args.global = global }
+    if (typeof frame !== 'undefined') { args.frame = frame }
+    if (typeof context !== 'undefined') { args.additional_context = context }
+
+    debug.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'evaluate',
+      arguments: args
+    }, (err, out) => {
+      if (err) return cb(err)
+      if (!out.res) return cb(Error('no response'))
+      cb(null, out)
+    })
+  }
+
+  const frameEvaluate = (frame, expression, cb) => evaluate({expression, frame}, cb)
+  const globalEvaluate = (expression, cb) => evaluate({expression, global: true}, cb)
+
   const scopes = ({callFrameId: frameNumber}, cb) => {
     if (!debug.client || !debug.client.writable) return cb(DC_ERROR)
     debug.send({
@@ -325,9 +347,84 @@ export default () => {
   const start = ({port = 5858, host = '127.0.0.1'}, cb) => {
     debug = new Debugger({port, host})
 
+    net.createServer(socket => {
+      socket.on('data', d => {
+        const OUT = 1
+        const ERR = 2
+        const chan = d[0]
+        d = d.slice(1)
+        if (chan === OUT) debug.emit('stdout', d + '')
+        if (chan === ERR) debug.emit('stderr', d + '')
+      })
+    }).listen(9000 + port)
+
+    const connected = () => {
+      const cnet = require.resolve('c-net')
+
+      globalEvaluate(`
+
+        (function () {
+          if (process.wrappedForDebugger)
+
+          var cnet
+          var socket
+
+          try {
+            cnet = process.mainModule.require('${cnet}')
+          } catch (e) {}
+
+          try {
+            socket = cnet.connect('127.0.0.1', ${9000 + port})
+          } catch (e) {}
+
+          process.stdout.write = (function(fn) {
+            return function(chunk) {
+              try {
+                cnet.write(socket, '\u0001' + chunk)
+              } catch (e) {
+                socket = cnet.connect('127.0.0.1', ${9000 + port})
+                try { cnet.write(socket, '\u0001' + chunk) } catch (e) {}
+              }
+              return fn.apply(process.stdout, arguments)
+            }
+          } (process.stdout.write))
+
+          process.stderr.write = (function(fn) {
+            return function(chunk) {
+              try {
+                cnet.write(socket, '\u0002' + chunk)
+              } catch (e) {
+                socket = cnet.connect('127.0.0.1', ${9000 + port})
+                try { cnet.write(socket, '\u0002' + chunk) } catch (e) {}
+              }
+              return fn.apply(process.stderr, arguments)
+            }
+          } (process.stderr.write))
+
+          process.wrappedForDebugger = true
+        }())
+      `, err => {
+        if (err) return cb(err)
+        callstack(cb)
+      })
+    }
+
+    let errorState = false
     const attempt = () => {
-      debug.connect(() => callstack(cb))
-      debug.once('error', () => setTimeout(attempt, 1000))
+      if (errorState) return
+
+      debug.connect(connected)
+      debug.once('error', e => {
+        const {code} = e
+
+        if (code === 'ECONNREFUSED') {
+          setTimeout(attempt, 1000)
+          return
+        }
+
+        errorState = true
+        console.error('error', e)
+      })
     }
 
     attempt()
@@ -345,6 +442,9 @@ export default () => {
     scopes,
     scope,
     lookup,
+    evaluate,
+    frameEvaluate,
+    globalEvaluate,
     setBreakpoint,
     clearBreakpoint,
     stepOver,

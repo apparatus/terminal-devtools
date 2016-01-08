@@ -3,13 +3,14 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TOGGLE_TOOLTIPS = exports.SET_DIMENSIONS = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.TOGGLE_BREAKPOINT = exports.SET_EDITOR_LINE = exports.SET_FILE_ITEM = exports.RECEIVE_SOURCE = exports.ADD_ITEM_TO_SCOPE = exports.SET_SCOPE_ITEM = exports.EXTEND_SCOPE = exports.RECEIVE_SCOPE = exports.CLEAR_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.START_DEBUGGING = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
+exports.TOGGLE_TOOLTIPS = exports.SET_DIMENSIONS = exports.TOGGLE_BREAKPOINT = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.RECEIVE_EVAL_ERROR = exports.RECEIVE_EVAL_RESULT = exports.CONSOLE_INPUT = exports.RECEIVE_STDERR = exports.RECEIVE_STDOUT = exports.SET_EDITOR_LINE = exports.SET_FILE_ITEM = exports.RECEIVE_SOURCE = exports.ADD_ITEM_TO_SCOPE = exports.SET_SCOPE_ITEM = exports.EXTEND_SCOPE = exports.RECEIVE_SCOPE = exports.CLEAR_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.START_DEBUGGING = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
 exports.startDebugging = startDebugging;
 exports.focusTab = focusTab;
 exports.focusPanel = focusPanel;
 exports.selectFile = selectFile;
 exports.setEditorLine = setEditorLine;
 exports.toggleBreakpoint = toggleBreakpoint;
+exports.consoleInput = consoleInput;
 exports.selectFrame = selectFrame;
 exports.error = error;
 exports.receiveSources = receiveSources;
@@ -38,7 +39,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var debug = (0, _debug2.default)();
 var dbg = undefined;
 
-// User Actions Types:
+// UI Actions Types:
 
 var FOCUS_TAB = exports.FOCUS_TAB = 'FOCUS_TAB';
 var FOCUS_PANEL = exports.FOCUS_PANEL = 'FOCUS_PANEL';
@@ -59,7 +60,11 @@ var ADD_ITEM_TO_SCOPE = exports.ADD_ITEM_TO_SCOPE = 'ADD_ITEM_TO_SCOPE';
 var RECEIVE_SOURCE = exports.RECEIVE_SOURCE = 'RECEIVE_SOURCE';
 var SET_FILE_ITEM = exports.SET_FILE_ITEM = 'SET_FILE_ITEM';
 var SET_EDITOR_LINE = exports.SET_EDITOR_LINE = 'SET_EDITOR_LINE';
-var TOGGLE_BREAKPOINT = exports.TOGGLE_BREAKPOINT = 'TOGGLE_BREAKPOINT';
+var RECEIVE_STDOUT = exports.RECEIVE_STDOUT = 'RECEIVE_STDOUT';
+var RECEIVE_STDERR = exports.RECEIVE_STDERR = 'RECEIVE_STDERR';
+var CONSOLE_INPUT = exports.CONSOLE_INPUT = 'CONSOLE_INPUT';
+var RECEIVE_EVAL_RESULT = exports.RECEIVE_EVAL_RESULT = 'RECEIVE_EVAL_RESULT';
+var RECEIVE_EVAL_ERROR = exports.RECEIVE_EVAL_ERROR = 'RECEIVE_EVAL_ERROR';
 
 // Debugger Action Types
 var PAUSE = exports.PAUSE = 'PAUSE';
@@ -70,11 +75,15 @@ var STEP_OUT = exports.STEP_OUT = 'STEP_OUT';
 var NEXT_FRAME = exports.NEXT_FRAME = 'NEXT_FRAME';
 var PREVIOUS_FRAME = exports.PREVIOUS_FRAME = 'PREVIOUS_FRAME';
 var SELECT_FRAME = exports.SELECT_FRAME = 'SELECT_FRAME';
+var TOGGLE_BREAKPOINT = exports.TOGGLE_BREAKPOINT = 'TOGGLE_BREAKPOINT';
 
 // Configuration Action Types:
 
 var SET_DIMENSIONS = exports.SET_DIMENSIONS = 'SET_DIMENSIONS';
 var TOGGLE_TOOLTIPS = exports.TOGGLE_TOOLTIPS = 'TOGGLE_TOOLTIPS';
+
+var stdoutQueue = [];
+var lockStdout = false;
 
 // User Action Creators:
 
@@ -117,6 +126,13 @@ function startDebugging(_ref) {
         }
         dispatch(receiveBreakpoints(breakpoints));
       });
+    });
+
+    dbg.on('stdout', function (line) {
+      return lockStdout ? stdoutQueue.push(line) : dispatch({ type: RECEIVE_STDOUT, payload: line });
+    });
+    dbg.on('stderr', function (line) {
+      return dispatch({ type: RECEIVE_STDERR, payload: line });
     });
   };
 }
@@ -263,11 +279,67 @@ function toggleBreakpoint() {
   };
 }
 
-function selectFrame(payload) {
+function consoleInput(payload) {
   return function (dispatch, getState) {
     var _getState3 = getState();
 
     var frames = _getState3.frames;
+    var frame = _getState3.frame;
+
+    var expression = payload;
+    var args = { expression: expression };
+
+    var frameIndex = frame ? frames.findIndex(function (_ref7) {
+      var callFrameId = _ref7.callFrameId;
+      return callFrameId === frame.callFrameId;
+    }) : -1;
+
+    args[! ~frameIndex ? 'global' : 'frame'] = ! ~frameIndex ? true : frameIndex;
+
+    lockStdout = true;
+
+    debug.evaluate(args, function (err, out) {
+      if (err) return dispatch(error(err));
+      var res = out.res;
+
+      if (!res.success) {
+        lockStdout = false;
+        dispatch({ type: CONSOLE_INPUT, payload: expression });
+        dispatch({ type: RECEIVE_EVAL_ERROR, payload: res.message });
+        return;
+      }
+
+      var _res$body = res.body;
+      var className = _res$body.className;
+      var type = _res$body.type;
+      var value = _res$body.value;
+      var text = _res$body.text;
+
+      var output = className ? type === 'function' ? text : className : type === 'string' ? '\'' + value + '\'' : value;
+
+      if (output === className) {
+        // todo - do a lookup to get the object props
+        // todo after: present them in a tree like scope?
+      }
+
+      var stdout = stdoutQueue.length ? stdoutQueue.join('  ') : '';
+      dispatch({ type: CONSOLE_INPUT, payload: expression + (stdout ? '' : '\n') });
+      if (stdout) {
+        dispatch({ type: RECEIVE_STDOUT, payload: '\n  ' + stdout });
+      }
+      dispatch({ type: RECEIVE_EVAL_RESULT, payload: output });
+
+      stdoutQueue.length = 0;
+      lockStdout = false;
+    });
+  };
+}
+
+function selectFrame(payload) {
+  return function (dispatch, getState) {
+    var _getState4 = getState();
+
+    var frames = _getState4.frames;
 
     var frameIndex = payload;
     var frame = frames[frameIndex];
@@ -354,9 +426,9 @@ function receiveBreakpoints(payload) {
   };
 }
 
-function extendScope(_ref7) {
-  var handle = _ref7.handle;
-  var branch = _ref7.branch;
+function extendScope(_ref8) {
+  var handle = _ref8.handle;
+  var branch = _ref8.branch;
 
   return function (dispatch) {
     debug.scope(handle, function (err, scope) {
@@ -422,9 +494,9 @@ function resume() {
     dispatch({ type: RESUME });
     dispatch(receiveCallstack([]));
     debug.resume(function () {
-      var catchBreak = function catchBreak(_ref8) {
-        var event = _ref8.event;
-        var body = _ref8.body;
+      var catchBreak = function catchBreak(_ref9) {
+        var event = _ref9.event;
+        var body = _ref9.body;
 
         if (event !== 'break') {
           return;

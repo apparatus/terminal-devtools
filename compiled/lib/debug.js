@@ -4,22 +4,29 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _net = require('net');
+
+var _net2 = _interopRequireDefault(_net);
+
 var _yadc = require('yadc');
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 // important: preserve order
-var SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch', 'block', 'script']; /*
-                                                                                       * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
-                                                                                       * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-                                                                                       * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-                                                                                       * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-                                                                                       * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-                                                                                       * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-                                                                                       * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-                                                                                       * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-                                                                                       * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-                                                                                       * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-                                                                                       * POSSIBILITY OF SUCH DAMAGE.
-                                                                                       */
+/*
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+var SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch', 'block', 'script'];
 
 var PROPERTY_TYPES = {
   NORMAL: 0,
@@ -226,8 +233,45 @@ exports.default = function () {
     });
   };
 
-  var scopes = function scopes(_ref4, cb) {
-    var frameNumber = _ref4.callFrameId;
+  var evaluate = function evaluate(_ref4, cb) {
+    var expression = _ref4.expression;
+    var global = _ref4.global;
+    var frame = _ref4.frame;
+    var context = _ref4.context;
+
+    if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
+    var args = { expression: expression, disable_break: true };
+    if (typeof global !== 'undefined') {
+      args.global = global;
+    }
+    if (typeof frame !== 'undefined') {
+      args.frame = frame;
+    }
+    if (typeof context !== 'undefined') {
+      args.additional_context = context;
+    }
+
+    debug.send({
+      seq: ++seq,
+      type: 'request',
+      command: 'evaluate',
+      arguments: args
+    }, function (err, out) {
+      if (err) return cb(err);
+      if (!out.res) return cb(Error('no response'));
+      cb(null, out);
+    });
+  };
+
+  var frameEvaluate = function frameEvaluate(frame, expression, cb) {
+    return evaluate({ expression: expression, frame: frame }, cb);
+  };
+  var globalEvaluate = function globalEvaluate(expression, cb) {
+    return evaluate({ expression: expression, global: true }, cb);
+  };
+
+  var scopes = function scopes(_ref5, cb) {
+    var frameNumber = _ref5.callFrameId;
 
     if (!debug.client || !debug.client.writable) return cb(DC_ERROR);
     debug.send({
@@ -253,8 +297,8 @@ exports.default = function () {
           return o;
         }
         o[SCOPE_TYPES[type]] = scope;
-        scope.context = res.refs.find(function (_ref5) {
-          var handle = _ref5.handle;
+        scope.context = res.refs.find(function (_ref6) {
+          var handle = _ref6.handle;
           return handle === ref;
         });
         return o;
@@ -271,8 +315,8 @@ exports.default = function () {
 
     if (!Array.isArray(handles)) handles = [handles];
 
-    handles = handles.map(function (_ref6) {
-      var ref = _ref6.object.ref;
+    handles = handles.map(function (_ref7) {
+      var ref = _ref7.object.ref;
       return ref;
     });
 
@@ -300,17 +344,17 @@ exports.default = function () {
           return;
         }
 
-        var props = properties.reduce(function (a, _ref7, i, arr) {
-          var name = _ref7.name;
-          var ref = _ref7.ref;
-          var _ref7$attributes = _ref7.attributes;
-          var attributes = _ref7$attributes === undefined ? 0 : _ref7$attributes;
-          var propertyType = _ref7.propertyType;
+        var props = properties.reduce(function (a, _ref8, i, arr) {
+          var name = _ref8.name;
+          var ref = _ref8.ref;
+          var _ref8$attributes = _ref8.attributes;
+          var attributes = _ref8$attributes === undefined ? 0 : _ref8$attributes;
+          var propertyType = _ref8.propertyType;
 
           var _refs$find = // functions
           // only on non-primitives (objects, functions, arrays)
-          refs.find(function (_ref8) {
-            var handle = _ref8.handle;
+          refs.find(function (_ref9) {
+            var handle = _ref9.handle;
             return handle === ref;
           });
 
@@ -361,9 +405,9 @@ exports.default = function () {
   };
 
   var callstack = function callstack(cb) {
-    return backtrace(function (err, _ref9) {
-      var frames = _ref9.frames;
-      var totalFrames = _ref9.totalFrames;
+    return backtrace(function (err, _ref10) {
+      var frames = _ref10.frames;
+      var totalFrames = _ref10.totalFrames;
 
       if (err) return cb(err);
       if (totalFrames === 0) {
@@ -377,12 +421,12 @@ exports.default = function () {
       scripts(fetch);
 
       function fetch() {
-        cb(null, frames.map(function (_ref10) {
-          var index = _ref10.index;
-          var func = _ref10.func;
-          var line = _ref10.line;
-          var column = _ref10.column;
-          var receiver = _ref10.receiver;
+        cb(null, frames.map(function (_ref11) {
+          var index = _ref11.index;
+          var func = _ref11.func;
+          var line = _ref11.line;
+          var column = _ref11.column;
+          var receiver = _ref11.receiver;
           return {
             callFrameId: index,
             functionName: func.inferredName || func.name,
@@ -399,20 +443,49 @@ exports.default = function () {
     });
   };
 
-  var start = function start(_ref11, cb) {
-    var _ref11$port = _ref11.port;
-    var port = _ref11$port === undefined ? 5858 : _ref11$port;
-    var _ref11$host = _ref11.host;
-    var host = _ref11$host === undefined ? '127.0.0.1' : _ref11$host;
+  var start = function start(_ref12, cb) {
+    var _ref12$port = _ref12.port;
+    var port = _ref12$port === undefined ? 5858 : _ref12$port;
+    var _ref12$host = _ref12.host;
+    var host = _ref12$host === undefined ? '127.0.0.1' : _ref12$host;
 
     debug = new _yadc.Debugger({ port: port, host: host });
 
-    var attempt = function attempt() {
-      debug.connect(function () {
-        return callstack(cb);
+    _net2.default.createServer(function (socket) {
+      socket.on('data', function (d) {
+        var OUT = 1;
+        var ERR = 2;
+        var chan = d[0];
+        d = d.slice(1);
+        if (chan === OUT) debug.emit('stdout', d + '');
+        if (chan === ERR) debug.emit('stderr', d + '');
       });
-      debug.once('error', function () {
-        return setTimeout(attempt, 1000);
+    }).listen(9000 + port);
+
+    var connected = function connected() {
+      var cnet = require.resolve('c-net');
+
+      globalEvaluate('\n\n        (function () {\n          if (process.wrappedForDebugger)\n\n          var cnet\n          var socket\n\n          try {\n            cnet = process.mainModule.require(\'' + cnet + '\')\n          } catch (e) {}\n\n          try {\n            socket = cnet.connect(\'127.0.0.1\', ' + (9000 + port) + ')\n          } catch (e) {}\n\n          process.stdout.write = (function(fn) {\n            return function(chunk) {\n              try {\n                cnet.write(socket, \'\u0001\' + chunk)\n              } catch (e) {\n                socket = cnet.connect(\'127.0.0.1\', ' + (9000 + port) + ')\n                try { cnet.write(socket, \'\u0001\' + chunk) } catch (e) {}\n              }\n              return fn.apply(process.stdout, arguments)\n            }\n          } (process.stdout.write))\n\n          process.stderr.write = (function(fn) {\n            return function(chunk) {\n              try {\n                cnet.write(socket, \'\u0002\' + chunk)\n              } catch (e) {\n                socket = cnet.connect(\'127.0.0.1\', ' + (9000 + port) + ')\n                try { cnet.write(socket, \'\u0002\' + chunk) } catch (e) {}\n              }\n              return fn.apply(process.stderr, arguments)\n            }\n          } (process.stderr.write))\n\n          process.wrappedForDebugger = true\n        }())\n      ', function (err) {
+        if (err) return cb(err);
+        callstack(cb);
+      });
+    };
+
+    var errorState = false;
+    var attempt = function attempt() {
+      if (errorState) return;
+
+      debug.connect(connected);
+      debug.once('error', function (e) {
+        var code = e.code;
+
+        if (code === 'ECONNREFUSED') {
+          setTimeout(attempt, 1000);
+          return;
+        }
+
+        errorState = true;
+        console.error('error', e);
       });
     };
 
@@ -431,6 +504,9 @@ exports.default = function () {
     scopes: scopes,
     scope: scope,
     lookup: lookup,
+    evaluate: evaluate,
+    frameEvaluate: frameEvaluate,
+    globalEvaluate: globalEvaluate,
     setBreakpoint: setBreakpoint,
     clearBreakpoint: clearBreakpoint,
     stepOver: stepOver,

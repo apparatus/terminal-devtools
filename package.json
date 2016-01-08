@@ -30,6 +30,7 @@
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
     "blessed": "^0.1.81",
+    "c-net": "^1.0.1",
     "lsof": "^0.1.0",
     "minimist": "^1.2.0",
     "react": "^0.14.3",
@@ -40,6 +41,7 @@
     "redux-logger": "^2.3.1",
     "redux-thunk": "^1.0.2",
     "source-map-support": "^0.4.0",
+    "v8-debug": "^0.7.0",
     "yadc": "0.0.1"
   },
   "description": "Terminal based Devtools for Node",

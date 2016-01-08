@@ -8,6 +8,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactFunctional = require('react-functional');
+
+var _reactFunctional2 = _interopRequireDefault(_reactFunctional);
+
 var _style = require('../../style');
 
 var style = _interopRequireWildcard(_style);
@@ -18,30 +22,70 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /* eslint-disable react/no-unknown-property */
 
-var Console = function Console(_ref) {
+var Console = function Console(_ref, cmp) {
   var top = _ref.top;
   var left = _ref.left;
   var width = _ref.width;
   var height = _ref.height;
   var focused = _ref.focused;
+  var independent = _ref.independent;
   var tooltips = _ref.tooltips;
+  var output = _ref.output;
   var actions = _ref.actions;
+
   return _react2.default.createElement('textarea', {
+    ref: function ref(el) {
+      cmp.el = el;
+      //hack :(
+      if (el && independent && focused) cmp.el.focus();
+    },
+    keys: true,
+    vi: true,
     mouse: true,
     label: 'Console',
+    inputOnFocus: true,
     focused: focused,
     'class': [style.panel, focused && style.selected],
     top: top,
     left: left,
     width: width,
     height: height,
-    value: '> ',
+    hoverText: actions && tooltips && 'ctrl+k',
+    value: output.all + '> ',
     onFocus: function onFocus() {
-      return actions && (focused || actions.focusPanel('console'));
+      return independent || focused || actions.focusPanel('console');
     },
-    hoverText: actions && tooltips && 'ctrl+k'
+    onKeyTab: function onKeyTab() {
+      if (independent) {
+        actions.focusTab('sources');
+        actions.focusPanel('console');
+        return;
+      }
+      cmp.el._done();
+      actions.focusPanel('navigator');
+    },
+    onKeyUp: function onKeyUp() {
+      // TODO history
+    },
+    onKeypress: function onKeypress(ch, key) {
+      if (key.name === 'return' && !key.shift) {
+        var lines = cmp.el.getLines();
+        var cmd = lines[lines.length - 2].substr(2);
+        actions.consoleInput(cmd);
+        return;
+      }
+      if (independent) {
+        if (key.name === 'escape') {
+          //hack :( - avoids intermittent crashing
+          setTimeout(function () {
+            actions.focusTab('sources');
+            actions.focusPanel('console');
+          });
+        }
+      }
+    }
   });
 };
 
-exports.default = Console;
+exports.default = (0, _reactFunctional2.default)(Console);
 //# sourceMappingURL=index.js.map

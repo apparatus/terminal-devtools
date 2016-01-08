@@ -40,6 +40,7 @@ var Sources = function Sources(_ref) {
   var panel = _ref.panel;
   var actions = _ref.actions;
   var tooltips = _ref.tooltips;
+  var output = _ref.output;
   return _React2.default.createElement(
     'element',
     layout.element,
@@ -49,7 +50,7 @@ var Sources = function Sources(_ref) {
     _React2.default.createElement(_components.CallStack, _extends({ tooltips: tooltips, items: callstack, focused: panel === 'callstack', actions: actions }, layout.callstack)),
     _React2.default.createElement(_components.BreakPoints, _extends({ tooltips: tooltips, items: breakpoints, focused: panel === 'breakpoints', actions: actions }, layout.breakpoints)),
     _React2.default.createElement(_components.Scope, _extends({ tooltips: tooltips, items: scope, item: scopeItem, focused: panel === 'scope', actions: actions }, layout.scope)),
-    _React2.default.createElement(_components.Console, _extends({ tooltips: tooltips, focused: panel === 'console', actions: actions }, layout.console))
+    _React2.default.createElement(_components.Console, _extends({ tooltips: tooltips, output: output, focused: panel === 'console', actions: actions }, layout.console))
   );
 };
 
@@ -66,6 +67,7 @@ var mapState = function mapState(_ref2) {
   var scope = _ref2.scope;
   var panel = _ref2.panel;
   var tooltips = _ref2.tooltips;
+  var output = _ref2.output;
   return {
     layout: layout.sources,
     source: source,
@@ -78,7 +80,8 @@ var mapState = function mapState(_ref2) {
     breakpoints: breakpoints,
     scope: scope,
     panel: panel,
-    tooltips: tooltips
+    tooltips: tooltips,
+    output: output
   };
 };
 

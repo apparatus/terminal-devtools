@@ -19,8 +19,21 @@ import {
   PAUSE,
   RESUME,
   SET_DIMENSIONS,
-  TOGGLE_TOOLTIPS
+  TOGGLE_TOOLTIPS,
+  RECEIVE_STDOUT,
+  RECEIVE_STDERR,
+  CONSOLE_INPUT,
+  RECEIVE_EVAL_RESULT,
+  RECEIVE_EVAL_ERROR
 } from '../actions'
+
+const CONSOLE_PREFIXES = {
+  [CONSOLE_INPUT]: '> ',
+  [RECEIVE_EVAL_RESULT]: '⦑ ',
+  [RECEIVE_EVAL_ERROR]: '⨂ ',
+  [RECEIVE_STDERR]: '⨂ ',
+  [RECEIVE_STDOUT]: '  '
+}
 
 export function tab (state = 'sources', {type, payload}) {
   if (type !== FOCUS_TAB) return state
@@ -41,7 +54,7 @@ export function files (state = [], {type, payload}) {
   if (type !== RECEIVE_SOURCES) return state
   const sources = payload.map(s => s.name)
 
-  const nonNative = sources.filter(s => s[0] === sep)
+  const nonNative = sources.filter(s => s && s[0] === sep)
     .reduce((o, path) => {
       let next = o
       path.split(sep).filter(Boolean).forEach((segment, ix, arr) => {
@@ -59,7 +72,7 @@ export function files (state = [], {type, payload}) {
   const native = {
     '(core)': {
       value: sources
-        .filter(s => s[0] !== sep)
+        .filter(s => s && s[0] !== sep)
         .reduce((o, f) => {
           o[f] = {
             value: {},
@@ -186,6 +199,29 @@ export function layout (state = {}, {type, payload}) {
 export function tooltips (state = true, {type}) {
   if (type !== TOGGLE_TOOLTIPS) return state
   return !state
+}
+
+export function output (state = {out: '', err: '', all: ''}, {type, payload}) {
+  if (type !== RECEIVE_STDOUT && type !== RECEIVE_STDERR &&
+    type !== CONSOLE_INPUT && type !== RECEIVE_EVAL_RESULT &&
+    type !== RECEIVE_EVAL_ERROR) return state
+
+  const {out, err, all, history = []} = state
+
+  const line = type === RECEIVE_EVAL_RESULT
+    ? CONSOLE_PREFIXES[type] + payload + '\n'
+    : type === RECEIVE_EVAL_ERROR
+      ? '\n' + CONSOLE_PREFIXES[type] + payload + '\n'
+      : CONSOLE_PREFIXES[type] + payload
+
+  if (type === CONSOLE_INPUT) { history.push(payload) }
+
+  return {
+    history,
+    out: (type === RECEIVE_STDOUT) ? CONSOLE_PREFIXES[type] + out + payload : out,
+    err: (type === RECEIVE_STDERR) ? CONSOLE_PREFIXES[type] + err + payload : err,
+    all: all + line
+  }
 }
 
 // utils:
