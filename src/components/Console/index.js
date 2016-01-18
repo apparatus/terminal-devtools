@@ -24,7 +24,13 @@ const Console = ({top, left, width, height, focused, independent, tooltips, outp
       width={width}
       height={height}
       hoverText={actions && tooltips && 'ctrl+k'}
-      value={output.all + '> '}
+      value={
+        output.all + '> ' + (
+          output.historyIndex ? 
+            output.history.slice(output.historyIndex).shift() : 
+            ''
+        )
+      }
       onFocus={() => (independent || focused || actions.focusPanel('console'))}
       onKeyTab={() => {
         if (independent) {
@@ -36,8 +42,12 @@ const Console = ({top, left, width, height, focused, independent, tooltips, outp
         actions.focusPanel('navigator')
       }}
       onKeyUp={() => {
-        // TODO history
+        actions.consoleHistory({step: -1})
       }}
+      onKeyDown={() => {
+        actions.consoleHistory({step: 1})
+      }}
+
       onKeypress={(ch, key) => {
         if (key.name === 'return' && !key.shift) {
           const lines = cmp.el.getLines()

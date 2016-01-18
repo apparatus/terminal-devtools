@@ -23,6 +23,7 @@ import {
   RECEIVE_STDOUT,
   RECEIVE_STDERR,
   CONSOLE_INPUT,
+  CONSOLE_HISTORY,
   RECEIVE_EVAL_RESULT,
   RECEIVE_EVAL_ERROR
 } from '../actions'
@@ -202,6 +203,28 @@ export function tooltips (state = true, {type}) {
 }
 
 export function output (state = {out: '', err: '', all: ''}, {type, payload}) {
+  console.log('type', type)
+  if (type === CONSOLE_HISTORY) {
+
+    if (!state.history && !state.history.length) {
+      return state
+    }
+
+    payload = payload || {step: -1}
+    const {step} = payload
+    let {historyIndex = 0} = state
+
+    historyIndex += step
+
+    if (historyIndex > 0) historyIndex = 0
+    if (-historyIndex > state.history.length) historyIndex = -(state.history.length)
+
+    return {
+      ...state,
+      historyIndex
+    }
+  }
+
   if (type !== RECEIVE_STDOUT && type !== RECEIVE_STDERR &&
     type !== CONSOLE_INPUT && type !== RECEIVE_EVAL_RESULT &&
     type !== RECEIVE_EVAL_ERROR) return state
@@ -214,9 +237,13 @@ export function output (state = {out: '', err: '', all: ''}, {type, payload}) {
       ? '\n' + CONSOLE_PREFIXES[type] + payload + '\n'
       : CONSOLE_PREFIXES[type] + payload
 
-  if (type === CONSOLE_INPUT) { history.push(payload) }
+  if (type === CONSOLE_INPUT) { 
+    history.push((payload + '').trim())
+    state.historyIndex = 0
+  }
 
   return {
+    ...state,
     history,
     out: (type === RECEIVE_STDOUT) ? CONSOLE_PREFIXES[type] + out + payload : out,
     err: (type === RECEIVE_STDERR) ? CONSOLE_PREFIXES[type] + err + payload : err,

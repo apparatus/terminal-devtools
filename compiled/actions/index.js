@@ -3,13 +3,14 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TOGGLE_TOOLTIPS = exports.SET_DIMENSIONS = exports.TOGGLE_BREAKPOINT = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.RECEIVE_EVAL_ERROR = exports.RECEIVE_EVAL_RESULT = exports.CONSOLE_INPUT = exports.RECEIVE_STDERR = exports.RECEIVE_STDOUT = exports.SET_EDITOR_LINE = exports.SET_FILE_ITEM = exports.RECEIVE_SOURCE = exports.ADD_ITEM_TO_SCOPE = exports.SET_SCOPE_ITEM = exports.EXTEND_SCOPE = exports.RECEIVE_SCOPE = exports.CLEAR_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.START_DEBUGGING = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
+exports.TOGGLE_TOOLTIPS = exports.SET_DIMENSIONS = exports.TOGGLE_BREAKPOINT = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.RECEIVE_EVAL_ERROR = exports.RECEIVE_EVAL_RESULT = exports.CONSOLE_HISTORY = exports.CONSOLE_INPUT = exports.RECEIVE_STDERR = exports.RECEIVE_STDOUT = exports.SET_EDITOR_LINE = exports.SET_FILE_ITEM = exports.RECEIVE_SOURCE = exports.ADD_ITEM_TO_SCOPE = exports.SET_SCOPE_ITEM = exports.EXTEND_SCOPE = exports.RECEIVE_SCOPE = exports.CLEAR_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.START_DEBUGGING = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
 exports.startDebugging = startDebugging;
 exports.focusTab = focusTab;
 exports.focusPanel = focusPanel;
 exports.selectFile = selectFile;
 exports.setEditorLine = setEditorLine;
 exports.toggleBreakpoint = toggleBreakpoint;
+exports.consoleHistory = consoleHistory;
 exports.consoleInput = consoleInput;
 exports.selectFrame = selectFrame;
 exports.error = error;
@@ -63,6 +64,7 @@ var SET_EDITOR_LINE = exports.SET_EDITOR_LINE = 'SET_EDITOR_LINE';
 var RECEIVE_STDOUT = exports.RECEIVE_STDOUT = 'RECEIVE_STDOUT';
 var RECEIVE_STDERR = exports.RECEIVE_STDERR = 'RECEIVE_STDERR';
 var CONSOLE_INPUT = exports.CONSOLE_INPUT = 'CONSOLE_INPUT';
+var CONSOLE_HISTORY = exports.CONSOLE_HISTORY = 'CONSOLE_HISTORY';
 var RECEIVE_EVAL_RESULT = exports.RECEIVE_EVAL_RESULT = 'RECEIVE_EVAL_RESULT';
 var RECEIVE_EVAL_ERROR = exports.RECEIVE_EVAL_ERROR = 'RECEIVE_EVAL_ERROR';
 
@@ -276,6 +278,13 @@ function toggleBreakpoint() {
         dispatch(receiveBreakpoints(breakpoints));
       });
     });
+  };
+}
+
+function consoleHistory(payload) {
+  return {
+    type: CONSOLE_HISTORY,
+    payload: payload
   };
 }
 

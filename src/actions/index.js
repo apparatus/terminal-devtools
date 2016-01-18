@@ -26,6 +26,7 @@ export const SET_EDITOR_LINE = 'SET_EDITOR_LINE'
 export const RECEIVE_STDOUT = 'RECEIVE_STDOUT'
 export const RECEIVE_STDERR = 'RECEIVE_STDERR'
 export const CONSOLE_INPUT = 'CONSOLE_INPUT'
+export const CONSOLE_HISTORY = 'CONSOLE_HISTORY'
 export const RECEIVE_EVAL_RESULT = 'RECEIVE_EVAL_RESULT'
 export const RECEIVE_EVAL_ERROR = 'RECEIVE_EVAL_ERROR'
 
@@ -174,6 +175,13 @@ export function toggleBreakpoint () {
         dispatch(receiveBreakpoints(breakpoints))
       })
     })
+  }
+}
+
+export function consoleHistory(payload) {
+  return {
+    type: CONSOLE_HISTORY,
+    payload
   }
 }
 

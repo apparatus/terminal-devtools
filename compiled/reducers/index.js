@@ -302,6 +302,29 @@ function output() {
   var type = _ref21.type;
   var payload = _ref21.payload;
 
+  console.log('type', type);
+  if (type === _actions.CONSOLE_HISTORY) {
+
+    if (!state.history && !state.history.length) {
+      return state;
+    }
+
+    payload = payload || { step: -1 };
+    var _payload = payload;
+    var step = _payload.step;
+    var _state$historyIndex = state.historyIndex;
+    var historyIndex = _state$historyIndex === undefined ? 0 : _state$historyIndex;
+
+    historyIndex += step;
+
+    if (historyIndex > 0) historyIndex = 0;
+    if (-historyIndex > state.history.length) historyIndex = -state.history.length;
+
+    return _extends({}, state, {
+      historyIndex: historyIndex
+    });
+  }
+
   if (type !== _actions.RECEIVE_STDOUT && type !== _actions.RECEIVE_STDERR && type !== _actions.CONSOLE_INPUT && type !== _actions.RECEIVE_EVAL_RESULT && type !== _actions.RECEIVE_EVAL_ERROR) return state;
 
   var out = state.out;
@@ -313,15 +336,16 @@ function output() {
   var line = type === _actions.RECEIVE_EVAL_RESULT ? CONSOLE_PREFIXES[type] + payload + '\n' : type === _actions.RECEIVE_EVAL_ERROR ? '\n' + CONSOLE_PREFIXES[type] + payload + '\n' : CONSOLE_PREFIXES[type] + payload;
 
   if (type === _actions.CONSOLE_INPUT) {
-    history.push(payload);
+    history.push((payload + '').trim());
+    state.historyIndex = 0;
   }
 
-  return {
+  return _extends({}, state, {
     history: history,
     out: type === _actions.RECEIVE_STDOUT ? CONSOLE_PREFIXES[type] + out + payload : out,
     err: type === _actions.RECEIVE_STDERR ? CONSOLE_PREFIXES[type] + err + payload : err,
     all: all + line
-  };
+  });
 }
 
 // utils:

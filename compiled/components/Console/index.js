@@ -36,7 +36,7 @@ var Console = function Console(_ref, cmp) {
   return _react2.default.createElement('textarea', {
     ref: function ref(el) {
       cmp.el = el;
-      //hack :(
+      // hack :(
       if (el && independent && focused) cmp.el.focus();
     },
     keys: true,
@@ -51,7 +51,7 @@ var Console = function Console(_ref, cmp) {
     width: width,
     height: height,
     hoverText: actions && tooltips && 'ctrl+k',
-    value: output.all + '> ',
+    value: output.all + '> ' + (output.historyIndex ? output.history.slice(output.historyIndex).shift() : ''),
     onFocus: function onFocus() {
       return independent || focused || actions.focusPanel('console');
     },
@@ -65,7 +65,16 @@ var Console = function Console(_ref, cmp) {
       actions.focusPanel('navigator');
     },
     onKeyUp: function onKeyUp() {
-      // TODO history
+      try {
+        actions.consoleHistory({ step: -1 });
+      } catch (e) {
+        console.log(e.stack);
+      }
+      console.log(output);
+    },
+    onKeyDown: function onKeyDown() {
+      actions.consoleHistory({ step: 1 });
+      console.log(output);
     },
     onKeypress: function onKeypress(ch, key) {
       if (key.name === 'return' && !key.shift) {
@@ -76,7 +85,7 @@ var Console = function Console(_ref, cmp) {
       }
       if (independent) {
         if (key.name === 'escape') {
-          //hack :( - avoids intermittent crashing
+          // hack :( - avoids intermittent crashing
           setTimeout(function () {
             actions.focusTab('sources');
             actions.focusPanel('console');
