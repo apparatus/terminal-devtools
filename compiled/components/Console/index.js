@@ -39,8 +39,6 @@ var Console = function Console(_ref, cmp) {
       // hack :(
       if (el && independent && focused) cmp.el.focus();
     },
-    keys: true,
-    vi: true,
     mouse: true,
     label: 'Console',
     inputOnFocus: true,
@@ -51,7 +49,7 @@ var Console = function Console(_ref, cmp) {
     width: width,
     height: height,
     hoverText: actions && tooltips && 'ctrl+k',
-    value: output.all + '> ' + (output.historyIndex ? output.history.slice(output.historyIndex).shift() : ''),
+    value: !(cmp && cmp.force) ? output.all + '> ' + (output.historyIndex ? output.history.slice(output.historyIndex).shift() : '') : cmp.force(),
     onFocus: function onFocus() {
       return independent || focused || actions.focusPanel('console');
     },
@@ -65,21 +63,26 @@ var Console = function Console(_ref, cmp) {
       actions.focusPanel('navigator');
     },
     onKeyUp: function onKeyUp() {
-      try {
-        actions.consoleHistory({ step: -1 });
-      } catch (e) {
-        console.log(e.stack);
-      }
-      console.log(output);
+      actions.consoleHistory({ step: -1 });
     },
     onKeyDown: function onKeyDown() {
       actions.consoleHistory({ step: 1 });
-      console.log(output);
+    },
+    onKeyBackspace: function onKeyBackspace(ch, key) {
+      if (cmp.el.value.substr(-2) === '\n>') {
+        (function () {
+          var val = cmp.el.value;
+          cmp.force = function () {
+            cmp.force = null;return val + ' ';
+          };
+          cmp.forceUpdate();
+        })();
+      }
     },
     onKeypress: function onKeypress(ch, key) {
       if (key.name === 'return' && !key.shift) {
         var lines = cmp.el.getLines();
-        var cmd = lines[lines.length - 2].substr(2);
+        var cmd = (lines[lines.length - 2] + '').substr(2);
         actions.consoleInput(cmd);
         return;
       }

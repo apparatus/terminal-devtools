@@ -12,8 +12,6 @@ const Console = ({top, left, width, height, focused, independent, tooltips, outp
         // hack :(
         if (el && independent && focused) cmp.el.focus()
       }}
-      keys
-      vi
       mouse
       label='Console'
       inputOnFocus
@@ -25,11 +23,13 @@ const Console = ({top, left, width, height, focused, independent, tooltips, outp
       height={height}
       hoverText={actions && tooltips && 'ctrl+k'}
       value={
-        output.all + '> ' + (
-          output.historyIndex ? 
-            output.history.slice(output.historyIndex).shift() : 
-            ''
-        )
+        !(cmp && cmp.force) ?
+          (output.all + '> ' + (
+            output.historyIndex ? 
+              output.history.slice(output.historyIndex).shift() : 
+              ''
+          )) : 
+          cmp.force()
       }
       onFocus={() => (independent || focused || actions.focusPanel('console'))}
       onKeyTab={() => {
@@ -47,11 +47,17 @@ const Console = ({top, left, width, height, focused, independent, tooltips, outp
       onKeyDown={() => {
         actions.consoleHistory({step: 1})
       }}
-
+      onKeyBackspace={(ch, key) => {
+        if (cmp.el.value.substr(-2) === '\n>') {
+          const val = cmp.el.value
+          cmp.force = () => { cmp.force = null; return val + ' ' }
+          cmp.forceUpdate()
+        }
+      }}
       onKeypress={(ch, key) => {
         if (key.name === 'return' && !key.shift) {
           const lines = cmp.el.getLines()
-          const cmd = lines[lines.length - 2].substr(2)
+          const cmd = (lines[lines.length - 2]+'').substr(2)
           actions.consoleInput(cmd)
           return
         }
