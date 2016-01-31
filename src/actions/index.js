@@ -69,7 +69,7 @@ export function startDebugging ({host, port}) {
           dispatch(selectFrame(0))
           return
         }
-        const {name} = (scripts.find(s => s.name[0] === '/') || scripts[0])
+        const {name} = (scripts.find(s => s.name && s.name[0] === '/') || scripts[0])
         dispatch(selectFile(name))
       })
 

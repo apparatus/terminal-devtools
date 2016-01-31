@@ -8,25 +8,28 @@ var _net = require('net');
 
 var _net2 = _interopRequireDefault(_net);
 
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
 var _yadc = require('yadc');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // important: preserve order
-/*
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-var SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch', 'block', 'script'];
+var SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch', 'block', 'script']; /*
+                                                                                       * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+                                                                                       * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+                                                                                       * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+                                                                                       * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+                                                                                       * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+                                                                                       * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+                                                                                       * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+                                                                                       * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+                                                                                       * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+                                                                                       * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+                                                                                       * POSSIBILITY OF SUCH DAMAGE.
+                                                                                       */
 
 var PROPERTY_TYPES = {
   NORMAL: 0,
@@ -450,22 +453,55 @@ exports.default = function () {
     var host = _ref12$host === undefined ? '127.0.0.1' : _ref12$host;
 
     debug = new _yadc.Debugger({ port: port, host: host });
+    var stdout = __dirname + '/../' + port + '.stdout';
+    var stderr = __dirname + '/../' + port + '.stderr';
 
-    _net2.default.createServer(function (socket) {
-      socket.on('data', function (d) {
-        var OUT = 1;
-        var ERR = 2;
-        var chan = d[0];
-        d = d.slice(1);
-        if (chan === OUT) debug.emit('stdout', d + '');
-        if (chan === ERR) debug.emit('stderr', d + '');
-      });
-    }).listen(9000 + port);
+    if (_fs2.default.existsSync(stdout)) _fs2.default.unlinkSync(stdout);
+    if (_fs2.default.existsSync(stderr)) _fs2.default.unlinkSync(stderr);
+
+    _fs2.default.writeFileSync(stdout, '');
+    _fs2.default.writeFileSync(stderr, '');
+
+    var stdoutFd = _fs2.default.openSync(stdout, 'r');
+    var stderrFd = _fs2.default.openSync(stderr, 'r');
+
+    var lastStdoutSize = 0;
+    var lastStderrSize = 0;
+
+    _fs2.default.watch(stdout, function (evt) {
+      if (!/change/.test(evt)) return;
+
+      var _fs$statSync = _fs2.default.statSync(stdout);
+
+      var size = _fs$statSync.size;
+
+      var bufferSize = size - lastStdoutSize;
+      var buffer = Buffer(bufferSize);
+      lastStdoutSize = size;
+      console.log(size, bufferSize, lastStdoutSize);
+      if (!bufferSize) return;
+      _fs2.default.readSync(stdoutFd, buffer, 0, bufferSize, 'utf8');
+      debug.emit('stdout', buffer + '');
+    });
+
+    _fs2.default.watch(stderr, function (evt) {
+      if (!/change/.test(evt)) return;
+
+      var _fs$statSync2 = _fs2.default.statSync(stdout);
+
+      var size = _fs$statSync2.size;
+
+      var bufferSize = size - lastStderrSize;
+      var buffer = Buffer(bufferSize);
+      lastStderrSize = size;
+      if (!bufferSize) return;
+      _fs2.default.readSync(stderrFd, buffer, 0, bufferSize, 'utf8');
+      debug.emit('stderr', buffer + '');
+    });
 
     var connected = function connected() {
-      var cnet = require.resolve('c-net');
 
-      globalEvaluate('\n\n        (function () {\n          if (process.wrappedForDebugger)\n\n          var cnet\n          var socket\n\n          try {\n            cnet = process.mainModule.require(\'' + cnet + '\')\n          } catch (e) {}\n\n          try {\n            socket = cnet.connect(\'127.0.0.1\', ' + (9000 + port) + ')\n          } catch (e) {}\n\n          process.stdout.write = (function(fn) {\n            return function(chunk) {\n              try {\n                cnet.write(socket, \'\u0001\' + chunk)\n              } catch (e) {\n                socket = cnet.connect(\'127.0.0.1\', ' + (9000 + port) + ')\n                try { cnet.write(socket, \'\u0001\' + chunk) } catch (e) {}\n              }\n              return fn.apply(process.stdout, arguments)\n            }\n          } (process.stdout.write))\n\n          process.stderr.write = (function(fn) {\n            return function(chunk) {\n              try {\n                cnet.write(socket, \'\u0002\' + chunk)\n              } catch (e) {\n                socket = cnet.connect(\'127.0.0.1\', ' + (9000 + port) + ')\n                try { cnet.write(socket, \'\u0002\' + chunk) } catch (e) {}\n              }\n              return fn.apply(process.stderr, arguments)\n            }\n          } (process.stderr.write))\n\n          process.wrappedForDebugger = true\n        }())\n      ', function (err) {
+      globalEvaluate('\n        (function () {\n          if (process.wrappedForDebugger) return\n          process.stdout.write = (function(fn) {\n            return function(chunk) {\n              try {\n                process.mainModule.require(\'fs\').appendFileSync(\'' + stdout + '\', chunk)\n              } catch (e) {\n        \n              }\n\n              return fn.apply(process.stdout, arguments)\n            }\n          } (process.stdout.write))\n\n          process.stderr.write = (function(fn) {\n            return function(chunk) {\n              try {\n                process.mainModule.require(\'fs\').appendFileSync(\'' + stderr + '\', chunk)\n              } catch (e) {\n\n              }\n              return fn.apply(process.stderr, arguments)\n            }\n          } (process.stderr.write))\n\n          process.wrappedForDebugger = true\n        }())\n      ', function (err) {
         if (err) return cb(err);
         callstack(cb);
       });
@@ -474,13 +510,12 @@ exports.default = function () {
     var errorState = false;
     var attempt = function attempt() {
       if (errorState) return;
-
       debug.connect(connected);
       debug.once('error', function (e) {
         var code = e.code;
 
         if (code === 'ECONNREFUSED') {
-          setTimeout(attempt, 1000);
+          setTimeout(attempt, 1000); //TODO cancel previous connect on timeout
           return;
         }
 

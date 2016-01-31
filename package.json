@@ -30,7 +30,6 @@
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
     "blessed": "^0.1.81",
-    "c-net": "^1.0.1",
     "lsof": "^0.1.0",
     "minimist": "^1.2.0",
     "react": "^0.14.3",

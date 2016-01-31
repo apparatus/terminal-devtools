@@ -12,6 +12,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import net from 'net'
+import fs from 'fs'
 import {Debugger} from 'yadc'
 
 // important: preserve order
@@ -346,45 +347,57 @@ export default () => {
 
   const start = ({port = 5858, host = '127.0.0.1'}, cb) => {
     debug = new Debugger({port, host})
+    const stdout = __dirname + '/../' + port + '.stdout'
+    const stderr = __dirname + '/../' + port + '.stderr'
 
-    net.createServer(socket => {
-      socket.on('data', d => {
-        const OUT = 1
-        const ERR = 2
-        const chan = d[0]
-        d = d.slice(1)
-        if (chan === OUT) debug.emit('stdout', d + '')
-        if (chan === ERR) debug.emit('stderr', d + '')
-      })
-    }).listen(9000 + port)
+    if (fs.existsSync(stdout)) fs.unlinkSync(stdout)
+    if (fs.existsSync(stderr)) fs.unlinkSync(stderr)
+
+    fs.writeFileSync(stdout, '')
+    fs.writeFileSync(stderr, '')
+
+    const stdoutFd = fs.openSync(stdout, 'r')
+    const stderrFd = fs.openSync(stderr, 'r')
+
+    let lastStdoutSize = 0
+    let lastStderrSize = 0
+
+    fs.watch(stdout, (evt) => {
+      if (!/change/.test(evt)) return
+      const {size} = fs.statSync(stdout)
+      const bufferSize = size - lastStdoutSize
+      const buffer = Buffer(bufferSize)
+      lastStdoutSize = size
+      console.log(size, bufferSize, lastStdoutSize)
+      if (!bufferSize) return
+      fs.readSync(stdoutFd, buffer, 0, bufferSize, 'utf8')
+      debug.emit('stdout', buffer + '')          
+    })
+
+    fs.watch(stderr, (evt) => {
+      if (!/change/.test(evt)) return
+      const {size} = fs.statSync(stdout)
+      const bufferSize = size - lastStderrSize
+      const buffer = Buffer(bufferSize)
+      lastStderrSize = size
+      if (!bufferSize) return
+      fs.readSync(stderrFd, buffer, 0, bufferSize, 'utf8')
+      debug.emit('stderr', buffer + '')
+    })
 
     const connected = () => {
-      const cnet = require.resolve('c-net')
 
       globalEvaluate(`
-
         (function () {
-          if (process.wrappedForDebugger)
-
-          var cnet
-          var socket
-
-          try {
-            cnet = process.mainModule.require('${cnet}')
-          } catch (e) {}
-
-          try {
-            socket = cnet.connect('127.0.0.1', ${9000 + port})
-          } catch (e) {}
-
+          if (process.wrappedForDebugger) return
           process.stdout.write = (function(fn) {
             return function(chunk) {
               try {
-                cnet.write(socket, '\u0001' + chunk)
+                process.mainModule.require('fs').appendFileSync('${stdout}', chunk)
               } catch (e) {
-                socket = cnet.connect('127.0.0.1', ${9000 + port})
-                try { cnet.write(socket, '\u0001' + chunk) } catch (e) {}
+        
               }
+
               return fn.apply(process.stdout, arguments)
             }
           } (process.stdout.write))
@@ -392,10 +405,9 @@ export default () => {
           process.stderr.write = (function(fn) {
             return function(chunk) {
               try {
-                cnet.write(socket, '\u0002' + chunk)
+                process.mainModule.require('fs').appendFileSync('${stderr}', chunk)
               } catch (e) {
-                socket = cnet.connect('127.0.0.1', ${9000 + port})
-                try { cnet.write(socket, '\u0002' + chunk) } catch (e) {}
+
               }
               return fn.apply(process.stderr, arguments)
             }
@@ -412,13 +424,12 @@ export default () => {
     let errorState = false
     const attempt = () => {
       if (errorState) return
-
-      debug.connect(connected)
+      debug.connect(connected) 
       debug.once('error', e => {
         const {code} = e
 
         if (code === 'ECONNREFUSED') {
-          setTimeout(attempt, 1000)
+          setTimeout(attempt, 1000) //TODO cancel previous connect on timeout
           return
         }
 

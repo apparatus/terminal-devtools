@@ -203,19 +203,14 @@ export function tooltips (state = true, {type}) {
 }
 
 export function output (state = {out: '', err: '', all: ''}, {type, payload}) {
-  console.log('type', type)
   if (type === CONSOLE_HISTORY) {
-
-    if (!state.history && !state.history.length) {
+    if (!state.history || !state.history.length) {
       return state
     }
-
     payload = payload || {step: -1}
     const {step} = payload
     let {historyIndex = 0} = state
-
     historyIndex += step
-
     if (historyIndex > 0) historyIndex = 0
     if (-historyIndex > state.history.length) historyIndex = -(state.history.length)
 

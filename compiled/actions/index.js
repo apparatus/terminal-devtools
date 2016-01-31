@@ -112,7 +112,7 @@ function startDebugging(_ref) {
         }
 
         var _ref2 = scripts.find(function (s) {
-          return s.name[0] === '/';
+          return s.name && s.name[0] === '/';
         }) || scripts[0];
 
         var name = _ref2.name;

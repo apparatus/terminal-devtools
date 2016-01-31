@@ -302,13 +302,10 @@ function output() {
   var type = _ref21.type;
   var payload = _ref21.payload;
 
-  console.log('type', type);
   if (type === _actions.CONSOLE_HISTORY) {
-
-    if (!state.history && !state.history.length) {
+    if (!state.history || !state.history.length) {
       return state;
     }
-
     payload = payload || { step: -1 };
     var _payload = payload;
     var step = _payload.step;
@@ -316,7 +313,6 @@ function output() {
     var historyIndex = _state$historyIndex === undefined ? 0 : _state$historyIndex;
 
     historyIndex += step;
-
     if (historyIndex > 0) historyIndex = 0;
     if (-historyIndex > state.history.length) historyIndex = -state.history.length;
 
