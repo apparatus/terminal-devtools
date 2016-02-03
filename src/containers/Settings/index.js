@@ -1,4 +1,4 @@
-import React from 'React'
+import React from 'react'
 import { connect } from 'react-redux'
 import { focusPanel, setDimensions, toggleTooltips } from '../../actions'
 import layouts from '../../config/layouts'

@@ -1,4 +1,4 @@
-import React from 'React'
+import React from 'react'
 import {basename} from 'path'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
