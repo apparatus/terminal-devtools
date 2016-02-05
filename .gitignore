@@ -1,3 +1,5 @@
 node_modules
 log
 config/user-settings.json
+compiled/*.std*
+

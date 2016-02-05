@@ -37,6 +37,7 @@ var PauseResume = function PauseResume(_ref) {
   return _react2.default.createElement(
     'button',
     {
+      mouse: true,
       onClick: onClick,
       hoverText: tooltips && (paused ? 'resume (c) ' : 'pause (c)')
     },
@@ -50,7 +51,9 @@ var StepOver = function StepOver(_ref2) {
   var onClick = _ref2.onClick;
   return _react2.default.createElement(
     'button',
-    _extends({}, enabled ? enable : disable, {
+    _extends({
+      mouse: true
+    }, enabled ? enable : disable, {
       onClick: onClick,
       hoverText: tooltips && 'step over (n)'
     }),
@@ -64,7 +67,9 @@ var StepInto = function StepInto(_ref3) {
   var onClick = _ref3.onClick;
   return _react2.default.createElement(
     'button',
-    _extends({}, enabled ? enable : disable, {
+    _extends({
+      mouse: true
+    }, enabled ? enable : disable, {
       onClick: onClick,
       hoverText: tooltips && 'step into (i)'
     }),
@@ -78,7 +83,9 @@ var StepOut = function StepOut(_ref4) {
   var onClick = _ref4.onClick;
   return _react2.default.createElement(
     'button',
-    _extends({}, enabled ? enable : disable, {
+    _extends({
+      mouse: true
+    }, enabled ? enable : disable, {
       onClick: onClick,
       hoverText: tooltips && 'step out (o)'
     }),
@@ -93,6 +100,7 @@ var BreakPointsActive = function BreakPointsActive(_ref5) {
   return _react2.default.createElement(
     'button',
     {
+      mouse: true,
       onClick: onClick,
       hoverText: tooltips && (active ? '' : 'de') + 'activate breakpoints (p)'
     },
@@ -106,6 +114,7 @@ var UncaughtExceptions = function UncaughtExceptions(_ref6) {
   return _react2.default.createElement(
     'button',
     {
+      mouse: true,
       onClick: onClick,
       hoverText: tooltips && 'break on exception (x)'
     },

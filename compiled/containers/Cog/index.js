@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _React = require('React');
+var _react = require('react');
 
-var _React2 = _interopRequireDefault(_React);
+var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = require('react-redux');
 
@@ -22,7 +22,7 @@ var Cog = function Cog(_ref) {
   var layout = _ref.layout;
   var active = _ref.active;
   var dispatch = _ref.dispatch;
-  return _React2.default.createElement(_components.Cog, _extends({}, layout, {
+  return _react2.default.createElement(_components.Cog, _extends({}, layout, {
     active: active,
     onClick: function onClick() {
       return dispatch((0, _actions.focusPanel)('settings'));

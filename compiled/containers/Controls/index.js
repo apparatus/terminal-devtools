@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _React = require('React');
+var _react = require('react');
 
-var _React2 = _interopRequireDefault(_React);
+var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = require('react-redux');
 
@@ -23,7 +23,7 @@ var Controls = function Controls(_ref) {
   var tooltips = _ref.tooltips;
   var paused = _ref.paused;
   var dispatch = _ref.dispatch;
-  return _React2.default.createElement(_components.Controls, _extends({}, layout, {
+  return _react2.default.createElement(_components.Controls, _extends({}, layout, {
     paused: paused,
     tooltips: tooltips,
     pauseResume: function pauseResume() {

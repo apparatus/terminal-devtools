@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _React = require('React');
+var _react = require('react');
 
-var _React2 = _interopRequireDefault(_React);
+var _react2 = _interopRequireDefault(_react);
 
 var _redux = require('redux');
 
@@ -28,7 +28,7 @@ var Console = function Console(_ref) {
   var layout = _ref.layout;
   var output = _ref.output;
   var actions = _ref.actions;
-  return _React2.default.createElement(_components.Console, _extends({ focused: true, independent: true, output: output, actions: actions }, layout.element));
+  return _react2.default.createElement(_components.Console, _extends({ focused: true, independent: true, output: output, actions: actions }, layout.element));
 };
 
 var mapDispatch = function mapDispatch(dispatch) {

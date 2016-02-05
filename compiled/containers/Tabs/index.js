@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _React = require('React');
+var _react = require('react');
 
-var _React2 = _interopRequireDefault(_React);
+var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = require('react-redux');
 
@@ -23,7 +23,7 @@ var tabs = ['Sources', 'Networking', 'Profiling', 'Console'];
 var Tabs = function Tabs(_ref) {
   var layout = _ref.layout;
   var dispatch = _ref.dispatch;
-  return _React2.default.createElement(_components.Tabs, _extends({}, layout, { items: tabs, onSelectTab: function onSelectTab(_, ix) {
+  return _react2.default.createElement(_components.Tabs, _extends({}, layout, { items: tabs, onSelectTab: function onSelectTab(_, ix) {
       return dispatch((0, _actions.focusTab)(tabs[ix]));
     } }));
 };

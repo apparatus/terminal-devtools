@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _React = require('React');
+var _react = require('react');
 
-var _React2 = _interopRequireDefault(_React);
+var _react2 = _interopRequireDefault(_react);
 
 var _path = require('path');
 
@@ -41,16 +41,16 @@ var Sources = function Sources(_ref) {
   var actions = _ref.actions;
   var tooltips = _ref.tooltips;
   var output = _ref.output;
-  return _React2.default.createElement(
+  return _react2.default.createElement(
     'element',
     layout.element,
-    _React2.default.createElement(_components.Navigator, _extends({ tooltips: tooltips, items: files, item: fileItem, focused: panel === 'navigator', actions: actions }, layout.navigator)),
-    _React2.default.createElement(_components.Editor, _extends({ tooltips: tooltips, items: source, selected: editorLine, focused: panel === 'editor', actions: actions }, layout.editor)),
-    _React2.default.createElement(_components.EditorStatus, _extends({ tooltips: tooltips, line: editorLine, file: filename }, layout.editorstatus)),
-    _React2.default.createElement(_components.CallStack, _extends({ tooltips: tooltips, items: callstack, focused: panel === 'callstack', actions: actions }, layout.callstack)),
-    _React2.default.createElement(_components.BreakPoints, _extends({ tooltips: tooltips, items: breakpoints, focused: panel === 'breakpoints', actions: actions }, layout.breakpoints)),
-    _React2.default.createElement(_components.Scope, _extends({ tooltips: tooltips, items: scope, item: scopeItem, focused: panel === 'scope', actions: actions }, layout.scope)),
-    _React2.default.createElement(_components.Console, _extends({ tooltips: tooltips, output: output, focused: panel === 'console', actions: actions }, layout.console))
+    _react2.default.createElement(_components.Navigator, _extends({ tooltips: tooltips, items: files, item: fileItem, focused: panel === 'navigator', actions: actions }, layout.navigator)),
+    _react2.default.createElement(_components.Editor, _extends({ tooltips: tooltips, items: source, selected: editorLine, focused: panel === 'editor', actions: actions }, layout.editor)),
+    _react2.default.createElement(_components.EditorStatus, _extends({ tooltips: tooltips, line: editorLine, file: filename }, layout.editorstatus)),
+    _react2.default.createElement(_components.CallStack, _extends({ tooltips: tooltips, items: callstack, focused: panel === 'callstack', actions: actions }, layout.callstack)),
+    _react2.default.createElement(_components.BreakPoints, _extends({ tooltips: tooltips, items: breakpoints, focused: panel === 'breakpoints', actions: actions }, layout.breakpoints)),
+    _react2.default.createElement(_components.Scope, _extends({ tooltips: tooltips, items: scope, item: scopeItem, focused: panel === 'scope', actions: actions }, layout.scope)),
+    _react2.default.createElement(_components.Console, _extends({ tooltips: tooltips, output: output, focused: panel === 'console', actions: actions }, layout.console))
   );
 };
 

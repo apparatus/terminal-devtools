@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _React = require('React');
+var _react = require('react');
 
-var _React2 = _interopRequireDefault(_React);
+var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = require('react-redux');
 
@@ -57,7 +57,7 @@ var Settings = function Settings(_ref) {
     });
   };
 
-  return _React2.default.createElement(_components.Settings, _extends({}, layout.settings, {
+  return _react2.default.createElement(_components.Settings, _extends({}, layout.settings, {
     focusedInput: focusedInput || layout,
     focused: focused,
     layout: layout,

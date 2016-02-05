@@ -20,6 +20,7 @@ const disable = {
 
 const PauseResume = ({paused, tooltips, onClick}) => (
   <button
+    mouse
     onClick={onClick}
     hoverText={tooltips && (paused ? 'resume (c) ' : 'pause (c)')}
   >
@@ -29,6 +30,7 @@ const PauseResume = ({paused, tooltips, onClick}) => (
 
 const StepOver = ({enabled, tooltips, onClick}) => (
   <button
+    mouse
     {...(enabled ? enable : disable)}
     onClick={onClick}
     hoverText={tooltips && 'step over (n)'}
@@ -39,6 +41,7 @@ const StepOver = ({enabled, tooltips, onClick}) => (
 
 const StepInto = ({enabled, tooltips, onClick}) => (
   <button
+    mouse
     {...(enabled ? enable : disable)}
     onClick={onClick}
     hoverText={tooltips && 'step into (i)'}
@@ -49,6 +52,7 @@ const StepInto = ({enabled, tooltips, onClick}) => (
 
 const StepOut = ({enabled, tooltips, onClick}) => (
   <button
+    mouse
     {...(enabled ? enable : disable)}
     onClick={onClick}
     hoverText={tooltips && 'step out (o)'}
@@ -59,6 +63,7 @@ const StepOut = ({enabled, tooltips, onClick}) => (
 
 const BreakPointsActive = ({active, tooltips, onClick}) => (
   <button
+    mouse
     onClick={onClick}
     hoverText={tooltips && `${active ? '' : 'de'}activate breakpoints (p)`}
   >
@@ -68,6 +73,7 @@ const BreakPointsActive = ({active, tooltips, onClick}) => (
 
 const UncaughtExceptions = ({tooltips, onClick}) => (
   <button
+    mouse
     onClick={onClick}
     hoverText={tooltips && 'break on exception (x)'}
   >
