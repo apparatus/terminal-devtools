@@ -18,7 +18,7 @@ var _components = require('../../components');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var tabs = ['Sources', 'Networking', 'Profiling', 'Console'];
+var tabs = ['Sources', 'Console'];
 
 var Tabs = function Tabs(_ref) {
   var layout = _ref.layout;
