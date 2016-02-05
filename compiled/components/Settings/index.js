@@ -117,18 +117,8 @@ var Settings = function Settings(_ref2, cmp) {
         }),
         _react2.default.createElement('radiobutton', {
           onKeypress: nav(cmp),
-          onCheck: changeLayout('compact'),
-          left: 22,
-          height: 1,
-          width: 22,
-          checked: layout.name === 'compact',
-          text: 'Compact',
-          'class': _extends({}, bg)
-        }),
-        _react2.default.createElement('radiobutton', {
-          onKeypress: nav(cmp),
           onCheck: changeLayout('minimal'),
-          left: 44,
+          left: 22,
           height: 1,
           width: 22,
           checked: layout.name === 'minimal',

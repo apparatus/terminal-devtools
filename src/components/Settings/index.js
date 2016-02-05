@@ -91,18 +91,8 @@ const Settings = ({layout, focused, top, left, width, height, align, tooltips, p
         />
         <radiobutton
           onKeypress={nav(cmp)}
-          onCheck={changeLayout('compact')}
-          left={22}
-          height={1}
-          width={22}
-          checked={layout.name === 'compact'}
-          text='Compact'
-          class={{...bg}}
-        />
-        <radiobutton
-          onKeypress={nav(cmp)}
           onCheck={changeLayout('minimal')}
-          left={44}
+          left={22}
           height={1}
           width={22}
           checked={layout.name === 'minimal'}
