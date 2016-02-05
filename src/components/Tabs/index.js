@@ -14,6 +14,12 @@ const Tabs = ({items, top, left, width, height, onSelectTab}) => (
     height={height}
     items={items}
     onSelectTab={onSelectTab}
+    onSelect={
+      (label) => 
+        onSelectTab(label, 
+          label && label.data && label.data.cmd && (label.data.cmd.prefix - 1) || 0
+        )
+    }
   />
 )
 

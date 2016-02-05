@@ -34,7 +34,10 @@ var Tabs = function Tabs(_ref) {
     width: width,
     height: height,
     items: items,
-    onSelectTab: onSelectTab
+    onSelectTab: onSelectTab,
+    onSelect: function onSelect(label) {
+      return onSelectTab(label, label && label.data && label.data.cmd && label.data.cmd.prefix - 1 || 0);
+    }
   });
 };
 
