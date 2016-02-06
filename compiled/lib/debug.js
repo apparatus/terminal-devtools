@@ -253,7 +253,6 @@ exports.default = function () {
     if (typeof context !== 'undefined') {
       args.additional_context = context;
     }
-
     debug.send({
       seq: ++seq,
       type: 'request',
@@ -478,7 +477,6 @@ exports.default = function () {
       var bufferSize = size - lastStdoutSize;
       var buffer = Buffer(bufferSize);
       lastStdoutSize = size;
-      console.log(size, bufferSize, lastStdoutSize);
       if (!bufferSize) return;
       _fs2.default.readSync(stdoutFd, buffer, 0, bufferSize, 'utf8');
       debug.emit('stdout', buffer + '');
@@ -500,10 +498,10 @@ exports.default = function () {
     });
 
     var connected = function connected() {
-
-      globalEvaluate('\n        (function () {\n          if (process.wrappedForDebugger) return\n          process.stdout.write = (function(fn) {\n            return function(chunk) {\n              try {\n                process.mainModule.require(\'fs\').appendFileSync(\'' + stdout + '\', chunk)\n              } catch (e) {\n        \n              }\n\n              return fn.apply(process.stdout, arguments)\n            }\n          } (process.stdout.write))\n\n          process.stderr.write = (function(fn) {\n            return function(chunk) {\n              try {\n                process.mainModule.require(\'fs\').appendFileSync(\'' + stderr + '\', chunk)\n              } catch (e) {\n\n              }\n              return fn.apply(process.stderr, arguments)\n            }\n          } (process.stderr.write))\n\n          process.wrappedForDebugger = true\n        }())\n      ', function (err) {
-        if (err) return cb(err);
-        callstack(cb);
+      callstack(function (err, stack) {
+        globalEvaluate('\n          (function () {\n            if (process.wrappedForDebugger) return\n            process.stdout.write = (function(fn) {\n              return function(chunk) {\n                try {\n                  process.mainModule.require(\'fs\').appendFileSync(\'' + stdout + '\', chunk)\n                } catch (e) {\n          \n                }\n\n                return fn.apply(process.stdout, arguments)\n              }\n            } (process.stdout.write))\n\n            process.stderr.write = (function(fn) {\n              return function(chunk) {\n                try {\n                  process.mainModule.require(\'fs\').appendFileSync(\'' + stderr + '\', chunk)\n                } catch (e) {\n\n                }\n                return fn.apply(process.stderr, arguments)\n              }\n            } (process.stderr.write))\n\n            process.wrappedForDebugger = true\n          }())\n        ', function (evalErr) {
+          cb(err || evalErr, stack);
+        });
       });
     };
 
