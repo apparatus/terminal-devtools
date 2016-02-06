@@ -27,9 +27,17 @@ exports.layout = layout;
 exports.tooltips = tooltips;
 exports.output = output;
 
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
 var _path = require('path');
 
 var _actions = require('../actions');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -80,17 +88,55 @@ function files() {
     return s && s[0] === _path.sep;
   }).reduce(function (o, path) {
     var next = o;
-    path.split(_path.sep).filter(Boolean).forEach(function (segment, ix, arr) {
-      next[segment] = { value: {} };
 
-      if (ix === arr.length - 1) {
-        next[segment].data = { path: path };
-        next[segment].options = { terminate: true };
+    var parts = path.split(_path.sep).filter(Boolean);
+
+    var candidates = [''].concat(_toConsumableArray(parts.slice()));
+
+    while ((candidates.length -= 1) > 0) {
+      if (_fs2.default.existsSync([].concat(_toConsumableArray(candidates), ['package.json']).join(_path.sep))) break;
+    }
+
+    var rootDirname = candidates[candidates.length - 1];
+    var contractedRoot = '/…' + _path.sep + candidates[candidates.length - 1];
+    var choppedParts = candidates.length - 2;
+
+    parts.slice(choppedParts, parts.length - 1).forEach(function (segment, ix, arr) {
+      var cur = next[segment === rootDirname ? contractedRoot : segment] = { value: {} };
+
+      function lookup(curPath, cur) {
+        var ls = _fs2.default.readdirSync(curPath);
+        var jsFiles = ls.filter(function (f) {
+          var ext = (0, _path.extname)(f);
+          return ext === '.js' || ext === '.jsx' || ext === '.es';
+        });
+
+        var dirs = ls.filter(function (d) {
+          return d[0] !== '.' && !(0, _path.extname)(d) && _fs2.default.statSync(curPath + _path.sep + d).isDirectory();
+        });
+        jsFiles.forEach(function (f) {
+          return cur.value[f] = {
+            value: {},
+            data: { path: curPath + _path.sep + f },
+            options: { terminate: true }
+          };
+        });
+
+        dirs.forEach(function (d) {
+          cur.value[d] = { value: {} };
+          lookup(curPath + _path.sep + d, cur.value[d]);
+        });
       }
-      next = next[segment].value;
+
+      lookup([''].concat(_toConsumableArray(parts.slice(0, choppedParts + ix)), [segment]).join(_path.sep), cur);
+
+      next = cur.value;
     });
+
     return o;
   }, {});
+
+  console.log(require('util').inspect(nonNative, { depth: 20 }));
 
   var native = {
     '(core)': {
@@ -214,7 +260,7 @@ function breakpoints() {
   return payload.map(function (_ref15) {
     var name = _ref15.script_name;
     var line = _ref15.line;
-    return (0, _path.basename)(name) + ':' + line;
+    return (0, _path.basename)(name) + ':' + line.num;
   });
 }
 

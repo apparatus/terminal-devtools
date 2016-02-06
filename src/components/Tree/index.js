@@ -118,7 +118,6 @@ function traverse (obj, cfg, depth = 0) {
   if (Array.isArray(obj)) return {items: obj, map: obj}
   const map = []
   let {indentation = 2, labelling = false} = cfg
-
   const items = Object.keys(obj).reduce((items, key) => {
     const {label, value, options = {}} = obj[key]
     const {expanded, terminate, prefix: itemPrefix = ''} = options

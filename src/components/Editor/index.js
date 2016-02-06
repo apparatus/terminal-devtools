@@ -36,7 +36,7 @@ const Editor = ({items, selected, top, left, width, height, focused, tooltips, a
     items={items}
     onSelectItem={item => {
       focusPanel('editor')
-      setEditorLine(item.parent.getItemIndex(item))
+      setEditorLine(item.parent.getItemIndex(item) + 1)
     }}
     onKeyB={() => toggleBreakpoint()}
     hoverText={tooltips && 'Source Text (ctrl+t)'}

@@ -31,6 +31,14 @@ exports.previousFrame = previousFrame;
 exports.setDimensions = setDimensions;
 exports.toggleTooltips = toggleTooltips;
 
+var _module = require('module');
+
+var _module2 = _interopRequireDefault(_module);
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
 var _debug = require('../lib/debug');
 
 var _debug2 = _interopRequireDefault(_debug);
@@ -169,12 +177,21 @@ function selectFile(payload) {
     });
 
     if (!script) {
-      console.trace('no script', payload);
-      return;
+
+      if (payloadIsObject || !_fs2.default.existsSync(payload)) {
+        console.trace('no script', payload);
+        return;
+      }
+
+      script = {
+        source: _module2.default.wrap(_fs2.default.readFileSync(payload)),
+        name: payload
+      };
     }
 
-    var source = script.source;
-    var name = script.name;
+    var _script = script;
+    var source = _script.source;
+    var name = _script.name;
 
     dispatch({ type: SELECT_FILE, payload: name });
 

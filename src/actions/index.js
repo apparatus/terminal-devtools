@@ -1,3 +1,5 @@
+import {default as Module} from 'module'
+import fs from 'fs'
 import createDebugger from '../lib/debug'
 const debug = createDebugger()
 let dbg
@@ -105,13 +107,22 @@ export function selectFile (payload) {
     if (!sources.length) return
     const payloadIsObject = Object(payload) === payload
 
-    const script = payloadIsObject
+    let script = payloadIsObject
       ? sources.find(s => +s.id === +payload.scriptId)
       : sources.find(s => s.name === payload)
 
     if (!script) {
-      console.trace('no script', payload)
-      return
+      
+      if (payloadIsObject || !fs.existsSync(payload)) {
+        console.trace('no script', payload)
+        return
+      }
+
+      script = {
+        source: Module.wrap(fs.readFileSync(payload)),
+        name: payload
+      }
+      
     }
 
     const {source, name} = script

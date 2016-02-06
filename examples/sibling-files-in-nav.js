@@ -2,3 +2,5 @@
 //requiring a sibling file and making sure they both appear in the tree
 
 require('./long-file')
+
+process.stdin.resume()

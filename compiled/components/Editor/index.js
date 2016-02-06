@@ -66,7 +66,7 @@ var Editor = function Editor(_ref) {
     items: items,
     onSelectItem: function onSelectItem(item) {
       focusPanel('editor');
-      setEditorLine(item.parent.getItemIndex(item));
+      setEditorLine(item.parent.getItemIndex(item) + 1);
     },
     onKeyB: function onKeyB() {
       return toggleBreakpoint();
