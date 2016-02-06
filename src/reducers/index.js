@@ -105,7 +105,10 @@ export function scopeItem (state = null, {type, payload = state}) {
 
 export function editorLine (state = 0, {type, payload}) {
   if (type !== SET_EDITOR_LINE) return state
-  return payload
+  return {
+    num: payload,
+    idx: payload - 1
+  }
 }
 
 export function callstack (state = [], {type, payload = []}) {

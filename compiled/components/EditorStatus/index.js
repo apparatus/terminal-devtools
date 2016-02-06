@@ -25,9 +25,9 @@ var EditorStatus = function EditorStatus(_ref) {
   var rightEdgeLeft = _ref.rightEdgeLeft;
   var height = _ref.height;
 
-  var status = file + ':' + line + ' ';
+  var status = file + ':' + line.num + ' ';
   var width = status.length - 1;
-  var lineNumLength = (line + '').length;
+  var lineNumLength = (line.num + '').length;
   var left = rightEdgeLeft + '-' + (width + lineNumLength + (lineNumLength < 2 ? 2 : 1));
 
   return _react2.default.createElement(

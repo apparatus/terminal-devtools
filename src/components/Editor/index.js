@@ -27,7 +27,7 @@ const Editor = ({items, selected, top, left, width, height, focused, tooltips, a
     scrollbar
     inputOnFocused
     class={[style.panel, ed, focused && style.selected]}
-    selected={selected}
+    selected={selected.idx}
     left={left}
     width={width}
     top={top}

@@ -149,7 +149,10 @@ function editorLine() {
   var payload = _ref8.payload;
 
   if (type !== _actions.SET_EDITOR_LINE) return state;
-  return payload;
+  return {
+    num: payload,
+    idx: payload - 1
+  };
 }
 
 function callstack() {

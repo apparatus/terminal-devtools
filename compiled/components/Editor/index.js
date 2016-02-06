@@ -57,7 +57,7 @@ var Editor = function Editor(_ref) {
     scrollbar: true,
     inputOnFocused: true,
     'class': [style.panel, ed, focused && style.selected],
-    selected: selected,
+    selected: selected.idx,
     left: left,
     width: width,
     top: top,
