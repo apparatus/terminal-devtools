@@ -19,6 +19,7 @@ const Navigator = ({
     class={[style.panel, style.list, focused && style.selected]}
     width={width}
     top={top}
+    left={left}
     height={height}
     item={item}
     items={items}

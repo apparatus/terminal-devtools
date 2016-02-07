@@ -27,6 +27,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Sources = function Sources(_ref) {
+  var layoutName = _ref.layoutName;
   var layout = _ref.layout;
   var source = _ref.source;
   var filename = _ref.filename;
@@ -44,11 +45,12 @@ var Sources = function Sources(_ref) {
   return _react2.default.createElement(
     'element',
     layout.element,
-    _react2.default.createElement(_components.Navigator, _extends({ tooltips: tooltips, items: files, item: fileItem, focused: panel === 'navigator', actions: actions }, layout.navigator)),
+    layoutName !== 'minimal' && _react2.default.createElement(_components.Navigator, _extends({ tooltips: tooltips, items: files, item: fileItem, focused: panel === 'navigator', actions: actions }, layout.navigator)),
     _react2.default.createElement(_components.Editor, _extends({ tooltips: tooltips, items: source, selected: editorLine, focused: panel === 'editor', actions: actions }, layout.editor)),
     _react2.default.createElement(_components.EditorStatus, _extends({ tooltips: tooltips, line: editorLine, file: filename }, layout.editorstatus)),
     _react2.default.createElement(_components.CallStack, _extends({ tooltips: tooltips, items: callstack, focused: panel === 'callstack', actions: actions }, layout.callstack)),
     _react2.default.createElement(_components.BreakPoints, _extends({ tooltips: tooltips, items: breakpoints, focused: panel === 'breakpoints', actions: actions }, layout.breakpoints)),
+    layoutName === 'minimal' && _react2.default.createElement(_components.Navigator, _extends({ tooltips: tooltips, items: files, item: fileItem, focused: panel === 'navigator', actions: actions }, layout.navigator)),
     _react2.default.createElement(_components.Scope, _extends({ tooltips: tooltips, items: scope, item: scopeItem, focused: panel === 'scope', actions: actions }, layout.scope)),
     _react2.default.createElement(_components.Console, _extends({ tooltips: tooltips, output: output, focused: panel === 'console', actions: actions }, layout.console))
   );
@@ -69,6 +71,7 @@ var mapState = function mapState(_ref2) {
   var tooltips = _ref2.tooltips;
   var output = _ref2.output;
   return {
+    layoutName: layout.name,
     layout: layout.sources,
     source: source,
     filename: file[0] === '/' ? (0, _path.basename)(file) : file,

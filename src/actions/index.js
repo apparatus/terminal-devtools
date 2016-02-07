@@ -96,9 +96,30 @@ export function focusTab (payload) {
   }
 }
 export function focusPanel (payload) {
-  return {
-    type: FOCUS_PANEL,
-    payload
+
+  return (dispatch, getState) => {
+    const {layout} = getState()
+    if (layout.name === 'minimal') {
+      if (payload === 'navigator') {
+        layout.sources.navigator.height = layout.sources.navigator.visHeight
+        dispatch(setDimensions({...layout}))
+      } else if (layout.sources.navigator.height !== 0) {
+        layout.sources.navigator.height = 0
+        dispatch(setDimensions({...layout}))
+      }
+      if (payload === 'scope') {
+        layout.sources.scope.height = layout.sources.scope.visHeight
+        dispatch(setDimensions({...layout}))
+      } else if (layout.sources.scope.height !== 0) {
+        layout.sources.scope.height = 0
+        dispatch(setDimensions({...layout}))
+      }
+    }
+
+    dispatch({
+      type: FOCUS_PANEL,
+      payload
+    })
   }
 }
 export function selectFile (payload) {

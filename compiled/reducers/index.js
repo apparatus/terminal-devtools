@@ -136,8 +136,6 @@ function files() {
     return o;
   }, {});
 
-  console.log(require('util').inspect(nonNative, { depth: 20 }));
-
   var native = {
     '(core)': {
       value: sources.filter(function (s) {

@@ -15,10 +15,11 @@ var element = exports.element = {
 var ordering = exports.ordering = ['editor', 'callstack', 'breakpoints'];
 
 var navigator = exports.navigator = {
-  top: 0,
-  left: 0,
-  width: 0,
-  height: 0
+  top: '47.5%-14',
+  left: '50%-46',
+  width: 90,
+  height: 0,
+  visHeight: 28
 };
 
 var editor = exports.editor = {
@@ -50,10 +51,11 @@ var breakpoints = exports.breakpoints = {
 };
 
 var scope = exports.scope = {
-  top: 0,
-  left: 0,
-  width: 0,
-  height: 0
+  top: '47.5%-14',
+  left: '50%-46',
+  width: 90,
+  height: 0,
+  visHeight: 28
 };
 
 var console = exports.console = {

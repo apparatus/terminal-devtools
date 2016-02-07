@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -154,18 +156,42 @@ function focusTab(payload) {
   };
 }
 function focusPanel(payload) {
-  return {
-    type: FOCUS_PANEL,
-    payload: payload
+
+  return function (dispatch, getState) {
+    var _getState = getState();
+
+    var layout = _getState.layout;
+
+    if (layout.name === 'minimal') {
+      if (payload === 'navigator') {
+        layout.sources.navigator.height = layout.sources.navigator.visHeight;
+        dispatch(setDimensions(_extends({}, layout)));
+      } else if (layout.sources.navigator.height !== 0) {
+        layout.sources.navigator.height = 0;
+        dispatch(setDimensions(_extends({}, layout)));
+      }
+      if (payload === 'scope') {
+        layout.sources.scope.height = layout.sources.scope.visHeight;
+        dispatch(setDimensions(_extends({}, layout)));
+      } else if (layout.sources.scope.height !== 0) {
+        layout.sources.scope.height = 0;
+        dispatch(setDimensions(_extends({}, layout)));
+      }
+    }
+
+    dispatch({
+      type: FOCUS_PANEL,
+      payload: payload
+    });
   };
 }
 function selectFile(payload) {
   return function (dispatch, getState) {
-    var _getState = getState();
+    var _getState2 = getState();
 
-    var sources = _getState.sources;
-    var _getState$files = _getState.files;
-    var files = _getState$files === undefined ? {} : _getState$files;
+    var sources = _getState2.sources;
+    var _getState2$files = _getState2.files;
+    var files = _getState2$files === undefined ? {} : _getState2$files;
 
     if (!sources.length) return;
     var payloadIsObject = Object(payload) === payload;
@@ -251,11 +277,11 @@ function setEditorLine(payload) {
 
 function toggleBreakpoint() {
   return function (dispatch, getState) {
-    var _getState2 = getState();
+    var _getState3 = getState();
 
-    var editorLine = _getState2.editorLine;
-    var file = _getState2.file;
-    var breaks = _getState2.breaks;
+    var editorLine = _getState3.editorLine;
+    var file = _getState3.file;
+    var breaks = _getState3.breaks;
 
     dispatch({ type: TOGGLE_BREAKPOINT });
 
@@ -307,10 +333,10 @@ function consoleHistory(payload) {
 
 function consoleInput(payload) {
   return function (dispatch, getState) {
-    var _getState3 = getState();
+    var _getState4 = getState();
 
-    var frames = _getState3.frames;
-    var frame = _getState3.frame;
+    var frames = _getState4.frames;
+    var frame = _getState4.frame;
 
     var expression = payload;
     var args = { expression: expression };
@@ -363,9 +389,9 @@ function consoleInput(payload) {
 
 function selectFrame(payload) {
   return function (dispatch, getState) {
-    var _getState4 = getState();
+    var _getState5 = getState();
 
-    var frames = _getState4.frames;
+    var frames = _getState5.frames;
 
     var frameIndex = payload;
     var frame = frames[frameIndex];
