@@ -97,7 +97,8 @@ exports.default = (function () {
               return _react2.default.createElement(
                 'element',
                 null,
-                _react2.default.createElement(_containers.Tabs, null),
+                layout.name === 'normal' && _react2.default.createElement(_containers.Tabs, null),
+                layout.name === 'minimal' && _react2.default.createElement(_containers.Tabs, null),
                 tab === 'sources' && _react2.default.createElement(_containers.Sources, null),
                 tab === 'console' && _react2.default.createElement(_containers.Console, null),
                 _react2.default.createElement(_containers.Cog, _extends({}, layout.cog, { active: panel === 'settings' })),

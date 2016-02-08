@@ -52,7 +52,12 @@ export default async (pid, {host: host = '127.0.0.1', port: port = 5858}) => {
   let Devtools = ({layout, tab, panel}) => {
     return (
       <element>
-        <Tabs />
+        {
+          // force tab rendering after layout change:
+          // todo: find a more elegant fix
+        }
+        {layout.name === 'normal' && <Tabs/>}
+        {layout.name === 'minimal' && <Tabs/>}
         {tab === 'sources' && <Sources/>}
         {tab === 'console' && <Console/>}
         <Cog {...layout.cog} active={panel === 'settings'}/>
