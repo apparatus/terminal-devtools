@@ -25,18 +25,18 @@ const Console = ({top, left, width, height, focused, independent, tooltips, outp
         inputOnFocus
         focused={focused}
         value={
-          !(cmp && cmp.force) ?
-            (output.all + '> ' + (
-              output.historyIndex ? 
-                output.history.slice(output.historyIndex).shift() : 
-                ''
-            )) : 
-            cmp.force()
+          !(cmp && cmp.force)
+            ? (output.all + '> ' + (
+              output.historyIndex
+                ? output.history.slice(output.historyIndex).shift()
+                : ''
+            ))
+            : cmp.force()
         }
         onFocus={() => (independent || focused || actions.focusPanel('console'))}
-        onBlur={()=> {
-          //blessed doesn't unfocus the textarea 
-          //when mouse is used - work around:
+        onBlur={() => {
+          // blessed doesn't unfocus the textarea
+          // when mouse is used - work around:
           const textarea = cmp.el.parent.children[1]
           const screen = cmp.el.screen
           textarea._reading = false
@@ -60,7 +60,7 @@ const Console = ({top, left, width, height, focused, independent, tooltips, outp
         onKeypress={(ch, key) => {
           if (key.name === 'return' && !key.shift) {
             const lines = cmp.el.getLines()
-            const cmd = (lines[lines.length - 2]+'').substr(2)
+            const cmd = (lines[lines.length - 2] + '').substr(2)
             actions.consoleInput(cmd)
             return
           }

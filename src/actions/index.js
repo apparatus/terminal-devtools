@@ -133,7 +133,7 @@ export function selectFile (payload) {
       : sources.find(s => s.name === payload)
 
     if (!script) {
-      
+
       if (payloadIsObject || !fs.existsSync(payload)) {
         console.trace('no script', payload)
         return
@@ -143,7 +143,7 @@ export function selectFile (payload) {
         source: Module.wrap(fs.readFileSync(payload)),
         name: payload
       }
-      
+
     }
 
     const {source, name} = script
@@ -199,7 +199,7 @@ export function toggleBreakpoint () {
       return
     }
 
-    //break point is set by index (from 0)
+    // break point is set by index (from 0)
     debug.setBreakpoint({line: editorLine.idx, file}, (err, result) => {
       if (err) { return error(err) }
       debug.breakpoints((err, {breakpoints}) => {
@@ -210,7 +210,7 @@ export function toggleBreakpoint () {
   }
 }
 
-export function consoleHistory(payload) {
+export function consoleHistory (payload) {
   return {
     type: CONSOLE_HISTORY,
     payload

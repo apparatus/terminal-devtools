@@ -64,7 +64,7 @@ export function files (state = [], {type, payload}) {
 
       const candidates = ['', ...parts.slice()]
 
-      while((candidates.length -= 1) > 0) {
+      while ((candidates.length -= 1) > 0) {
         if (fs.existsSync([...candidates, 'package.json'].join(sep))) break
       }
 
@@ -74,25 +74,25 @@ export function files (state = [], {type, payload}) {
 
       parts.slice(choppedParts, parts.length - 1)
         .forEach((segment, ix, arr) => {
-          const cur = 
-            next[(segment === rootDirname) ? contractedRoot : segment] = 
+          const cur =
+            next[(segment === rootDirname) ? contractedRoot : segment] =
               {value: {}}
 
-          function lookup(curPath, cur) {
+          function lookup (curPath, cur) {
             const ls = fs.readdirSync(curPath)
             const jsFiles = ls.filter(f => {
-              const ext = extname(f) 
+              const ext = extname(f)
               return ext === '.js' || ext === '.jsx' || ext === '.es'
             })
 
             const dirs = ls.filter(d => {
-              return d[0] !== '.' && 
-                !extname(d) && 
+              return d[0] !== '.' &&
+                !extname(d) &&
                 fs.statSync(curPath + sep + d).isDirectory()
             })
-            jsFiles.forEach(f => 
+            jsFiles.forEach(f =>
               cur.value[f] = {
-                value: {}, 
+                value: {},
                 data: {path: curPath + sep + f},
                 options: {terminate: true}
               }
@@ -158,8 +158,8 @@ export function callstack (state = [], {type, payload = []}) {
   return payload.map(({
       functionName,
       location: {lineNumber: l, columnNumber: c, url}
-    }) => 
-      //we plus one to l because we want human readable (from 1) rather than idx
+    }) =>
+      // we plus one to l because we want human readable (from 1) rather than idx
       `${functionName || '(anonymous function)'} ${basename(url)}:${l + 1}:${c}`
   )
 }
@@ -277,7 +277,7 @@ export function output (state = {out: '', err: '', all: ''}, {type, payload}) {
       ? '\n' + CONSOLE_PREFIXES[type] + payload + '\n'
       : CONSOLE_PREFIXES[type] + payload
 
-  if (type === CONSOLE_INPUT) { 
+  if (type === CONSOLE_INPUT) {
     history.push((payload + '').trim())
     state.historyIndex = 0
   }

@@ -11,7 +11,6 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-import net from 'net'
 import fs from 'fs'
 import {Debugger} from 'yadc'
 
@@ -369,7 +368,7 @@ export default () => {
       lastStdoutSize = size
       if (!bufferSize) return
       fs.readSync(stdoutFd, buffer, 0, bufferSize, 'utf8')
-      debug.emit('stdout', buffer + '')          
+      debug.emit('stdout', buffer + '')
     })
 
     fs.watch(stderr, (evt) => {
@@ -393,7 +392,6 @@ export default () => {
                 try {
                   process.mainModule.require('fs').appendFileSync('${stdout}', chunk)
                 } catch (e) {
-          
                 }
 
                 return fn.apply(process.stdout, arguments)
@@ -423,12 +421,12 @@ export default () => {
     let errorState = false
     const attempt = () => {
       if (errorState) return
-      debug.connect(connected) 
+      debug.connect(connected)
       debug.once('error', e => {
         const {code} = e
 
         if (code === 'ECONNREFUSED') {
-          setTimeout(attempt, 1000) //TODO cancel previous connect on timeout
+          setTimeout(attempt, 1000) // TODO cancel previous connect on timeout
           return
         }
 

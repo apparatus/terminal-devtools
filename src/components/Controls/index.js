@@ -61,25 +61,25 @@ const StepOut = ({enabled, tooltips, onClick}) => (
   </button>
 )
 
-const BreakPointsActive = ({active, tooltips, onClick}) => (
-  <button
-    mouse
-    onClick={onClick}
-    hoverText={tooltips && `${active ? '' : 'de'}activate breakpoints (p)`}
-  >
-    {active ? '⤇' : '⤃'}
-  </button>
-)
+// const BreakPointsActive = ({active, tooltips, onClick}) => (
+//   <button
+//     mouse
+//     onClick={onClick}
+//     hoverText={tooltips && `${active ? '' : 'de'}activate breakpoints (p)`}
+//   >
+//     {active ? '⤇' : '⤃'}
+//   </button>
+// )
 
-const UncaughtExceptions = ({tooltips, onClick}) => (
-  <button
-    mouse
-    onClick={onClick}
-    hoverText={tooltips && 'break on exception (x)'}
-  >
-    ⬣
-  </button>
-)
+// const UncaughtExceptions = ({tooltips, onClick}) => (
+//   <button
+//     mouse
+//     onClick={onClick}
+//     hoverText={tooltips && 'break on exception (x)'}
+//   >
+//     ⬣
+//   </button>
+// )
 
 const Controls = ({top, left, width, height, paused, areBreakpointsActive, pauseResume, stepOver, stepInto, stepOut, breakpointsActive, uncaughtExceptions, tooltips}) => (
   <layout
@@ -93,9 +93,9 @@ const Controls = ({top, left, width, height, paused, areBreakpointsActive, pause
     <StepOver enabled={paused} onClick={stepOver} tooltips={tooltips}/>
     <StepInto enabled={paused} onClick={stepInto} tooltips={tooltips}/>
     <StepOut enabled={paused} onClick={stepOut} tooltips={tooltips}/>
-    { //icons disabled until functionality implemented:
-      //<BreakPointsActive active={areBreakpointsActive} onClick={breakpointsActive} tooltips={tooltips}/>
-      //<UncaughtExceptions onClick={uncaughtExceptions} tooltips={tooltips}/>
+    { // icons disabled until functionality implemented:
+      // <BreakPointsActive active={areBreakpointsActive} onClick={breakpointsActive} tooltips={tooltips}/>
+      // <UncaughtExceptions onClick={uncaughtExceptions} tooltips={tooltips}/>
     }
   </layout>
 )

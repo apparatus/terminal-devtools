@@ -6,7 +6,7 @@ import {
   Tabs as TabsCmp
 } from '../../components'
 
-const tabs = ['Sources',  'Console']
+const tabs = ['Sources', 'Console']
 
 const Tabs = ({layout, dispatch}) => (
   <TabsCmp {...layout} items={tabs} onSelectTab={
