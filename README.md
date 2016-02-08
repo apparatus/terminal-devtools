@@ -31,7 +31,7 @@ signal to the process, putting it into debug mode then connect to port
 ## Navigating
 
 * **?** - help and settings
-* **c** - **c**ontinue, resume execution
+* **c** - **c**ontinue, resume if paused, pause if resumed
 * **n** - step **n**ext
 * **i** - step **i**into
 * **o** - step **out** of
