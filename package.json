@@ -1,6 +1,6 @@
 {
   "name": "terminal-devtools",
-  "version": "1.0.3-rc1",
+  "version": "1.0.5-rc1",
   "bin": {
     "devtools": "./cmd.js"
   },
@@ -54,10 +54,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nearform/terminal-devtools.git"
+    "url": "git+https://github.com/apparatus/terminal-devtools.git"
   },
   "bugs": {
-    "url": "https://github.com/nearform/terminal-devtools/issues"
+    "url": "https://github.com/apparatus/terminal-devtools/issues"
   },
-  "homepage": "https://github.com/nearform/terminal-devtools#readme"
+  "homepage": "https://github.com/apparatus/terminal-devtools#readme"
 }
