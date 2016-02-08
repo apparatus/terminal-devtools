@@ -258,8 +258,7 @@ function selectFile(payload) {
       var _payload$lineNumber = payload.lineNumber;
       var lineNumber = _payload$lineNumber === undefined ? 0 : _payload$lineNumber;
 
-      lineNumber += 1; // accounts for added module function wrapper
-      dispatch(setEditorLine(lineNumber));
+      dispatch(setEditorLine(lineNumber + 1));
     }
 
     if (source) {
@@ -288,7 +287,7 @@ function toggleBreakpoint() {
     var isSet = breaks.find(function (_ref4) {
       var line = _ref4.line;
       var name = _ref4.script_name;
-      return name === file && line === editorLine;
+      return name === file && line === editorLine.num;
     });
 
     if (isSet) {
@@ -308,7 +307,8 @@ function toggleBreakpoint() {
       return;
     }
 
-    debug.setBreakpoint({ line: editorLine, file: file }, function (err, result) {
+    //break point is set by index (from 0)
+    debug.setBreakpoint({ line: editorLine.idx, file: file }, function (err, result) {
       if (err) {
         return error(err);
       }
@@ -547,16 +547,11 @@ function resume() {
     dispatch(receiveCallstack([]));
     debug.resume(function () {
       var catchBreak = function catchBreak(_ref9) {
-        var event = _ref9.event;
         var body = _ref9.body;
-
-        if (event !== 'break') {
-          return;
-        }
-        var lineNumber = body.sourceLine;
+        var idx = body.sourceLine;
         var scriptId = body.script.id;
 
-        dispatch(selectFile({ scriptId: scriptId, lineNumber: lineNumber }));
+        dispatch(selectFile({ scriptId: scriptId, lineNumber: idx }));
         debug.callstack(function (err, callstack) {
           if (err) {
             return dispatch(error(err));
@@ -569,7 +564,7 @@ function resume() {
           dispatch(selectFrame(0));
         });
       };
-      dbg.once('event', catchBreak);
+      dbg.once('break', catchBreak);
     });
   };
 }

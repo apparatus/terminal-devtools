@@ -439,6 +439,12 @@ export default () => {
 
     attempt()
 
+    debug.on('event', (evt) => {
+      if (evt.event === 'break') {
+        debug.emit('break', evt)
+      }
+    })
+
     return debug
   }
 

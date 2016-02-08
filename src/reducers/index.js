@@ -158,9 +158,9 @@ export function callstack (state = [], {type, payload = []}) {
   return payload.map(({
       functionName,
       location: {lineNumber: l, columnNumber: c, url}
-    }) => (
-      (functionName || '(anonymous function)') + ' ' + basename(url) + ':' + l + ':' + c
-    )
+    }) => 
+      //we plus one to l because we want human readable (from 1) rather than idx
+      `${functionName || '(anonymous function)'} ${basename(url)}:${l + 1}:${c}`
   )
 }
 
@@ -181,7 +181,7 @@ export function breaks (state = [], {type, payload}) {
 
 export function breakpoints (state = [], {type, payload}) {
   if (type !== RECEIVE_BREAKPOINTS) return state
-  return payload.map(({script_name: name, line}) => basename(name) + ':' + line.num)
+  return payload.map(({script_name: name, line}) => `${basename(name)}:${line + 1}`)
 }
 
 export function scope (state = {}, {type, payload: {area, scope, branch, namespace} = {}}) {

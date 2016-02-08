@@ -213,7 +213,10 @@ function callstack() {
     var l = _ref10$location.lineNumber;
     var c = _ref10$location.columnNumber;
     var url = _ref10$location.url;
-    return (functionName || '(anonymous function)') + ' ' + (0, _path.basename)(url) + ':' + l + ':' + c;
+    return(
+      //we plus one to l because we want human readable (from 1) rather than idx
+      (functionName || '(anonymous function)') + ' ' + (0, _path.basename)(url) + ':' + (l + 1) + ':' + c
+    );
   });
 }
 
@@ -258,7 +261,7 @@ function breakpoints() {
   return payload.map(function (_ref15) {
     var name = _ref15.script_name;
     var line = _ref15.line;
-    return (0, _path.basename)(name) + ':' + line.num;
+    return (0, _path.basename)(name) + ':' + (line + 1);
   });
 }
 

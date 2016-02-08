@@ -524,6 +524,12 @@ exports.default = function () {
 
     attempt();
 
+    debug.on('event', function (evt) {
+      if (evt.event === 'break') {
+        debug.emit('break', evt);
+      }
+    });
+
     return debug;
   };
 

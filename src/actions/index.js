@@ -165,8 +165,7 @@ export function selectFile (payload) {
 
     if (payloadIsObject) {
       let { lineNumber = 0 } = payload
-      lineNumber += 1 // accounts for added module function wrapper
-      dispatch(setEditorLine(lineNumber))
+      dispatch(setEditorLine(lineNumber + 1))
     }
 
     if (source) {
@@ -187,7 +186,7 @@ export function toggleBreakpoint () {
     const {editorLine, file, breaks} = getState()
     dispatch({type: TOGGLE_BREAKPOINT})
 
-    const isSet = breaks.find(({line, script_name: name}) => (name === file && line === editorLine))
+    const isSet = breaks.find(({line, script_name: name}) => (name === file && line === editorLine.num))
 
     if (isSet) {
       debug.clearBreakpoint(isSet.number, (err, result) => {
@@ -200,7 +199,8 @@ export function toggleBreakpoint () {
       return
     }
 
-    debug.setBreakpoint({line: editorLine, file}, (err, result) => {
+    //break point is set by index (from 0)
+    debug.setBreakpoint({line: editorLine.idx, file}, (err, result) => {
       if (err) { return error(err) }
       debug.breakpoints((err, {breakpoints}) => {
         if (err) { return error(err) }
@@ -417,10 +417,10 @@ export function resume () {
     dispatch({type: RESUME})
     dispatch(receiveCallstack([]))
     debug.resume(() => {
-      const catchBreak = ({event, body}) => {
-        if (event !== 'break') { return }
-        const {sourceLine: lineNumber, script: {id: scriptId}} = body
-        dispatch(selectFile({scriptId, lineNumber}))
+      const catchBreak = ({body}) => {
+        const {sourceLine: idx, script: {id: scriptId}} = body
+
+        dispatch(selectFile({scriptId, lineNumber: idx}))
         debug.callstack((err, callstack) => {
           if (err) {
             return dispatch(error(err))
@@ -431,7 +431,7 @@ export function resume () {
           dispatch(selectFrame(0))
         })
       }
-      dbg.once('event', catchBreak)
+      dbg.once('break', catchBreak)
     })
   }
 }
