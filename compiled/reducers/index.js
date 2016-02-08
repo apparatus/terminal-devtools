@@ -214,7 +214,7 @@ function callstack() {
     var c = _ref10$location.columnNumber;
     var url = _ref10$location.url;
     return(
-      //we plus one to l because we want human readable (from 1) rather than idx
+      // we plus one to l because we want human readable (from 1) rather than idx
       (functionName || '(anonymous function)') + ' ' + (0, _path.basename)(url) + ':' + (l + 1) + ':' + c
     );
   });

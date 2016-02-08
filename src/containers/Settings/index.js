@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { focusPanel, setDimensions, toggleTooltips } from '../../actions'
+import { focusPanel, refetchScope, setDimensions, toggleTooltips } from '../../actions'
 import layouts from '../../config/layouts'
 
 import { Settings as SettingsCmp } from '../../components'
@@ -14,6 +14,7 @@ const Settings = ({layout, tooltips, dispatch, focused}) => {
     // in the same event loop
     setImmediate(() => {
       dispatch(focusPanel('editor'))
+      dispatch(refetchScope())
       setImmediate(() => {
         dispatch(setDimensions(layouts[to]))
         focusedInput = to

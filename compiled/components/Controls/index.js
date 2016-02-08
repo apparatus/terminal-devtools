@@ -93,49 +93,40 @@ var StepOut = function StepOut(_ref4) {
   );
 };
 
-var BreakPointsActive = function BreakPointsActive(_ref5) {
-  var active = _ref5.active;
+// const BreakPointsActive = ({active, tooltips, onClick}) => (
+//   <button
+//     mouse
+//     onClick={onClick}
+//     hoverText={tooltips && `${active ? '' : 'de'}activate breakpoints (p)`}
+//   >
+//     {active ? '⤇' : '⤃'}
+//   </button>
+// )
+
+// const UncaughtExceptions = ({tooltips, onClick}) => (
+//   <button
+//     mouse
+//     onClick={onClick}
+//     hoverText={tooltips && 'break on exception (x)'}
+//   >
+//     ⬣
+//   </button>
+// )
+
+var Controls = function Controls(_ref5) {
+  var top = _ref5.top;
+  var left = _ref5.left;
+  var width = _ref5.width;
+  var height = _ref5.height;
+  var paused = _ref5.paused;
+  var areBreakpointsActive = _ref5.areBreakpointsActive;
+  var pauseResume = _ref5.pauseResume;
+  var stepOver = _ref5.stepOver;
+  var stepInto = _ref5.stepInto;
+  var stepOut = _ref5.stepOut;
+  var breakpointsActive = _ref5.breakpointsActive;
+  var uncaughtExceptions = _ref5.uncaughtExceptions;
   var tooltips = _ref5.tooltips;
-  var onClick = _ref5.onClick;
-  return _react2.default.createElement(
-    'button',
-    {
-      mouse: true,
-      onClick: onClick,
-      hoverText: tooltips && (active ? '' : 'de') + 'activate breakpoints (p)'
-    },
-    active ? '⤇' : '⤃'
-  );
-};
-
-var UncaughtExceptions = function UncaughtExceptions(_ref6) {
-  var tooltips = _ref6.tooltips;
-  var onClick = _ref6.onClick;
-  return _react2.default.createElement(
-    'button',
-    {
-      mouse: true,
-      onClick: onClick,
-      hoverText: tooltips && 'break on exception (x)'
-    },
-    '⬣'
-  );
-};
-
-var Controls = function Controls(_ref7) {
-  var top = _ref7.top;
-  var left = _ref7.left;
-  var width = _ref7.width;
-  var height = _ref7.height;
-  var paused = _ref7.paused;
-  var areBreakpointsActive = _ref7.areBreakpointsActive;
-  var pauseResume = _ref7.pauseResume;
-  var stepOver = _ref7.stepOver;
-  var stepInto = _ref7.stepInto;
-  var stepOut = _ref7.stepOut;
-  var breakpointsActive = _ref7.breakpointsActive;
-  var uncaughtExceptions = _ref7.uncaughtExceptions;
-  var tooltips = _ref7.tooltips;
   return _react2.default.createElement(
     'layout',
     {
@@ -152,11 +143,11 @@ var Controls = function Controls(_ref7) {
   );
 };
 
-function renderer(_ref8) {
+function renderer(_ref6) {
   var _this = this;
 
-  var xl = _ref8.xl;
-  var xi = _ref8.xi;
+  var xl = _ref6.xl;
+  var xi = _ref6.xi;
 
   return function (el, i) {
     el.shrink = true;

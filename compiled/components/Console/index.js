@@ -58,8 +58,8 @@ var Console = function Console(_ref, cmp) {
         return independent || focused || actions.focusPanel('console');
       },
       onBlur: function onBlur() {
-        //blessed doesn't unfocus the textarea
-        //when mouse is used - work around:
+        // blessed doesn't unfocus the textarea
+        // when mouse is used - work around:
         var textarea = cmp.el.parent.children[1];
         var screen = cmp.el.screen;
         textarea._reading = false;

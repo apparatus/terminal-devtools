@@ -17,6 +17,9 @@ exports.default = function (store, screen) {
     return process.exit(0);
   });
 
+  screen.key(['C-n'], function () {
+    return dispatch((0, _actions.focusPanel)('navigator'));
+  });
   screen.key(['C-t'], function () {
     return dispatch((0, _actions.focusPanel)('editor'));
   });
@@ -26,35 +29,16 @@ exports.default = function (store, screen) {
   screen.key(['C-p'], function () {
     return dispatch((0, _actions.focusPanel)('breakpoints'));
   });
-
-  screen.key(['C-n'], function () {
-    var _getState = getState();
-
-    var panel = _getState.panel;
-    var layout = _getState.layout;
-
-    if (layout === 'minimal' && panel === 'navigator') return dispatch((0, _actions.focusPanel)('editor'));
-
-    dispatch((0, _actions.focusPanel)('navigator'));
-  });
   screen.key(['C-o'], function () {
-    var _getState2 = getState();
-
-    var panel = _getState2.panel;
-    var layout = _getState2.layout;
-
-    if (layout === 'minimal' && panel === 'scope') return dispatch((0, _actions.focusPanel)('editor'));
-
-    dispatch((0, _actions.focusPanel)('scope'));
+    return dispatch((0, _actions.focusPanel)('scope'));
   });
-
   screen.key(['C-k'], function () {
     return dispatch((0, _actions.focusPanel)('console'));
   });
   screen.key(['?'], function () {
-    var _getState3 = getState();
+    var _getState = getState();
 
-    var panel = _getState3.panel;
+    var panel = _getState.panel;
 
     if (panel === 'settings') {
       return dispatch((0, _actions.focusPanel)('editor'));
@@ -63,9 +47,9 @@ exports.default = function (store, screen) {
   });
 
   screen.key(['F8', 'C-\\', 'c'], function () {
-    var _getState4 = getState();
+    var _getState2 = getState();
 
-    var paused = _getState4.paused;
+    var paused = _getState2.paused;
 
     if (paused) {
       return dispatch((0, _actions.resume)());
@@ -83,11 +67,11 @@ exports.default = function (store, screen) {
   });
 
   screen.key(['tab'], function () {
-    var _getState5 = getState();
+    var _getState3 = getState();
 
-    var panel = _getState5.panel;
-    var tab = _getState5.tab;
-    var layout = _getState5.layout;
+    var panel = _getState3.panel;
+    var tab = _getState3.tab;
+    var layout = _getState3.layout;
 
     if (panel === 'settings') return;
     var ordering = layout[tab].ordering;
@@ -98,11 +82,11 @@ exports.default = function (store, screen) {
   });
 
   screen.key(['S-tab'], function () {
-    var _getState6 = getState();
+    var _getState4 = getState();
 
-    var panel = _getState6.panel;
-    var tab = _getState6.tab;
-    var layout = _getState6.layout;
+    var panel = _getState4.panel;
+    var tab = _getState4.tab;
+    var layout = _getState4.layout;
 
     if (panel === 'settings') return;
     var ordering = layout[tab].ordering;

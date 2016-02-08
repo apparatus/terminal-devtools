@@ -4,10 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _net = require('net');
-
-var _net2 = _interopRequireDefault(_net);
-
 var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
@@ -17,19 +13,20 @@ var _yadc = require('yadc');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // important: preserve order
-var SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch', 'block', 'script']; /*
-                                                                                       * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
-                                                                                       * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-                                                                                       * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-                                                                                       * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-                                                                                       * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-                                                                                       * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-                                                                                       * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-                                                                                       * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-                                                                                       * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-                                                                                       * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-                                                                                       * POSSIBILITY OF SUCH DAMAGE.
-                                                                                       */
+/*
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+var SCOPE_TYPES = ['global', 'local', 'with', 'closure', 'catch', 'block', 'script'];
 
 var PROPERTY_TYPES = {
   NORMAL: 0,
@@ -499,7 +496,7 @@ exports.default = function () {
 
     var connected = function connected() {
       callstack(function (err, stack) {
-        globalEvaluate('\n          (function () {\n            if (process.wrappedForDebugger) return\n            process.stdout.write = (function(fn) {\n              return function(chunk) {\n                try {\n                  process.mainModule.require(\'fs\').appendFileSync(\'' + stdout + '\', chunk)\n                } catch (e) {\n          \n                }\n\n                return fn.apply(process.stdout, arguments)\n              }\n            } (process.stdout.write))\n\n            process.stderr.write = (function(fn) {\n              return function(chunk) {\n                try {\n                  process.mainModule.require(\'fs\').appendFileSync(\'' + stderr + '\', chunk)\n                } catch (e) {\n\n                }\n                return fn.apply(process.stderr, arguments)\n              }\n            } (process.stderr.write))\n\n            process.wrappedForDebugger = true\n          }())\n        ', function (evalErr) {
+        globalEvaluate('\n          (function () {\n            if (process.wrappedForDebugger) return\n            process.stdout.write = (function(fn) {\n              return function(chunk) {\n                try {\n                  process.mainModule.require(\'fs\').appendFileSync(\'' + stdout + '\', chunk)\n                } catch (e) {\n                }\n\n                return fn.apply(process.stdout, arguments)\n              }\n            } (process.stdout.write))\n\n            process.stderr.write = (function(fn) {\n              return function(chunk) {\n                try {\n                  process.mainModule.require(\'fs\').appendFileSync(\'' + stderr + '\', chunk)\n                } catch (e) {\n\n                }\n                return fn.apply(process.stderr, arguments)\n              }\n            } (process.stderr.write))\n\n            process.wrappedForDebugger = true\n          }())\n        ', function (evalErr) {
           cb(err || evalErr, stack);
         });
       });
@@ -513,7 +510,7 @@ exports.default = function () {
         var code = e.code;
 
         if (code === 'ECONNREFUSED') {
-          setTimeout(attempt, 1000); //TODO cancel previous connect on timeout
+          setTimeout(attempt, 1000); // TODO cancel previous connect on timeout
           return;
         }
 

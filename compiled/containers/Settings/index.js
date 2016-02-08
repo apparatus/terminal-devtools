@@ -37,6 +37,7 @@ var Settings = function Settings(_ref) {
       // in the same event loop
       setImmediate(function () {
         dispatch((0, _actions.focusPanel)('editor'));
+        dispatch((0, _actions.refetchScope)());
         setImmediate(function () {
           dispatch((0, _actions.setDimensions)(_layouts2.default[to]));
           focusedInput = to;

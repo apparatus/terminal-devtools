@@ -13,6 +13,7 @@ exports.selectFile = selectFile;
 exports.setEditorLine = setEditorLine;
 exports.toggleBreakpoint = toggleBreakpoint;
 exports.consoleHistory = consoleHistory;
+exports.refetchScope = refetchScope;
 exports.consoleInput = consoleInput;
 exports.selectFrame = selectFrame;
 exports.error = error;
@@ -307,7 +308,7 @@ function toggleBreakpoint() {
       return;
     }
 
-    //break point is set by index (from 0)
+    // break point is set by index (from 0)
     debug.setBreakpoint({ line: editorLine.idx, file: file }, function (err, result) {
       if (err) {
         return error(err);
@@ -331,12 +332,22 @@ function consoleHistory(payload) {
   };
 }
 
-function consoleInput(payload) {
+function refetchScope() {
   return function (dispatch, getState) {
     var _getState4 = getState();
 
-    var frames = _getState4.frames;
     var frame = _getState4.frame;
+
+    dispatch(selectFrame(frame ? frame.callFrameId : 0));
+  };
+}
+
+function consoleInput(payload) {
+  return function (dispatch, getState) {
+    var _getState5 = getState();
+
+    var frames = _getState5.frames;
+    var frame = _getState5.frame;
 
     var expression = payload;
     var args = { expression: expression };
@@ -389,9 +400,9 @@ function consoleInput(payload) {
 
 function selectFrame(payload) {
   return function (dispatch, getState) {
-    var _getState5 = getState();
+    var _getState6 = getState();
 
-    var frames = _getState5.frames;
+    var frames = _getState6.frames;
 
     var frameIndex = payload;
     var frame = frames[frameIndex];

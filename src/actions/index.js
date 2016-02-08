@@ -217,6 +217,13 @@ export function consoleHistory (payload) {
   }
 }
 
+export function refetchScope() {
+  return (dispatch, getState) => {
+    const {frame} = getState()
+    dispatch(selectFrame(frame ? frame.callFrameId : 0))
+  }
+}
+
 export function consoleInput (payload) {
   return (dispatch, getState) => {
     const {frames, frame} = getState()
