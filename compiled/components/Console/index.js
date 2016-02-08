@@ -67,15 +67,6 @@ var Console = function Console(_ref, cmp) {
         screen.program.hideCursor();
         textarea.removeListener('keypress');
       },
-      onKeyTab: function onKeyTab() {
-        if (independent) {
-          actions.focusTab('sources');
-          actions.focusPanel('console');
-          return;
-        }
-        cmp.el._done();
-        actions.focusPanel('navigator');
-      },
       onKeyUp: function onKeyUp() {
         actions.consoleHistory({ step: -1 });
       },
@@ -100,6 +91,18 @@ var Console = function Console(_ref, cmp) {
           actions.consoleInput(cmd);
           return;
         }
+
+        if (key.name === 'tab') {
+          cmp.el._done();
+          actions.focusPanel(key.shift ? 'scope' : 'navigator');
+
+          if (independent) {
+            actions.focusTab('sources');
+            actions.focusPanel('console');
+            return;
+          }
+        }
+
         if (independent) {
           if (key.name === 'escape') {
             // hack :( - avoids intermittent crashing
