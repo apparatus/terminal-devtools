@@ -42,7 +42,7 @@ var Sources = function Sources(_ref) {
   var actions = _ref.actions;
   var tooltips = _ref.tooltips;
   var output = _ref.output;
-  return console.log(layoutName), _react2.default.createElement(
+  return _react2.default.createElement(
     'element',
     layout.element,
     _react2.default.createElement(_components.Navigator, _extends({ tooltips: tooltips, items: files, item: fileItem, focused: panel === 'navigator', actions: actions }, layout.navigator)),
@@ -51,6 +51,8 @@ var Sources = function Sources(_ref) {
     _react2.default.createElement(_components.CallStack, _extends({ tooltips: tooltips, items: callstack, focused: panel === 'callstack', actions: actions }, layout.callstack)),
     _react2.default.createElement(_components.BreakPoints, _extends({ tooltips: tooltips, items: breakpoints, focused: panel === 'breakpoints', actions: actions }, layout.breakpoints)),
     _react2.default.createElement(_components.Scope, _extends({ tooltips: tooltips, items: scope, item: scopeItem, focused: panel === 'scope', actions: actions }, layout.scope)),
+    panel === 'navigator' && layoutName === 'minimal' && _react2.default.createElement(_components.Navigator, _extends({ tooltips: tooltips, items: files, item: fileItem, focused: panel === 'navigator', actions: actions }, layout.navigator)),
+    panel === 'scope' && layoutName === 'minimal' && _react2.default.createElement(_components.Scope, _extends({ tooltips: tooltips, items: scope, item: scopeItem, focused: panel === 'scope', actions: actions }, layout.scope)),
     _react2.default.createElement(_components.Console, _extends({ tooltips: tooltips, output: output, focused: panel === 'console', actions: actions }, layout.console))
   );
 };
