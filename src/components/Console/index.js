@@ -34,6 +34,16 @@ const Console = ({top, left, width, height, focused, independent, tooltips, outp
             cmp.force()
         }
         onFocus={() => (independent || focused || actions.focusPanel('console'))}
+        onBlur={()=> {
+          //blessed doesn't unfocus the textarea 
+          //when mouse is used - work around:
+          const textarea = cmp.el.parent.children[1]
+          const screen = cmp.el.screen
+          textarea._reading = false
+          screen.grabKeys = false
+          screen.program.hideCursor()
+          textarea.removeListener('keypress')
+        }}
         onKeyTab={() => {
           if (independent) {
             actions.focusTab('sources')
@@ -63,7 +73,6 @@ const Console = ({top, left, width, height, focused, independent, tooltips, outp
             actions.consoleInput(cmd)
             return
           }
-          console.log(key, ch)
           if (independent) {
             if (key.name === 'escape') {
               // hack :( - avoids intermittent crashing

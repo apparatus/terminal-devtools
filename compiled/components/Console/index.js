@@ -57,6 +57,16 @@ var Console = function Console(_ref, cmp) {
       onFocus: function onFocus() {
         return independent || focused || actions.focusPanel('console');
       },
+      onBlur: function onBlur() {
+        //blessed doesn't unfocus the textarea
+        //when mouse is used - work around:
+        var textarea = cmp.el.parent.children[1];
+        var screen = cmp.el.screen;
+        textarea._reading = false;
+        screen.grabKeys = false;
+        screen.program.hideCursor();
+        textarea.removeListener('keypress');
+      },
       onKeyTab: function onKeyTab() {
         if (independent) {
           actions.focusTab('sources');
@@ -90,7 +100,6 @@ var Console = function Console(_ref, cmp) {
           actions.consoleInput(cmd);
           return;
         }
-        console.log(key, ch);
         if (independent) {
           if (key.name === 'escape') {
             // hack :( - avoids intermittent crashing
