@@ -13,7 +13,7 @@ exports.default = function (store, screen) {
   var dispatch = store.dispatch;
   var getState = store.getState;
 
-  screen.key(['escape', 'q', 'C-c'], function (ch, key) {
+  screen.key(['q', 'C-c'], function (ch, key) {
     return process.exit(0);
   });
 

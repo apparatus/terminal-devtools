@@ -6,7 +6,7 @@ import {focusPanel, resume, pause, stepOver, stepInto, stepOut} from './actions'
 export default (store, screen) => {
   const {dispatch, getState} = store
 
-  screen.key(['escape', 'q', 'C-c'], function (ch, key) {
+  screen.key(['q', 'C-c'], function (ch, key) {
     return process.exit(0)
   })
 

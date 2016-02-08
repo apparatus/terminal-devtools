@@ -33,11 +33,11 @@ const Sources = ({
     <Scope tooltips={tooltips} items={scope} item={scopeItem} focused={panel === 'scope'} actions={actions} {...layout.scope}/>
     {
       (panel === 'navigator' && layoutName === 'minimal') &&
-        <Navigator tooltips={tooltips} items={files} item={fileItem} focused={panel === 'navigator'} actions={actions} {...layout.navigator}/>
+        <Navigator onEsc={() => actions.focusPanel('editor')} tooltips={tooltips} items={files} item={fileItem} focused={panel === 'navigator'} actions={actions} {...layout.navigator}/>
     }
     {
       (panel === 'scope' && layoutName === 'minimal') &&
-        <Scope tooltips={tooltips} items={scope} item={scopeItem} focused={panel === 'scope'} actions={actions} {...layout.scope}/>
+        <Scope onEsc={() => actions.focusPanel('editor')} tooltips={tooltips} items={scope} item={scopeItem} focused={panel === 'scope'} actions={actions} {...layout.scope}/>
     }
     <Console tooltips={tooltips} output={output} focused={panel === 'console'} actions={actions} {...layout.console}/>
   </element>

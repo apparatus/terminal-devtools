@@ -33,6 +33,7 @@ var Scope = function Scope(_ref) {
   var height = _ref.height;
   var focused = _ref.focused;
   var tooltips = _ref.tooltips;
+  var onEsc = _ref.onEsc;
   var _ref$actions = _ref.actions;
   var focusPanel = _ref$actions.focusPanel;
   var extendScope = _ref$actions.extendScope;
@@ -52,6 +53,7 @@ var Scope = function Scope(_ref) {
     items: items,
     item: item,
     hoverText: tooltips && 'ctrl+o',
+    onKeyEscape: onEsc,
     onFocus: function onFocus() {
       return focused || focusPanel('scope');
     },

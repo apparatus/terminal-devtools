@@ -31,6 +31,7 @@ var Navigator = function Navigator(_ref) {
   var focused = _ref.focused;
   var item = _ref.item;
   var tooltips = _ref.tooltips;
+  var onEsc = _ref.onEsc;
   var _ref$actions = _ref.actions;
   var selectFile = _ref$actions.selectFile;
   var setEditorLine = _ref$actions.setEditorLine;
@@ -50,6 +51,7 @@ var Navigator = function Navigator(_ref) {
     height: height,
     item: item,
     items: items,
+    onKeyEscape: onEsc,
     onSelectItem: function onSelectItem(_ref2) {
       var path = _ref2.data.path;
 

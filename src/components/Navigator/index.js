@@ -5,7 +5,7 @@ import * as style from '../../style'
 /* eslint-disable react/no-unknown-property */
 
 const Navigator = ({
-  items, top, left, width, height, focused, item, tooltips,
+  items, top, left, width, height, focused, item, tooltips, onEsc,
   actions: {selectFile, setEditorLine, focusPanel}
 }) => (
   <Tree
@@ -23,6 +23,7 @@ const Navigator = ({
     height={height}
     item={item}
     items={items}
+    onKeyEscape={onEsc}
     onSelectItem = {
       ({data: {path}}) => {
         selectFile(path)
