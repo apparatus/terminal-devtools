@@ -1,6 +1,6 @@
 {
   "name": "terminal-devtools",
-  "version": "1.0.2-rc1",
+  "version": "1.0.3-rc1",
   "bin": {
     "devtools": "./cmd.js"
   },
@@ -17,20 +17,19 @@
       "examples/**"
     ]
   },
+  "files": [
+    "compiled",
+    "cmd.js",
+    "index.js"
+  ],
   "watch": {
     "build": "src/**/*.js"
   },
   "author": "David Mark Clements",
   "license": "MIT",
   "dependencies": {
-    "babel": "^6.3.13",
-    "babel-cli": "^6.3.17",
     "babel-polyfill": "^6.3.14",
-    "babel-preset-es2015": "^6.3.13",
-    "babel-preset-react": "^6.3.13",
-    "babel-preset-stage-0": "^6.3.13",
     "blessed": "^0.1.81",
-    "lsof": "^0.1.0",
     "minimist": "^1.2.0",
     "react": "^0.14.3",
     "react-blessed": "davidmarkclements/react-blessed#patches",
@@ -39,14 +38,18 @@
     "redux": "^3.0.5",
     "redux-logger": "^2.3.1",
     "redux-thunk": "^1.0.2",
-    "source-map-support": "^0.4.0",
-    "v8-debug": "^0.7.0",
     "yadc": "0.0.1"
   },
   "description": "Terminal based Devtools for Node",
   "devDependencies": {
+    "babel": "^6.3.13",
+    "babel-cli": "^6.3.17",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
     "babel-eslint": "^5.0.0-beta6",
     "npm-watch": "0.0.1",
+    "source-map-support": "^0.4.0",
     "spacey-standard": "^1.0.1"
   },
   "repository": {
