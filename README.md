@@ -101,8 +101,9 @@ There are two supported layouts, Normal and Minimal.
 
 The layout can be changed in Settings (`?` or click the ⚙ icon).
 
-In minimal layout, hidden panels can be revealed with their 
-`ctrl` based shortcuts (Navigator: ctrl+n, Scope: ctrl+o).
+In minimal layout, hidden panels can be revealed as dialogs using the 
+`ctrl` based shortcuts (Navigator: `ctrl+n`, Scope: `ctrl+o`). To exit a
+Scope or Navigator dialog press the `esc` key.
 
 
 ## Contributing
