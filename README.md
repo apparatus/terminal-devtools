@@ -4,6 +4,8 @@ Terminal based Devtools for Node
 
 ![terminal devtools](./demo.gif)
 
+## Status: Pre-release
+
 ## Install
 
 ```sh
