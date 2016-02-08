@@ -25,8 +25,8 @@ export const settings = {
 }
 
 export const controls = {
-  left: '100%-24',
-  width: 10,
+  left: '100%-18',
+  width: 8,
   height: 1,
   top: 0
 }

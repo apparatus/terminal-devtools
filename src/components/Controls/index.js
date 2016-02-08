@@ -93,8 +93,10 @@ const Controls = ({top, left, width, height, paused, areBreakpointsActive, pause
     <StepOver enabled={paused} onClick={stepOver} tooltips={tooltips}/>
     <StepInto enabled={paused} onClick={stepInto} tooltips={tooltips}/>
     <StepOut enabled={paused} onClick={stepOut} tooltips={tooltips}/>
-    <BreakPointsActive active={areBreakpointsActive} onClick={breakpointsActive} tooltips={tooltips}/>
-    <UncaughtExceptions onClick={uncaughtExceptions} tooltips={tooltips}/>
+    { //icons disabled until functionality implemented:
+      //<BreakPointsActive active={areBreakpointsActive} onClick={breakpointsActive} tooltips={tooltips}/>
+      //<UncaughtExceptions onClick={uncaughtExceptions} tooltips={tooltips}/>
+    }
   </layout>
 )
 

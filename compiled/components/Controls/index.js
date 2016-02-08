@@ -148,9 +148,7 @@ var Controls = function Controls(_ref7) {
     _react2.default.createElement(PauseResume, { paused: paused, onClick: pauseResume, tooltips: tooltips }),
     _react2.default.createElement(StepOver, { enabled: paused, onClick: stepOver, tooltips: tooltips }),
     _react2.default.createElement(StepInto, { enabled: paused, onClick: stepInto, tooltips: tooltips }),
-    _react2.default.createElement(StepOut, { enabled: paused, onClick: stepOut, tooltips: tooltips }),
-    _react2.default.createElement(BreakPointsActive, { active: areBreakpointsActive, onClick: breakpointsActive, tooltips: tooltips }),
-    _react2.default.createElement(UncaughtExceptions, { onClick: uncaughtExceptions, tooltips: tooltips })
+    _react2.default.createElement(StepOut, { enabled: paused, onClick: stepOut, tooltips: tooltips })
   );
 };
 
