@@ -1,1 +1,1 @@
-{"version":3,"sources":["../../../src/config/layouts/index.js"],"names":[],"mappings":";;;;;;;;;;;;;;;;kBAGe,EAAC,MAAM,kBAAA,EAAE,OAAO,mBAAA,EAAC","file":"index.js","sourcesContent":["import normal from './normal'\nimport minimal from './minimal'\n\nexport default {normal, minimal}\n"]}
+{"version":3,"sources":["../../../src/config/layouts/index.js"],"names":[],"mappings":";;;;;;;;;;;;;;;;kBAGe,EAAC,wBAAD,EAAS,0BAAT","file":"index.js","sourcesContent":["import normal from './normal'\nimport minimal from './minimal'\n\nexport default {normal, minimal}\n"]}

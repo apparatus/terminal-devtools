@@ -1,12 +1,13 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _CONSOLE_PREFIXES;
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.tab = tab;
 exports.panel = panel;
 exports.sources = sources;
@@ -36,8 +37,6 @@ var _path = require('path');
 var _actions = require('../actions');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -83,54 +82,18 @@ function files() {
   var sources = payload.map(function (s) {
     return s.name;
   });
-
   var nonNative = sources.filter(function (s) {
     return s && s[0] === _path.sep;
   }).reduce(function (o, path) {
     var next = o;
 
-    var parts = path.split(_path.sep).filter(Boolean);
-
-    var candidates = [''].concat(_toConsumableArray(parts.slice()));
-
-    while ((candidates.length -= 1) > 0) {
-      if (_fs2.default.existsSync([].concat(_toConsumableArray(candidates), ['package.json']).join(_path.sep))) break;
-    }
-
-    var rootDirname = candidates[candidates.length - 1];
-    var contractedRoot = '/…' + _path.sep + candidates[candidates.length - 1];
-    var choppedParts = candidates.length - 2;
-
-    parts.slice(choppedParts, parts.length - 1).forEach(function (segment, ix, arr) {
-      var cur = next[segment === rootDirname ? contractedRoot : segment] = { value: {} };
-
-      function lookup(curPath, cur) {
-        var ls = _fs2.default.readdirSync(curPath);
-        var jsFiles = ls.filter(function (f) {
-          var ext = (0, _path.extname)(f);
-          return ext === '.js' || ext === '.jsx' || ext === '.es';
-        });
-
-        var dirs = ls.filter(function (d) {
-          return d[0] !== '.' && !(0, _path.extname)(d) && _fs2.default.statSync(curPath + _path.sep + d).isDirectory();
-        });
-        jsFiles.forEach(function (f) {
-          return cur.value[f] = {
-            value: {},
-            data: { path: curPath + _path.sep + f },
-            options: { terminate: true }
-          };
-        });
-
-        dirs.forEach(function (d) {
-          cur.value[d] = { value: {} };
-          lookup(curPath + _path.sep + d, cur.value[d]);
-        });
+    path.split(_path.sep).filter(Boolean).forEach(function (segment, ix, arr) {
+      next[segment] = { value: {} };
+      next[segment].data = { path: path };
+      if (ix === arr.length - 1) {
+        next[segment].options = { terminate: true };
       }
-
-      lookup([''].concat(_toConsumableArray(parts.slice(0, choppedParts + ix)), [segment]).join(_path.sep), cur);
-
-      next = cur.value;
+      next = next[segment].value;
     });
 
     return o;
@@ -378,6 +341,7 @@ function output() {
   var all = state.all;
   var _state$history = state.history;
   var history = _state$history === undefined ? [] : _state$history;
+
 
   var line = type === _actions.RECEIVE_EVAL_RESULT ? CONSOLE_PREFIXES[type] + payload + '\n' : type === _actions.RECEIVE_EVAL_ERROR ? '\n' + CONSOLE_PREFIXES[type] + payload + '\n' : CONSOLE_PREFIXES[type] + payload;
 

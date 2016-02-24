@@ -1,10 +1,10 @@
 'use strict';
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 require('babel-polyfill');
 
@@ -44,9 +44,10 @@ var _actions = require('./actions');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } step("next"); }); }; }
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
 
 Error.stackTraceLimit = Infinity;
+
 
 var userSettings = _path2.default.join(__dirname, 'config', 'user-settings.json');
 
@@ -63,9 +64,7 @@ var store = (0, _create2.default)(_extends({
 
 var dispatch = store.dispatch;
 
-exports.default = (function () {
-  var _this = this;
-
+exports.default = function () {
   var ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(pid, _ref) {
     var _ref$host = _ref.host;
     var host = _ref$host === undefined ? '127.0.0.1' : _ref$host;
@@ -85,6 +84,7 @@ exports.default = (function () {
             }
 
             screen = (0, _screen2.default)(store);
+
 
             dispatch((0, _actions.receiveSource)('Waiting for debug port ' + port));
             dispatch((0, _actions.startDebugging)({ host: host, port: port }));
@@ -125,11 +125,12 @@ exports.default = (function () {
             return _context.stop();
         }
       }
-    }, _callee, _this);
-  }));
+    }, _callee, undefined);
+  })),
+      _this = undefined;
 
   return function (_x, _x2) {
-    return ref.apply(this, arguments);
+    return ref.apply(_this, arguments);
   };
-})();
+}();
 //# sourceMappingURL=index.js.map

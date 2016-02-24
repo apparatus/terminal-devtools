@@ -55,59 +55,18 @@ export function sources (state = [], {type, payload}) {
 export function files (state = [], {type, payload}) {
   if (type !== RECEIVE_SOURCES) return state
   const sources = payload.map(s => s.name)
-
   const nonNative = sources.filter(s => s && s[0] === sep)
     .reduce((o, path) => {
       let next = o
 
-      let parts = path.split(sep).filter(Boolean)
-
-      const candidates = ['', ...parts.slice()]
-
-      while ((candidates.length -= 1) > 0) {
-        if (fs.existsSync([...candidates, 'package.json'].join(sep))) break
-      }
-
-      const rootDirname = candidates[candidates.length - 1]
-      const contractedRoot = '/…' + sep + candidates[candidates.length - 1]
-      const choppedParts = candidates.length - 2
-
-      parts.slice(choppedParts, parts.length - 1)
-        .forEach((segment, ix, arr) => {
-          const cur =
-            next[(segment === rootDirname) ? contractedRoot : segment] =
-              {value: {}}
-
-          function lookup (curPath, cur) {
-            const ls = fs.readdirSync(curPath)
-            const jsFiles = ls.filter(f => {
-              const ext = extname(f)
-              return ext === '.js' || ext === '.jsx' || ext === '.es'
-            })
-
-            const dirs = ls.filter(d => {
-              return d[0] !== '.' &&
-                !extname(d) &&
-                fs.statSync(curPath + sep + d).isDirectory()
-            })
-            jsFiles.forEach(f =>
-              cur.value[f] = {
-                value: {},
-                data: {path: curPath + sep + f},
-                options: {terminate: true}
-              }
-            )
-
-            dirs.forEach(d => {
-              cur.value[d] = {value: {}}
-              lookup(curPath + sep + d, cur.value[d])
-            })
-          }
-
-          lookup(['', ...parts.slice(0, choppedParts + ix), segment].join(sep), cur)
-
-          next = cur.value
-        })
+      path.split(sep).filter(Boolean).forEach((segment, ix, arr) => {
+        next[segment] = {value: {}}
+        next[segment].data = {path}
+        if (ix === arr.length - 1) {
+          next[segment].options = {terminate: true}
+        }
+        next = next[segment].value
+      })
 
       return o
     }, {})

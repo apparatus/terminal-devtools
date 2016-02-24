@@ -1,1 +1,1 @@
-{"version":3,"sources":["../../src/config/index.js"],"names":[],"mappings":";;;;;;;;;;;;kBAEe,EAAC,OAAO,mBAAA,EAAC","file":"index.js","sourcesContent":["import layouts from './layouts'\n\nexport default {layouts}\n"]}
+{"version":3,"sources":["../../src/config/index.js"],"names":[],"mappings":";;;;;;;;;;;;kBAEe,EAAC,0BAAD","file":"index.js","sourcesContent":["import layouts from './layouts'\n\nexport default {layouts}\n"]}

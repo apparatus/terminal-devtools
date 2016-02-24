@@ -336,8 +336,10 @@ exports.default = function () {
 
       var refs = out.refs;
 
+
       var objList = handles.map(function (ref) {
         var properties = out.body[ref].properties;
+
 
         if (!properties) {
           return;
@@ -367,6 +369,7 @@ exports.default = function () {
           var // fallback for null/undefined
           source = _refs$find.source;
           var properties = _refs$find.properties;
+
 
           var descriptor = {
             writable: !(attributes & 1 << 0),
@@ -508,6 +511,7 @@ exports.default = function () {
       debug.connect(connected);
       debug.once('error', function (e) {
         var code = e.code;
+
 
         if (code === 'ECONNREFUSED') {
           setTimeout(attempt, 1000); // TODO cancel previous connect on timeout

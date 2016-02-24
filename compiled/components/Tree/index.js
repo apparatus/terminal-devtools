@@ -1,10 +1,10 @@
 'use strict';
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _react = require('react');
 
@@ -43,6 +43,7 @@ var Tree = function Tree(props, cmp) {
 
   var items = _traverse.items;
   var map = _traverse.map;
+
 
   if (item && !cmp.$$forcingUpdate$$) {
     var index = map.indexOf(item);
@@ -141,6 +142,7 @@ var Tree = function Tree(props, cmp) {
 
 exports.default = (0, _reactFunctional2.default)(Tree);
 
+
 function pad() {
   var depth = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
   var indentation = arguments.length <= 1 || arguments[1] === undefined ? 2 : arguments[1];
@@ -168,6 +170,7 @@ function traverse(obj, cfg) {
     var terminate = options.terminate;
     var _options$prefix = options.prefix;
     var itemPrefix = _options$prefix === undefined ? '' : _options$prefix;
+
 
     if ('labelling' in options) {
       labelling = options.labelling;

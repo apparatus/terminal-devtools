@@ -1,11 +1,12 @@
 'use strict';
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.TOGGLE_TOOLTIPS = exports.SET_DIMENSIONS = exports.TOGGLE_BREAKPOINT = exports.SELECT_FRAME = exports.PREVIOUS_FRAME = exports.NEXT_FRAME = exports.STEP_OUT = exports.STEP_INTO = exports.STEP_OVER = exports.RESUME = exports.PAUSE = exports.RECEIVE_EVAL_ERROR = exports.RECEIVE_EVAL_RESULT = exports.CONSOLE_HISTORY = exports.CONSOLE_INPUT = exports.RECEIVE_STDERR = exports.RECEIVE_STDOUT = exports.SET_EDITOR_LINE = exports.SET_FILE_ITEM = exports.RECEIVE_SOURCE = exports.ADD_ITEM_TO_SCOPE = exports.SET_SCOPE_ITEM = exports.EXTEND_SCOPE = exports.RECEIVE_SCOPE = exports.CLEAR_SCOPE = exports.RECEIVE_BREAKPOINTS = exports.RECEIVE_CALLSTACK = exports.RECEIVE_SOURCES = exports.START_DEBUGGING = exports.ERROR = exports.SELECT_FILE = exports.FOCUS_PANEL = exports.FOCUS_TAB = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 exports.startDebugging = startDebugging;
 exports.focusTab = focusTab;
 exports.focusPanel = focusPanel;
@@ -220,6 +221,7 @@ function selectFile(payload) {
     var source = _script.source;
     var name = _script.name;
 
+
     dispatch({ type: SELECT_FILE, payload: name });
 
     function locate(f) {
@@ -377,6 +379,7 @@ function consoleInput(payload) {
       var type = _res$body.type;
       var value = _res$body.value;
       var text = _res$body.text;
+
 
       var output = className ? type === 'function' ? text : className : type === 'string' ? '\'' + value + '\'' : value;
 
@@ -561,6 +564,7 @@ function resume() {
         var body = _ref9.body;
         var idx = body.sourceLine;
         var scriptId = body.script.id;
+
 
         dispatch(selectFile({ scriptId: scriptId, lineNumber: idx }));
         debug.callstack(function (err, callstack) {

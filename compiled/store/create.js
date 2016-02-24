@@ -1,10 +1,10 @@
 'use strict';
 
-var _persistanceMap;
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _persistanceMap;
 
 var _redux = require('redux');
 
@@ -38,6 +38,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* eslint-disable */
 
 /* eslint-enable */
+
 
 var persist = (0, _persistance2.default)(_path2.default.join(__dirname, '..', 'config', 'user-settings.json'));
 
